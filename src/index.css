@@ -1,0 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap");
+
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+@theme {
+  --color-glass-gold: rgba(245, 158, 11, 0.1);
+  --color-glass-gold-hover: rgba(245, 158, 11, 0.2);
+  --color-border-gold: rgba(251, 191, 36, 0.6);
+  --color-border-gold-hover: rgb(252, 211, 77);
+  --color-black-bg: #0d0d0d;
+  --color-light-text: #f2f2f2;
+
+  --shadow-gold-glow: 0 0 15px rgba(251, 191, 36, 0.15);
+  --shadow-gold-glow-hover: 0 0 25px rgba(252, 211, 77, 0.4);
+
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-nunito: "Nunito", sans-serif;
+  --font-playfair: "Playfair Display SC", serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-source: "Source Sans 3", sans-serif;
+
+  --font-sans: "Montserrat", sans-serif;
+  --font-display: "Playfair Display SC", serif;
+
+  --animate-shimmer: shimmer 10s infinite linear;
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
