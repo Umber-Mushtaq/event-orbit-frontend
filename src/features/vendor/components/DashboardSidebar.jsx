@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   X,
 } from "lucide-react";
-import AppLogo from "../../home/components/Logo";
+import AppLogo from "../../../global_components/AppLogo";
 
 const SIDEBAR_ITEMS = [
   {
@@ -51,12 +51,7 @@ export function DashboardSidebar() {
   return (
     <>
       <aside className='fixed top-0 left-0 h-screen w-20 bg-neutral-900 backdrop-blur-md border-r border-white/5 flex flex-col justify-between items-center py-6 z-40 transition-all duration-300 hover:border-r-border-gold/20 shadow-xl'>
-        <Link
-          to='/dashboard'
-          className='w-13 h-13 rounded-xl bg-glass-gold border border-border-gold/30 text-border-gold flex items-center justify-center shadow-gold-glow animate-pulse [animation-duration:4s]'
-        >
-          <AppLogo />
-        </Link>
+        <AppLogo to='/vendor/dashboard' />
 
         <div className='flex flex-col gap-5 w-full px-3'>
           {SIDEBAR_ITEMS.map((item) => {

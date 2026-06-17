@@ -11,11 +11,6 @@ function CreateServiceHeader() {
           Create, and showcase your services.
         </p>
       </div>
-
-      <button className='bg-glass-gold text-white border border-border-gold shadow-gold-glow font-poppins text-xs font-semibold py-3 px-5 rounded-xl backdrop-blur-md hover:bg-glass-gold-hover hover:border-border-gold-hover hover:shadow-gold-glow-hover transition-all duration-300 flex items-center gap-2 cursor-pointer'>
-        <Plus className='w-4 h-4 text-border-gold-hover' />
-        Add
-      </button>
     </div>
   );
 }

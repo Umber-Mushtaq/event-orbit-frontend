@@ -1,7 +1,7 @@
 import { Type, Layers, FileText } from "lucide-react";
 import CreateServiceFormHeaders from "./CreateServiceFormHeaders";
 
-function BasicServiceInfo() {
+function BasicServiceInfo({ form }) {
   return (
     <div className='bg-white/5 backdrop-blur-md border border-stone-400 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col gap-5'>
       <CreateServiceFormHeaders number={1} text='Basic Info Section' />
@@ -15,8 +15,12 @@ function BasicServiceInfo() {
           <Type className='absolute left-4 w-4 h-4 text-stone-400' />
           <input
             type='text'
+            value={form.title}
+            onChange={(e) => form.setTitle(e.target.value)}
+            disabled={form.loading}
             placeholder='Wedding Photography Premium Package'
             className='w-full bg-neutral-900/50 border border-stone-400 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins'
+            required
           />
         </div>
       </div>
@@ -28,14 +32,27 @@ function BasicServiceInfo() {
         </label>
         <div className='relative flex items-center'>
           <Layers className='absolute left-4 w-4 h-4 text-stone-400' />
-          <select className='w-full bg-neutral-900/50 border border-stone-400 rounded-xl py-3 pl-11 pr-4 text-sm text-stone-400 placeholder-stone-400 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins appearance-none cursor-pointer'>
-            <option value='' disabled selected>
-              Service Category
+          <select
+            value={form.categoryId || ""}
+            onChange={(e) => form.setCategoryId(e.target.value)}
+            disabled={form.loading}
+            className='w-full bg-neutral-900/50 border border-stone-400 rounded-xl py-3 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins cursor-pointer'
+            required
+          >
+            <option value='' disabled className='text-stone-500'>
+              Select Service Category
             </option>
-            <option value='hall'>Marriage Hall</option>
-            <option value='catering'>Catering</option>
-            <option value='photography'>Photography</option>
-            <option value='decor'>Decoration</option>
+
+            {form.categories &&
+              form.categories.map((cat) => (
+                <option
+                  key={cat._id}
+                  value={cat._id}
+                  className='bg-neutral-900 text-white'
+                >
+                  {cat.name}
+                </option>
+              ))}
           </select>
         </div>
       </div>
@@ -49,8 +66,12 @@ function BasicServiceInfo() {
           <FileText className='absolute left-4 top-3 w-4 h-4 text-stone-400' />
           <textarea
             rows={4}
-            placeholder='Wedding Photography Premium Package'
+            value={form.description}
+            onChange={(e) => form.setDescription(e.target.value)}
+            disabled={form.loading}
+            placeholder='Provide details about what your premium wedding package covers...'
             className='w-full bg-neutral-900/50 border border-stone-400 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins resize-none'
+            required
           />
         </div>
       </div>

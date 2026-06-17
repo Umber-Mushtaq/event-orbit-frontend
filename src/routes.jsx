@@ -1,13 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import LandingPage from "./features/home/LandingPage";
 import AuthPage from "./features/auth/AuthPage";
-import Login from "./features/auth/components/Login";
-import Register from "./features/auth/components/Register";
-import ForgotPassword from "./features/auth/components/ForgotPassword";
-import ResetPassword from "./features/auth/components/ResetPassword";
 import ProtectedRoute from "./ProtectedRoutes";
-
-// Vendor Elements
 import DashboardLayout from "./features/vendor/DashboardLayout";
 import DashboardOverview from "./features/vendor/sections/DashboardOverview";
 import ManageServices from "./features/vendor/sections/ManageServces";
@@ -15,6 +9,12 @@ import CreateService from "./features/vendor/sections/CreateService";
 import ServiceDetails from "./features/vendor/sections/ServiceDetails";
 import BookingRequests from "./features/vendor/sections/BookingRequests";
 import ServiceReviews from "./features/vendor/sections/ServiceReviews";
+import EditService from "./features/vendor/sections/EditService";
+import VendorProfile from "./features/vendor/sections/VendorProfile";
+import Login from "./features/auth/section/Login";
+import Register from "./features/auth/section/Register";
+import ForgotPassword from "./features/auth/section/ForgotPassword";
+import ResetPassword from "./features/auth/section/ResetPassword";
 
 const router = createBrowserRouter([
   {
@@ -48,9 +48,11 @@ const router = createBrowserRouter([
           { index: true, element: <DashboardOverview /> },
           { path: "services", element: <ManageServices /> },
           { path: "create", element: <CreateService /> },
-          { path: "service/detatails", element: <ServiceDetails /> },
+          { path: "edit/:id", element: <EditService /> },
+          { path: "service/details/:id", element: <ServiceDetails /> },
           { path: "bookings", element: <BookingRequests /> },
           { path: "reviews", element: <ServiceReviews /> },
+          { path: "profile", element: <VendorProfile /> },
         ],
       },
     ],

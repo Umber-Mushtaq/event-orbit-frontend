@@ -1,8 +1,6 @@
 import { Outlet } from "react-router";
 import HeroImg from "../../assets/back-img.png";
 
-import AppLogo from "../home/components/Logo";
-
 function AuthPage() {
   return (
     <div className='min-h-screen w-full bg-neutral-950 text-white flex flex-col lg:flex-row relative overflow-hidden'>

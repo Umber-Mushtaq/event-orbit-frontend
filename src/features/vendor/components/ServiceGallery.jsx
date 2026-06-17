@@ -1,39 +1,54 @@
-import MainWedding from "../../../assets/service1.jpg";
-import Thumb1 from "../../../assets/service2.jpg";
-import Thumb2 from "../../../assets/service3.jpg";
+import { useState, useEffect } from "react";
+import DefaultPlaceholder from "../../../assets/service1.jpg";
 
-export default function ServiceGallery() {
-  const thumbnails = [Thumb1, Thumb2, Thumb1, Thumb2];
+export default function ServiceGallery({ images = [] }) {
+  // Ensure the fallback asset is array safe
+  const galleryImages = images.length > 0 ? images : [DefaultPlaceholder];
+  const [activeImage, setActiveImage] = useState(galleryImages[0]);
+
+  // Sync active image if the source array shifts asynchronously
+  useEffect(() => {
+    if (images.length > 0) {
+      setActiveImage(images[0]);
+    }
+  }, [images]);
 
   return (
-    <div className='w-full flex flex-col gap-4 z-10 relative'>
-      {/* Primary Display Showcase Image */}
-      <div className='w-full h-[45vh] rounded-3xl overflow-hidden border border-white/10 shadow-2xl'>
+    <div className='w-full flex flex-col gap-3 sm:gap-4 z-10 relative'>
+      {/* Main Feature Showcase Container */}
+      <div className='w-full aspect-[4/3] sm:aspect-auto sm:h-[40vh] md:h-[45vh] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 shadow-2xl'>
         <img
-          src={MainWedding}
+          src={activeImage}
           alt='Main Service Showcase'
-          className='w-full h-full object-cover object-center'
+          className='w-full h-full object-cover object-center transition-all duration-300'
         />
       </div>
 
-      {/* Horizontal Thumbnail Slider Row */}
-      <div className='grid grid-cols-5 gap-3 w-full'>
-        {thumbnails.map((img, idx) => (
-          <div
-            key={idx}
-            className='aspect-`aspect-4/3`rounded-xl overflow-hidden border border-white/5 hover:border-border-gold/50 cursor-pointer transition-all'
-          >
-            <img
-              src={img}
-              alt='Thumbnail preview'
-              className='w-full h-full object-cover'
-            />
-          </div>
-        ))}
-        {/* "+More" Album Utility Slot */}
-        <div className='aspect-`aspect-4/3` rounded-xl bg-neutral-900 border border-white/5 flex items-center justify-center text-xs font-poppins font-semibold text-stone-400 hover:text-border-gold-hover hover:border-border-gold/20 cursor-pointer transition-all'>
-          +24 More
-        </div>
+      {/* Thumbnails Matrix Grid */}
+      <div className='grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 w-full'>
+        {galleryImages.map((img, idx) => {
+          const isActive = activeImage === img;
+
+          return (
+            <button
+              key={idx}
+              type='button'
+              onClick={() => setActiveImage(img)}
+              className={`aspect-video rounded-lg sm:rounded-xl overflow-hidden border transition-all cursor-pointer focus:outline-none ${
+                isActive
+                  ? "border-border-gold shadow-md scale-[1.02]"
+                  : "border-white/5 hover:border-white/20"
+              }`}
+            >
+              <img
+                src={img}
+                alt={`Gallery Thumbnail ${idx + 1}`}
+                className='w-full h-full object-cover'
+                loading='lazy'
+              />
+            </button>
+          );
+        })}
       </div>
     </div>
   );
