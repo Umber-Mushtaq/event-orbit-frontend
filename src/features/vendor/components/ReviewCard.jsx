@@ -48,9 +48,6 @@ function ReviewCard({ review }) {
           </span>
         </div>
       </div>
-
-      {/* Persistent action chevron marker */}
-      <ChevronRight className='w-4 h-4 text-stone-400 group-hover:text-border-gold-hover group-hover:translate-x-0.5 transition-all shrink-0' />
     </div>
   );
 }

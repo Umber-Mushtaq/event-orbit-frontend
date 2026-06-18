@@ -1,8 +1,53 @@
+import { useState } from "react";
 import { Check, X, Loader2, AlertCircle } from "lucide-react";
 import { useBookingRequests } from "../hooks/useBookingRequests";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 function BookingRequests() {
   const { bookings, loading, error, handleStatusAction } = useBookingRequests();
+
+  // Modal Configuration Tracking States
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    bookingId: null,
+    targetStatus: null, // "confirmed" | "cancelled"
+    title: "",
+    message: "",
+    variant: "gold",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const openConfirmation = (booking, action) => {
+    const isConfirming = action === "confirmed";
+    setModalConfig({
+      isOpen: true,
+      bookingId: booking._id,
+      targetStatus: action,
+      title: isConfirming
+        ? "Confirm Booking Reservation"
+        : "Decline Event Request",
+      message: isConfirming
+        ? `Are you sure you want to approve the booking reservation for ${booking.customerName} on ${new Date(booking.requestedDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}? This will finalize their lock allocation slots.`
+        : `Are you sure you want to decline this reservation request from ${booking.customerName}? The customer will be informed, and schedule availability limits will release.`,
+      variant: isConfirming ? "gold" : "danger",
+    });
+  };
+
+  const closeConfirmation = () => {
+    setModalConfig((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const executeStatusChange = async () => {
+    try {
+      setIsSubmitting(true);
+      await handleStatusAction(modalConfig.bookingId, modalConfig.targetStatus);
+      closeConfirmation();
+    } catch (err) {
+      console.error("Modal operation execution pipeline crash:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -113,18 +158,18 @@ function BookingRequests() {
                 </div>
               </div>
 
-              {/* ACTION BUTTONS (Only render if booking is currently pending) */}
+              {/* ACTION BUTTONS */}
               {booking.status === "pending" && (
                 <div className='flex items-center gap-3 pt-4 border-t border-white/5 w-full justify-start'>
                   <button
-                    onClick={() => handleStatusAction(booking._id, "confirmed")}
+                    onClick={() => openConfirmation(booking, "confirmed")}
                     className='bg-glass-gold hover:bg-glass-gold-hover border border-border-gold text-white font-poppins text-[11px] font-semibold py-2 px-4 rounded-xl flex items-center gap-1.5 transition-all duration-200 cursor-pointer shadow-gold-glow'
                   >
                     <Check className='w-3.5 h-3.5 text-border-gold-hover' />
                     Confirm
                   </button>
                   <button
-                    onClick={() => handleStatusAction(booking._id, "cancelled")}
+                    onClick={() => openConfirmation(booking, "cancelled")}
                     className='bg-red-500/10 hover:bg-red-500/20 border border-red-500/40 text-red-400 font-poppins text-[11px] font-semibold py-2 px-4 rounded-xl flex items-center gap-1.5 transition-all duration-200 cursor-pointer'
                   >
                     <X className='w-3.5 h-3.5' />
@@ -136,6 +181,17 @@ function BookingRequests() {
           ))
         )}
       </div>
+
+      {/* PERSISTENT CONFIRMATION MODAL OVERLAY PORTAL */}
+      <ConfirmationModal
+        isOpen={modalConfig.isOpen}
+        onClose={closeConfirmation}
+        onConfirm={executeStatusChange}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        variant={modalConfig.variant}
+        isProcessing={isSubmitting}
+      />
     </section>
   );
 }

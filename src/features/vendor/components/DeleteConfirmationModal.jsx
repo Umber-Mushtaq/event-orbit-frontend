@@ -5,7 +5,7 @@ function DeleteConfirmationModal({ isOpen, isLoading, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
-    <div className='fixed inset-0 w-full h-full bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
+    <div className='fixed inset-0 w-full h-full bg-white/10 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
       <div className='w-full max-w-md bg-neutral-900 border border-stone-400 rounded-3xl p-6 md:p-8 shadow-2xl relative flex flex-col items-center text-center'>
         <button
           onClick={onClose}
