@@ -1,62 +1,8 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { Search, Check, Eye, X, Loader2, AlertCircle } from "lucide-react";
+import { Check, X, Loader2, AlertCircle } from "lucide-react";
+import { useBookingRequests } from "../hooks/useBookingRequests";
 
 function BookingRequests() {
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  // 1. Fetch Request Stream
-  const fetchBookings = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "http://localhost:5000/api/bookings/requests",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      if (response.data.success) {
-        setBookings(response.data.bookings);
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Failed to load booking actions.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchBookings();
-  }, []);
-
-  // 2. Action Update Engine (Confirm / Decline Handlers)
-  const handleStatusAction = async (id, actionStatus) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.patch(
-        `http://localhost:5000/api/bookings/requests/${id}`,
-        { status: actionStatus },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-
-      if (response.data.success) {
-        // Optimistically filter or update item layout states natively without page refresh
-        setBookings((prev) =>
-          prev.map((b) => (b._id === id ? { ...b, status: actionStatus } : b)),
-        );
-      }
-    } catch (err) {
-      alert(
-        err.response?.data?.message ||
-          "Could not complete status transaction update.",
-      );
-    }
-  };
+  const { bookings, loading, error, handleStatusAction } = useBookingRequests();
 
   if (loading) {
     return (
