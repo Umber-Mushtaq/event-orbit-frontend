@@ -43,7 +43,6 @@ function LandingMain() {
       id='home'
       className='w-full max-w-7xl mx-auto px-4 sm:px-6 relative my-auto z-10 py-6 select-none flex flex-col gap-6'
     >
-      {/* 1. SLIDER CONTAINER */}
       <div
         style={{
           boxShadow:
@@ -51,7 +50,6 @@ function LandingMain() {
         }}
         className='w-full aspect-[21/9] sm:aspect-[3/1] rounded-2xl md:rounded-3xl border border-yellow-500/40 bg-neutral-950 overflow-hidden relative group transition-all duration-500'
       >
-        {/* SLIDING IMAGES CANVAS */}
         {BANNERS.map((bannerImg, index) => {
           const isActive = index === currentSlide;
           return (
@@ -90,11 +88,6 @@ function LandingMain() {
         </button>
       </div>
 
-      {/* 
-        👉 2. EXTRACTED SLIDER DOTS WRAPPER:
-        Moved out of the canvas entirely. Changed 'absolute bottom-3 left-1/2 -translate-x-1/2' 
-        to 'mx-auto flex' layout positioning to drop it cleanly right below the image frame.
-      */}
       <div className='mx-auto flex items-center gap-2 bg-neutral-950/80 backdrop-blur-md px-4 py-2 rounded-full border border-yellow-500/30 opacity-90 hover:opacity-100 transition-opacity shadow-[0_4px_20px_rgba(0,0,0,0.4)]'>
         {BANNERS.map((_, index) => (
           <button

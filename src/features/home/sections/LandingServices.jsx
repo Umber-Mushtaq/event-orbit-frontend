@@ -4,7 +4,7 @@ function LandingServices() {
   return (
     <section
       id='services'
-      className='bg-neutral-950 text-white py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden'
+      className=' text-white py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden'
     >
       <TopHeadings
         badge='Service Categories'

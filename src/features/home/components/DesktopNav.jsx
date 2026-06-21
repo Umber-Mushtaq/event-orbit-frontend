@@ -1,4 +1,4 @@
-import { useLocation } from "react-router";
+import { useLocation, Link } from "react-router";
 
 const NAV_ITEMS = [
   { label: "Home", path: "" },
@@ -21,7 +21,7 @@ function DesktopNav() {
           <a
             key={item.path}
             href={item.path === "" ? "#" : `#${item.path}`}
-            className={`cursor-pointer transition-all duration-300 text-sm tracking-wide relative pb-2 ${
+            className={`cursor-pointer transition-all duration-300 text-sm tracking-wide relative pb-2 whitespace-nowrap ${
               isActive
                 ? "text-[#d4af37] font-medium drop-shadow-[0_0_12px_rgba(212,175,55,0.5)]"
                 : "text-stone-400 hover:text-stone-200"
@@ -38,6 +38,12 @@ function DesktopNav() {
           </a>
         );
       })}
+      <Link
+        to='/auth'
+        className='w-full bg-glass-gold text-white border border-border-gold shadow-gold-glow font-poppins tracking-wide font-semibold py-3 px-5 rounded-xl backdrop-blur-md hover:bg-glass-gold-hover hover:border-border-gold-hover hover:shadow-gold-glow-hover active:scale-98 transition-all duration-300 cursor-pointer  inline-flex items-center justify-center disabled:opacity-50'
+      >
+        Get Started
+      </Link>
     </div>
   );
 }

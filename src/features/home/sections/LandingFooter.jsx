@@ -10,7 +10,7 @@ function LandingFooter() {
   ];
 
   return (
-    <footer className=' bg-neutral-950 text-light-text font-poppins text-sm py-12 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden'>
+    <footer className='  text-light-text font-poppins text-sm py-12 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden'>
       <div className='w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center z-10'>
         <div className='md:col-span-8 flex flex-col gap-4 text-center md:text-left items-center md:items-start'>
           <p className='font-light text-xs text-light-text/80 leading-relaxed max-w-xs'>

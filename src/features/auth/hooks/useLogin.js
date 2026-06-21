@@ -27,7 +27,7 @@ export const useLogin = () => {
       );
 
       const { token, user } = response.data;
-
+      console.log(user);
       if (user.role === "vendor" && !user.isApproved) {
         setError("Your vendor account is pending admin approval.");
         setLoading(false);

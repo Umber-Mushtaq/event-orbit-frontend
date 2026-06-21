@@ -1,4 +1,4 @@
-import { useLocation } from "react-router";
+import { useLocation, Link } from "react-router";
 
 const NAV_ITEMS = [
   { label: "Services", path: "services" },
@@ -33,6 +33,12 @@ function MobileNav({ mobileMenuOpen }) {
               </a>
             );
           })}
+          <Link
+            to='/auth'
+            className='w-full bg-glass-gold text-white border border-border-gold shadow-gold-glow font-poppins tracking-wide font-semibold py-3 px-5 rounded-xl backdrop-blur-md hover:bg-glass-gold-hover hover:border-border-gold-hover hover:shadow-gold-glow-hover active:scale-98 transition-all duration-300 cursor-pointer  inline-flex items-center justify-center disabled:opacity-50'
+          >
+            Get Started
+          </Link>
         </div>
       )}
     </>

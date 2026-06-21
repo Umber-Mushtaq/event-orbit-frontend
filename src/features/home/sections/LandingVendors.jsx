@@ -6,7 +6,7 @@ function LandingVendors() {
   return (
     <section
       id='vendors'
-      className='bg-neutral-950 text-white py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden'
+      className=' text-white py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden'
     >
       <TopHeadings
         badge='Featured Vendors Section'
@@ -16,7 +16,7 @@ function LandingVendors() {
         {VENDORS_DATA.map((vendor) => (
           <div
             key={vendor.id}
-            className='bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg overflow-hidden group flex flex-col transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-border-gold/50 hover:shadow-gold-glow-hover'
+            className='bg-white/5 backdrop-blur-md rounded-2xl border border-border-gold shadow-lg overflow-hidden group flex flex-col transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-border-gold/50 hover:shadow-gold-glow-hover'
           >
             <div className='relative h-56 w-full overflow-hidden'>
               <img

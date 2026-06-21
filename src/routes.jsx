@@ -15,6 +15,11 @@ import Login from "./features/auth/section/Login";
 import Register from "./features/auth/section/Register";
 import ForgotPassword from "./features/auth/section/ForgotPassword";
 import ResetPassword from "./features/auth/section/ResetPassword";
+import UserDashboardOverview from "./features/user/sections/UserDashboardOverview";
+import UserDashboardLayout from "./features/user/sections/UserDashboardLayout";
+import ServiceListings from "./features/user/sections/ServiceListings";
+import MyBookings from "./features/user/sections/MyBookings";
+import Wishlist from "./features/user/sections/Wishlist";
 
 const router = createBrowserRouter([
   {
@@ -68,12 +73,24 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to='dashboard' replace /> },
       {
         path: "dashboard",
-        // element: <CustomerLayout />,
-        element: (
-          <div className='text-white p-10'>Customer Dashboard Placeholder</div>
-        ), // Temp placeholder
+        element: <UserDashboardLayout />,
         children: [
-          // Add your customer profile/booking views here later
+          {
+            index: true,
+            element: <UserDashboardOverview />,
+          },
+          {
+            path: "services",
+            element: <ServiceListings />,
+          },
+          {
+            path: "bookings",
+            element: <MyBookings />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
         ],
       },
     ],

@@ -1,7 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 
 export default function ProtectedRoute({ allowedRoles }) {
-  // 🔥 FIX: Read "user" because that's what useLogin saves
   const userString = localStorage.getItem("user");
   let user = null;
 
@@ -15,7 +14,6 @@ export default function ProtectedRoute({ allowedRoles }) {
     localStorage.removeItem("token");
   }
 
-  // If no user is found logged in, bounce them to login
   if (!user) {
     return <Navigate to='/auth/login' replace />;
   }
