@@ -20,12 +20,30 @@ import UserDashboardLayout from "./features/user/sections/UserDashboardLayout";
 import ServiceListings from "./features/user/sections/ServiceListings";
 import MyBookings from "./features/user/sections/MyBookings";
 import Wishlist from "./features/user/sections/Wishlist";
+import PublicServices from "./features/home/components/PublicServices";
+import PublicLayout from "./features/home/PublicLayout";
+import PublicServiceDetails from "./features/user/sections/PublicServiceDetails";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />,
+    element: <PublicLayout />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: "/allServices",
+        element: <PublicServices />,
+      },
+      {
+        path: "/services/:id",
+        element: <PublicServiceDetails />,
+      },
+    ],
   },
+
   {
     path: "/auth",
     element: <AuthPage />,
@@ -37,10 +55,6 @@ const router = createBrowserRouter([
       { path: "reset-password/:token", element: <ResetPassword /> },
     ],
   },
-
-  // ==========================================
-  // VENDOR ROUTES (Only accessible if role === 'vendor')
-  // ==========================================
   {
     path: "/vendor",
     element: <ProtectedRoute allowedRoles={["vendor"]} />,
@@ -62,10 +76,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
-  // ==========================================
-  // CUSTOMER ROUTES (Only accessible if role === 'customer')
-  // ==========================================
   {
     path: "/customer",
     element: <ProtectedRoute allowedRoles={["customer"]} />,
@@ -95,10 +105,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
-  // ==========================================
-  // ADMIN ROUTES (Only accessible if role === 'admin')
-  // ==========================================
   {
     path: "/admin",
     element: <ProtectedRoute allowedRoles={["admin"]} />,
@@ -111,15 +117,12 @@ const router = createBrowserRouter([
           <div className='text-white p-10'>
             Admin Dashboard (Where you will approve vendors!)
           </div>
-        ), // Temp placeholder
-        children: [
-          // Add your vendor approval queues and platform charts here later
-        ],
+        ),
+        children: [],
       },
     ],
   },
 
-  // Unauthorized Route Fallback
   {
     path: "/unauthorized",
     element: (

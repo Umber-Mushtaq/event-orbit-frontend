@@ -34,6 +34,12 @@ function MobileNav({ mobileMenuOpen }) {
             );
           })}
           <Link
+            to='/allServices'
+            className='cursor-pointer transition-all duration-300 text-sm tracking-wide relative pb-2 whitespace-nowrap text-stone-400 hover:text-stone-200'
+          >
+            See All Services
+          </Link>
+          <Link
             to='/auth'
             className='w-full bg-glass-gold text-white border border-border-gold shadow-gold-glow font-poppins tracking-wide font-semibold py-3 px-5 rounded-xl backdrop-blur-md hover:bg-glass-gold-hover hover:border-border-gold-hover hover:shadow-gold-glow-hover active:scale-98 transition-all duration-300 cursor-pointer  inline-flex items-center justify-center disabled:opacity-50'
           >

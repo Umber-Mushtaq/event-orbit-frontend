@@ -35,7 +35,6 @@ function Register() {
           onSubmit={handleRegisterSubmit}
         />
 
-        {/* Footer Navigation */}
         <div className='text-center mt-6 font-poppins text-xs text-light-text'>
           Already have an account?{" "}
           <Link

@@ -42,7 +42,7 @@ export function DashboardSidebar() {
 
   return (
     <aside className='fixed top-0 left-0 h-screen w-20 bg-neutral-900 backdrop-blur-md border-r border-white/5 flex flex-col justify-between items-center py-6 z-40 transition-all duration-300 hover:border-r-border-gold/20 shadow-xl'>
-      <AppLogo to='/customer/dashboard' />
+      <AppLogo to='/' />
 
       <div className='flex flex-col gap-5 w-full px-3'>
         {SIDEBAR_ITEMS.map((item) => {

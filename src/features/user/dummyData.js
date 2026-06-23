@@ -46,14 +46,6 @@ export const WISHLIST_DATA = [
   },
 ];
 
-export const CATEGORIES = [
-  { id: "venue", label: "Venue", Icon: Building2 },
-  { id: "catering", label: "Catering", Icon: UtensilsCrossed },
-  { id: "photography", label: "Photography", Icon: Camera },
-  { id: "decor", label: "Decor", Icon: Flower2 },
-  { id: "music", label: "Music", Icon: Music },
-];
-
 export const VENDORS_LIST = [
   {
     id: 1,
@@ -153,16 +145,6 @@ export const BOOKINGS_LIST = [
     status: "Confirmed",
     avatar: Avatar2,
     thumbnail: Vendor3,
-  },
-  {
-    id: 4,
-    vendorName: "Jane Cooper",
-    category: "Catering",
-    eventName: "Wedding",
-    time: "12:00 - 22:00",
-    status: "View Details",
-    avatar: Avatar3,
-    thumbnail: Vendor1,
   },
 ];
 

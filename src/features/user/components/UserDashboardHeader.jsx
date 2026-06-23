@@ -29,7 +29,7 @@ export function UserDashboardHeader() {
           />
         </div>
         <span className='font-poppins text-[11px] md:text-xs font-semibold text-white tracking-wide whitespace-nowrap transition-colors duration-200 group-hover:text-border-gold-hover'>
-          Vendor Profile
+          User Profile
         </span>
       </Link>
     </div>
