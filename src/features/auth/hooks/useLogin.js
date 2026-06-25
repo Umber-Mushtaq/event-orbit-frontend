@@ -40,14 +40,15 @@ export const useLogin = () => {
       setSuccess("Welcome back! Redirecting...");
 
       setTimeout(() => {
-        if (user.role === "vendor") {
+        if (user.role === "admin") {
+          navigate("/admin/dashboard");
+        } else if (user.role === "vendor") {
           navigate("/vendor/dashboard");
         } else {
           navigate("/customer/dashboard");
         }
       }, 1500);
     } catch (err) {
-      console.log(err.response.data);
       const backendMessage =
         err.response?.data?.message || "Invalid email or password.";
       setError(backendMessage);

@@ -2,6 +2,15 @@ import { createBrowserRouter, Navigate } from "react-router";
 import LandingPage from "./features/home/LandingPage";
 import AuthPage from "./features/auth/AuthPage";
 import ProtectedRoute from "./ProtectedRoutes";
+import AdminDashboardLayout from "./features/admin/layouts/AdminDashboardLayout";
+import AdminDashboardOverview from "./features/admin/sections/AdminDashboardOverview";
+import AdminSectionPage from "./features/admin/sections/AdminSectionPage";
+import BookingManagementPage from "./features/admin/sections/BookingManagementPage";
+import UserManagementPage from "./features/admin/sections/UserManagementPage";
+import SettingsManagementPage from "./features/admin/sections/SettingsManagementPage";
+import BlogListingPage from "./features/admin/sections/blog/BlogListingPage";
+import BlogDetailsPage from "./features/admin/sections/blog/BlogDetailsPage";
+import BlogFormPage from "./features/admin/sections/blog/BlogFormPage";
 import DashboardLayout from "./features/vendor/DashboardLayout";
 import DashboardOverview from "./features/vendor/sections/DashboardOverview";
 import ManageServices from "./features/vendor/sections/ManageServces";
@@ -84,19 +93,32 @@ const router = createBrowserRouter([
   // ==========================================
   {
     path: "/admin",
-    element: <ProtectedRoute allowedRoles={["admin"]} />,
+    // element: <ProtectedRoute allowedRoles={["admin"]} />,
     children: [
-      { index: true, element: <Navigate to='dashboard' replace /> },
       {
-        path: "dashboard",
-        // element: <AdminLayout />,
-        element: (
-          <div className='text-white p-10'>
-            Admin Dashboard (Where you will approve vendors!)
-          </div>
-        ), // Temp placeholder
+        element: <AdminDashboardLayout />,
         children: [
-          // Add your vendor approval queues and platform charts here later
+          { index: true, element: <Navigate to='dashboard' replace /> },
+          { path: "dashboard", element: <AdminDashboardOverview /> },
+          { path: "events", element: <AdminSectionPage sectionKey='events' /> },
+          {
+            path: "event-categories",
+            element: <AdminSectionPage sectionKey='event-categories' />,
+          },
+          { path: "vendors", element: <AdminSectionPage sectionKey='vendors' /> },
+          { path: "bookings", element: <BookingManagementPage /> },
+          { path: "users", element: <UserManagementPage /> },
+          { path: "analytics", element: <AdminSectionPage sectionKey='analytics' /> },
+          { path: "calendar", element: <AdminSectionPage sectionKey='calendar' /> },
+          { path: "blog", element: <BlogListingPage /> },
+          { path: "blog/add", element: <BlogFormPage mode='create' /> },
+          { path: "blog/:blogId/edit", element: <BlogFormPage mode='edit' /> },
+          { path: "blog/:blogId", element: <BlogDetailsPage /> },
+          {
+            path: "notifications",
+            element: <AdminSectionPage sectionKey='notifications' />,
+          },
+          { path: "settings", element: <SettingsManagementPage /> },
         ],
       },
     ],

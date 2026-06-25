@@ -1,0 +1,370 @@
+Admin Panel Backend API Requirements
+====================================
+
+Purpose
+-------
+This file documents the backend endpoints the frontend Admin Panel needs.
+The current admin UI uses a mix of mock data and local state, so these
+endpoints define the API contract required to fully power the dashboard.
+
+Base URL
+--------
+All endpoints should be available under:
+
+`/api/admin/...`
+
+Recommended cross-cutting requirements
+--------------------------------------
+- Authentication: all endpoints should require an authenticated admin session.
+- Authorization: only users with admin privileges should access these routes.
+- Pagination: list endpoints should support `page` and `limit`.
+- Search: list endpoints should support `q` or `search`.
+- Sorting: list endpoints should support `sortBy` and `sortOrder`.
+- Filtering: list endpoints should support resource-specific filters such as
+  status, category, date range, and approval state.
+- Timestamps: responses should use ISO 8601 date strings.
+- Media uploads: if the frontend uploads blog images or avatars, provide a
+  dedicated upload endpoint or accept multipart/form-data where appropriate.
+
+1. Admin Session / Profile
+--------------------------
+Required for the sidebar, topbar, and general admin identity display.
+
+- `GET /api/admin/me`
+  - Returns the current admin profile.
+  - Frontend uses this for name, role, avatar, and access-level display.
+
+- `PATCH /api/admin/me`
+  - Updates the current admin profile.
+  - Useful for display name, avatar, contact details, and preferences.
+
+2. Dashboard Overview
+---------------------
+Required for `AdminDashboardOverview`, charts, cards, and activity widgets.
+
+- `GET /api/admin/dashboard/summary`
+  - Returns total revenue, bookings, vendors, users, active events, upcoming
+    events, completed events, and pending approvals.
+
+- `GET /api/admin/dashboard/revenue`
+  - Returns revenue series for charts.
+  - Suggested query params: `range=7d|30d|12m|custom`.
+
+- `GET /api/admin/dashboard/bookings`
+  - Returns booking trend series and counts for analytics widgets.
+
+- `GET /api/admin/dashboard/event-status`
+  - Returns event status distribution data.
+
+- `GET /api/admin/dashboard/vendor-performance`
+  - Returns vendor performance rankings or score data.
+
+- `GET /api/admin/dashboard/recent-events`
+  - Returns the latest events shown in tables and summary cards.
+
+- `GET /api/admin/dashboard/recent-activities`
+  - Returns recent platform activity items for the activity feed.
+
+- `GET /api/admin/dashboard/calendar-events`
+  - Returns events used by the calendar widget.
+
+- `GET /api/admin/dashboard/notifications`
+  - Returns recent alert items for the topbar and notification panel.
+
+- `GET /api/admin/dashboard/messages`
+  - Returns recent admin messages shown in the topbar dropdown.
+
+3. Events
+---------
+Required for the Events section and any event-related analytics views.
+
+- `GET /api/admin/events`
+  - Returns a paginated list of events.
+  - Supports search, status, category, organizer, venue, and date filters.
+
+- `GET /api/admin/events/:id`
+  - Returns a single event record with full details.
+
+- `POST /api/admin/events`
+  - Creates a new event.
+
+- `PUT /api/admin/events/:id`
+  - Updates an existing event.
+
+- `PATCH /api/admin/events/:id/status`
+  - Updates the event lifecycle state, such as pending, confirmed, active,
+    completed, or cancelled.
+
+- `DELETE /api/admin/events/:id`
+  - Deletes an event.
+
+- `GET /api/admin/events/:id/history`
+  - Returns status change history and audit trail.
+
+4. Event Categories
+-------------------
+Required for the Event Categories section and event taxonomy management.
+
+- `GET /api/admin/event-categories`
+  - Returns all event categories.
+
+- `GET /api/admin/event-categories/:id`
+  - Returns one category.
+
+- `POST /api/admin/event-categories`
+  - Creates a category.
+
+- `PUT /api/admin/event-categories/:id`
+  - Updates a category.
+
+- `DELETE /api/admin/event-categories/:id`
+  - Deletes a category.
+
+5. Vendors
+----------
+Required for the Vendors section and vendor moderation workflow.
+
+- `GET /api/admin/vendors`
+  - Returns a paginated vendor list.
+  - Supports filters such as approval status, rating, category, and location.
+
+- `GET /api/admin/vendors/:id`
+  - Returns vendor profile, services, stats, and moderation state.
+
+- `POST /api/admin/vendors`
+  - Creates a vendor profile.
+
+- `PUT /api/admin/vendors/:id`
+  - Updates a vendor profile.
+
+- `PATCH /api/admin/vendors/:id/status`
+  - Updates approval or moderation status, such as pending, approved, rejected,
+    suspended, or inactive.
+
+- `DELETE /api/admin/vendors/:id`
+  - Removes a vendor.
+
+- `GET /api/admin/vendors/performance`
+  - Returns vendor performance scores and ranking data for charts.
+
+6. Vendor Categories
+--------------------
+Required for vendor grouping and classification.
+
+- `GET /api/admin/vendor-categories`
+  - Returns all vendor categories.
+
+- `GET /api/admin/vendor-categories/:id`
+  - Returns one vendor category.
+
+- `POST /api/admin/vendor-categories`
+  - Creates a vendor category.
+
+- `PUT /api/admin/vendor-categories/:id`
+  - Updates a vendor category.
+
+- `DELETE /api/admin/vendor-categories/:id`
+  - Deletes a vendor category.
+
+7. Bookings
+-----------
+Required for the Bookings section and booking lifecycle control.
+
+- `GET /api/admin/bookings`
+  - Returns a paginated booking list.
+  - Supports filters by status, date range, vendor, user, event, and payment
+    state.
+
+- `GET /api/admin/bookings/:id`
+  - Returns a single booking with all linked details.
+
+- `PATCH /api/admin/bookings/:id/status`
+  - Updates booking status, such as pending, confirmed, cancelled, completed,
+    or refunded.
+
+- `PATCH /api/admin/bookings/:id`
+  - Updates editable booking fields.
+
+- `GET /api/admin/bookings/analytics`
+  - Returns booking trend and booking summary data for charts.
+
+8. Users
+--------
+Required for the Users section and account administration.
+
+- `GET /api/admin/users`
+  - Returns a paginated user list.
+  - Supports search, role, status, and signup-date filters.
+
+- `GET /api/admin/users/:id`
+  - Returns a single user profile.
+
+- `PATCH /api/admin/users/:id`
+  - Updates user details, role, or account state.
+
+- `PATCH /api/admin/users/:id/status`
+  - Suspends, activates, or otherwise changes the user account state.
+
+- `DELETE /api/admin/users/:id`
+  - Deletes or soft-deletes a user account.
+
+9. Analytics
+------------
+Required for the Analytics section charts and reporting widgets.
+
+- `GET /api/admin/analytics/overview`
+  - Returns KPI cards and high-level admin metrics.
+
+- `GET /api/admin/analytics/revenue`
+  - Returns revenue chart data.
+
+- `GET /api/admin/analytics/bookings`
+  - Returns booking chart data.
+
+- `GET /api/admin/analytics/event-status`
+  - Returns event status distribution data.
+
+- `GET /api/admin/analytics/vendor-performance`
+  - Returns vendor score and ranking data.
+
+- `GET /api/admin/analytics/reviews`
+  - Returns review sentiment, rating averages, and volume trends.
+
+10. Calendar
+------------
+Required for the Calendar section and date-based coordination views.
+
+- `GET /api/admin/calendar/events`
+  - Returns calendar items for meetings, vendor appointments, and events.
+  - Supports month, week, and custom date ranges.
+
+- `POST /api/admin/calendar/events`
+  - Creates a calendar item.
+
+- `PUT /api/admin/calendar/events/:id`
+  - Updates a calendar item.
+
+- `DELETE /api/admin/calendar/events/:id`
+  - Deletes a calendar item.
+
+11. Reviews
+-----------
+Required for the Reviews section and moderation workflows.
+
+- `GET /api/admin/reviews`
+  - Returns a paginated review list.
+  - Supports filters by rating, service, vendor, status, and date range.
+
+- `GET /api/admin/reviews/:id`
+  - Returns one review with full context.
+
+- `PATCH /api/admin/reviews/:id`
+  - Updates moderation state or editable review metadata.
+
+- `PATCH /api/admin/reviews/:id/status`
+  - Hides, flags, approves, or restores a review.
+
+- `DELETE /api/admin/reviews/:id`
+  - Deletes a review.
+
+12. Blogs
+---------
+Required for the Blog Library, blog details page, and blog editor.
+
+- `GET /api/admin/blogs`
+  - Returns all blog posts for the listing page.
+  - Supports search, category, status, and date filters.
+
+- `GET /api/admin/blogs/:id`
+  - Returns a single blog post by id.
+
+- `POST /api/admin/blogs`
+  - Creates a blog post.
+  - Expected fields: `title`, `slug`, `category`, `status`, `excerpt`,
+    `content`, `featureImage`.
+
+- `PUT /api/admin/blogs/:id`
+  - Updates a blog post.
+
+- `PATCH /api/admin/blogs/:id/status`
+  - Updates published/draft state without replacing the full record.
+
+- `DELETE /api/admin/blogs/:id`
+  - Deletes a blog post.
+
+- `POST /api/admin/uploads`
+  - Uploads featured images or inline media for blog content.
+  - Can return a public URL for use in `featureImage`.
+
+13. Notifications
+------------------
+Required for the Notifications section and alert state management.
+
+- `GET /api/admin/notifications`
+  - Returns notification feed items.
+  - Supports read/unread, type, and date filters.
+
+- `PATCH /api/admin/notifications/:id/read`
+  - Marks one notification as read.
+
+- `PATCH /api/admin/notifications/read-all`
+  - Marks all notifications as read.
+
+- `DELETE /api/admin/notifications/:id`
+  - Removes a notification from the feed.
+
+14. Payments
+------------
+Required for the Payments section and finance reconciliation.
+
+- `GET /api/admin/payments`
+  - Returns a paginated payment list.
+  - Supports filters by status, amount range, date range, invoice, and booking.
+
+- `GET /api/admin/payments/:id`
+  - Returns a single payment record.
+
+- `GET /api/admin/payments/summary`
+  - Returns paid, pending, refund, and settlement metrics.
+
+- `PATCH /api/admin/payments/:id/status`
+  - Updates payment state, such as pending, paid, failed, refunded, or settled.
+
+- `POST /api/admin/payments/:id/refund`
+  - Starts a full or partial refund.
+
+15. Settings
+------------
+Required for the Settings section and platform configuration.
+
+- `GET /api/admin/settings`
+  - Returns global admin settings and workspace preferences.
+
+- `PUT /api/admin/settings`
+  - Updates settings in one request.
+
+- `PATCH /api/admin/settings/:section`
+  - Updates a specific settings group, such as branding, security, roles, or
+    notifications.
+
+Optional but useful admin helpers
+---------------------------------
+- `GET /api/admin/search?q=`
+  - Global admin search across events, users, vendors, bookings, blogs, and
+    payments.
+
+- `GET /api/admin/export/:resource`
+  - Exports CSV or Excel data for a resource.
+
+- `GET /api/admin/audit-logs`
+  - Returns admin action history for compliance and troubleshooting.
+
+Frontend notes
+--------------
+- The current admin blog flow is implemented with local storage, so the blog
+  endpoints above are required if the frontend is moved to real API data.
+- The dashboard, analytics, activities, notifications, calendar, and other
+  admin sections currently render mock data, but the endpoint groups above are
+  the expected backend contract for replacing those placeholders.
+- A consistent API envelope such as `{ data, meta, message }` will make the
+  frontend easier to integrate.
