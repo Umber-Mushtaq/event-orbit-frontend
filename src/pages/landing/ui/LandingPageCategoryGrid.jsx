@@ -19,7 +19,7 @@ function LandingPageCategoriesGrid() {
   if (error) return <CustomError msg={error} />;
 
   return (
-    <div className='py-12 flex flex-col max-w-7xl mx-auto px-5'>
+    <div className='py-20 flex flex-col max-w-7xl mx-auto px-5'>
       <CustomHeader badge='Categories' title='Explore Categories' />
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-8  mt-10 w-full'>

@@ -10,7 +10,7 @@ function LandingPageStatistics() {
     { id: 4, value: "50+", label: "Cities Covered" },
   ];
   return (
-    <section className='py-12 px-6 md:px-16 lg:px-24 w-full flex flex-col  relative overflow-hidden bg-transparent'>
+    <section className='py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col  relative overflow-hidden bg-transparent'>
       <CustomHeader badge='Statistics' title='Statistics Section' />
       <div className='w-full mt-10 self-center max-w-full bg-neutral-950 backdrop-blur-md rounded-3xl p-8 md:p-20 border border-border-gold shadow-2xl flex flex-col items-center relative z-10 overflow-hidden group hover:border-yellow-500/20 transition-all duration-500'>
         <div className='grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 w-full z-10'>

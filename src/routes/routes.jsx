@@ -26,6 +26,8 @@ import ServiceListings from "../pages/user/sections/ServiceListings";
 import UserServiceDetails from "../pages/user/sections/UserServiceDetails";
 import MyBookings from "../pages/user/sections/MyBookings";
 import Wishlist from "../pages/user/sections/Wishlist";
+import ContactPage from "../pages/landing/ContactPage";
+import AboutPage from "../pages/landing/AboutPage";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +53,14 @@ const router = createBrowserRouter([
       {
         path: "/vendor/:id",
         element: <VendorProfilePage />,
+      },
+      {
+        path: "/about",
+        element: <AboutPage />,
+      },
+      {
+        path: "/contact",
+        element: <ContactPage />,
       },
     ],
   },

@@ -5,6 +5,8 @@ import LandingPageCategoriesGrid from "./ui/LandingPageCategoryGrid";
 import LandingPageStatistics from "./ui/LandingPageStatistics";
 import LandingSteps from "./ui/LandingPageSteps";
 import LandingPageVerifiedVendors from "./ui/LandingPageVerifiedVendors";
+import ContactSection from "./ui/ContactSection";
+import FAQSection from "./ui/FAQSection";
 function LandingPage() {
   return (
     <>
@@ -24,6 +26,8 @@ function LandingPage() {
       <LandingPageVerifiedVendors />
       <LandingPageStatistics />
       <LandingSteps />
+      <ContactSection />
+      <FAQSection />
     </>
   );
 }

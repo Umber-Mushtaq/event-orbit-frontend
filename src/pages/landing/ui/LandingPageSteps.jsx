@@ -26,10 +26,7 @@ function LandingSteps() {
     },
   ];
   return (
-    <section
-      id='how-it-works'
-      className=' py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden bg-neutral-950'
-    >
+    <section className='py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden bg-neutral-950'>
       <CustomHeader
         badge='How It Works'
         title='Book Your Wedding in 3 simple steps.'
