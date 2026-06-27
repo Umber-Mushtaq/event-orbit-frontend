@@ -7,9 +7,10 @@ import {
   Globe,
   Award,
 } from "lucide-react";
+import { Link } from "react-router";
 
 export function VendorProfile({ vendor }) {
-  // Generic profile initials avatar if no custom profile image exists
+  const token = localStorage.getItem("token");
   const fallbackAvatar =
     "https://api.dicebear.com/7.x/initials/svg?seed=" +
     encodeURIComponent(vendor?.businessName || "Vendor") +
@@ -197,11 +198,6 @@ export function VendorProfile({ vendor }) {
             <span>Chat via WhatsApp</span>
           </a>
         )}
-
-        <button className='w-full flex items-center justify-center gap-2 bg-neutral-950 hover:bg-white/5 border border-white/20 text-stone-200 hover:text-white font-medium text-xs py-3 rounded-xl transition-all cursor-pointer'>
-          <Calendar className='w-3.5 h-3.5 text-amber-500' />
-          <span>Check Availability Window</span>
-        </button>
       </div>
     </div>
   );

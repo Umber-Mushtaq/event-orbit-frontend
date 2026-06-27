@@ -22,7 +22,6 @@ function PublicServiceListings() {
   });
 
   const { services, loading, error } = useServiceListings(activeFilters);
-
   const listingsRef = useRef(null);
 
   useEffect(() => {
@@ -53,7 +52,7 @@ function PublicServiceListings() {
         </div>
       </aside>
 
-      <main className='flex-1 flex flex-col p-6 '>
+      <main className='flex-1 flex flex-col p-6 bg-neutral-950'>
         <CustomHeader badge='Spotlight Services' title='Explore Services' />
         <div ref={listingsRef} className='flex-1 mt-5'>
           {loading ? (

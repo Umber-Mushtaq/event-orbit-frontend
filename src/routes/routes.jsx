@@ -22,12 +22,11 @@ import ServiceReviews from "../pages/vendor/sections/ServiceReviews";
 import VendorProfile from "../pages/vendor/sections/VendorProfile";
 import UserDashboardLayout from "../pages/user/sections/UserDashboardLayout";
 import UserDashboardOverview from "../pages/user/sections/UserDashboardOverview";
-import ServiceListings from "../pages/user/sections/ServiceListings";
-import UserServiceDetails from "../pages/user/sections/UserServiceDetails";
 import MyBookings from "../pages/user/sections/MyBookings";
 import Wishlist from "../pages/user/sections/Wishlist";
 import ContactPage from "../pages/landing/ContactPage";
 import AboutPage from "../pages/landing/AboutPage";
+import CheckoutPage from "../pages/user/sections/CheckoutPage";
 
 const router = createBrowserRouter([
   {
@@ -43,7 +42,7 @@ const router = createBrowserRouter([
         element: <PublicServiceListings />,
       },
       {
-        path: "/service/:id",
+        path: "/service/:serviceId/vendor/:vendorId",
         element: <PublicServiceDetails />,
       },
       {
@@ -61,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: "/contact",
         element: <ContactPage />,
+      },
+      {
+        path: "/checkout/:serviceId/vendor/:vendorId",
+        element: <CheckoutPage />,
       },
     ],
   },
@@ -111,11 +114,15 @@ const router = createBrowserRouter([
           },
           {
             path: "services",
-            element: <ServiceListings />,
+            element: <PublicServiceListings />,
           },
           {
-            path: "services/:id",
-            element: <UserServiceDetails />,
+            path: "service/:serviceId/vendor/:vendorId",
+            element: <PublicServiceDetails />,
+          },
+          {
+            path: "checkout/:serviceId/vendor/:vendorId",
+            element: <CheckoutPage />,
           },
           {
             path: "bookings",
