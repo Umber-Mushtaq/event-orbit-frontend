@@ -12,7 +12,7 @@ import { ServiceBookingCard } from "./ui/ServiceBookingCard";
 import { ImageGallery } from "./ui/ImageGallery";
 import { MapLocation } from "./ui/MapLocation";
 import { VendorProfile } from "./ui/VendorProfile";
-import { Reviews } from "./ui/Reviews";
+import { Reviews } from "./ui/Reviews"; // <-- Your updated component
 import CustomLoading from "../../shared_components/CustomLoading";
 import CustomError from "../../shared_components/CustomError";
 
@@ -27,18 +27,17 @@ export default function PublicServiceDetails() {
     setIsFavorite,
     fallbackExplorePath,
     checkoutBookingPath,
+    refetchReviewData, // <-- Extract your hook's data refetcher if available
   } = useServiceDetailsUtils();
+  console.log("service details ------", service, vendor);
 
-  // 2. Initialize the toggle engine with the initial loaded favorite boolean status.
-  // We destructure it using aliases (like `isWishlisted: remoteWishlistedState`) so it doesn't conflict
-  // with your hook utils variables, while directly utilizing your existing `setIsFavorite` to stay in sync.
   const {
     isWishlisted: remoteWishlistedState,
     toggleWishlist,
     isToggling,
   } = useToggleWishlist(isFavorite);
 
-  // 3. Keep your utility hook in sync whenever the standalone hook toggles the heart state
+  // Keep utility hook in sync whenever the standalone hook toggles the heart state
   React.useEffect(() => {
     setIsFavorite(remoteWishlistedState);
   }, [remoteWishlistedState, setIsFavorite]);
@@ -59,15 +58,23 @@ export default function PublicServiceDetails() {
     );
   }
 
-  // 4. Wrap the toggle action function cleanly
   const handleToggleFavoriteClick = () => {
     if (isToggling) return;
-    toggleWishlist(service._id || service.id); // Triggers the remote toggle controller API request
+    toggleWishlist(service._id || service.id);
+  };
+
+  // REFRESH DATA CALLBACK FUNCTION
+  const handleReviewRefreshPipeline = () => {
+    if (refetchReviewData) {
+      refetchReviewData(); // Refetches service reviews instantly from your server on success
+    } else {
+      // Fallback if your custom utility hook doesn't have a refetch handler built yet:
+      window.location.reload();
+    }
   };
 
   return (
     <main className='min-h-screen w-full bg-neutral-950 text-white font-poppins antialiased pb-24 selection:bg-amber-500 selection:text-black'>
-      {/* 5. Feed the updated hook states down into the Header child element */}
       <ServiceDetailsHeader
         explorePath={fallbackExplorePath}
         isFavorite={remoteWishlistedState}
@@ -75,12 +82,12 @@ export default function PublicServiceDetails() {
         isToggling={isToggling}
       />
 
-      <section className='max-w-7xl mx-auto px-6 mt-6'>
+      <section className='max-w-7xl mx-auto px-3 mt-6'>
         <ImageGallery images={service.images} title={service.title} />
       </section>
 
       {/* Split Body Framework Grid */}
-      <section className='max-w-7xl mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 items-start'>
+      <section className='max-w-7xl mx-auto px-3 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 items-start'>
         {/* Left Side: Editorial & Core Data Column */}
         <div className='lg:col-span-2 space-y-10'>
           <ServiceTitleSection
@@ -126,9 +133,12 @@ export default function PublicServiceDetails() {
             </div>
           </div>
 
-          {/* Reviews Stream Block */}
+          {/* Reviews Stream Block with tracking IDs passed to the component */}
           <div className='p-2'>
-            <Reviews reviews={reviews} />
+            <Reviews
+              reviews={reviews}
+              onReviewSubmitted={handleReviewRefreshPipeline}
+            />
           </div>
         </div>
 

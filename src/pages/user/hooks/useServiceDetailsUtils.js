@@ -5,8 +5,11 @@ import { usePublicServiceDetails } from "../../../hooks/usePublicServiceDetails"
 export function useServiceDetailsUtils() {
   const location = useLocation();
   const { serviceId, vendorId } = useParams();
-  const { service, reviews, loading, error } =
+
+  // 1. Destructure the refetch or refetchReviewData function if your base hook provides one!
+  const { service, reviews, loading, error, refetch } =
     usePublicServiceDetails(serviceId);
+  console.log("service details utils ------", serviceId, vendorId);
 
   const [isFavorite, setIsFavorite] = useState(false);
   const token = localStorage.getItem("token");
@@ -33,5 +36,6 @@ export function useServiceDetailsUtils() {
     setIsFavorite,
     fallbackExplorePath,
     checkoutBookingPath,
+    refetchReviewData: refetch, // 3. Expose it here to power the live UI refresh pipeline!
   };
 }

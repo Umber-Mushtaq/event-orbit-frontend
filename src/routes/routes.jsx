@@ -27,6 +27,7 @@ import Wishlist from "../pages/user/sections/Wishlist";
 import ContactPage from "../pages/landing/ContactPage";
 import AboutPage from "../pages/landing/AboutPage";
 import CheckoutPage from "../pages/user/sections/CheckoutPage";
+import CustomerProfile from "../pages/user/sections/CustomerProfile";
 
 const router = createBrowserRouter([
   {
@@ -132,6 +133,7 @@ const router = createBrowserRouter([
             path: "wishlist",
             element: <Wishlist />,
           },
+          { path: "profile", element: <CustomerProfile /> },
         ],
       },
     ],

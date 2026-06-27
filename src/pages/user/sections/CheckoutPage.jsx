@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import AvailabilityCalendar from "./AvailabilityCalender";
 import CustomHeader from "../../../shared_components/CustomHeader";
+import StatusIndicator from "../../../shared_components/StatusIndecator";
 
 export default function CheckoutPage() {
   const { serviceId, vendorId } = useParams();
@@ -17,8 +18,11 @@ export default function CheckoutPage() {
   const [eventDate, setEventDate] = useState("");
   const [guestsCount, setGuestsCount] = useState(100);
   const [totalAmount, setTotalAmount] = useState(dummyService.basePrice);
-  const [isLoading, setIsLoading] = useState(true); // Default to true while checking auth
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [statusError, setStatusError] = useState("");
+  const [statusSuccess, setStatusSuccess] = useState("");
 
   // 1. Unified Authentication Gate & Calendar Data Initializer
   useEffect(() => {
@@ -27,10 +31,13 @@ export default function CheckoutPage() {
 
     // Route Protection Check
     if (!token || !user) {
-      alert(
-        "Session expired or unauthorized. Please sign in to book an event.",
-      );
-      navigate("/auth/login");
+      // Pass the session error message silently down to the login page state context
+      navigate("/auth/login", {
+        state: {
+          message:
+            "Session expired or unauthorized. Please sign in to book an event.",
+        },
+      });
       return;
     }
 
@@ -40,14 +47,16 @@ export default function CheckoutPage() {
           `http://localhost:5000/api/bookings/booked-dates?serviceId=${serviceId}`,
         );
         const data = await response.json();
-        console.log(data);
         if (data.success) {
           setBookedDates(data.bookedDates);
         }
       } catch (err) {
         console.error("Failed parsing disabled dates: ", err);
+        setStatusError(
+          "Failed to pull current date block vectors from servers.",
+        );
       } finally {
-        setIsLoading(false); // Auth verified and dates loaded
+        setIsLoading(false);
       }
     };
 
@@ -63,8 +72,13 @@ export default function CheckoutPage() {
   // 2. Process Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatusError("");
+    setStatusSuccess("");
+
     if (!eventDate) {
-      alert("Please select an available event date from the calendar.");
+      setStatusError(
+        "Please select an available event date from the calendar.",
+      );
       return;
     }
 
@@ -76,7 +90,6 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      // Dynamic parameters injected straight into the endpoint destination route
       const response = await fetch(
         `http://localhost:5000/api/bookings/service/${serviceId}/vendor/${vendorId}`,
         {
@@ -95,21 +108,26 @@ export default function CheckoutPage() {
 
       const data = await response.json();
       if (data.success) {
-        alert("Booking request submitted successfully!");
+        setStatusSuccess("Booking request submitted successfully!");
         setBookedDates((prev) => ({ ...prev, [eventDate]: "Booked" }));
         setEventDate("");
       } else {
-        alert(data.message || "Something went wrong.");
+        // FIX: Replaced alert with statusError component state update
+        setStatusError(
+          data.message || "Something went wrong with your request validation.",
+        );
       }
     } catch (err) {
       console.error("Booking submission error: ", err);
-      alert("Server failure processing transaction.");
+      // FIX: Replaced alert with statusError component state update
+      setStatusError(
+        "Server failure processing your reservation request transaction.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Prevent UI flashing or half-rendering while checking authorization credentials
   if (isLoading) {
     return (
       <div className='flex items-center justify-center min-h-screen bg-neutral-950 text-amber-400'>
@@ -123,7 +141,14 @@ export default function CheckoutPage() {
   return (
     <div className='flex flex-col mx-10 py-20 '>
       <CustomHeader badge='Checkout' title='Book your event' />
-      <section className='max-w-full my-10 p-6 grid grid-cols-1 md:grid-cols-2 gap-10 bg-neutral-950 text-white rounded-lg shadow-gold-glow'>
+
+      <StatusIndicator
+        error={statusError}
+        success={statusSuccess}
+        className='mt-6 w-full font-poppins text-xs p-4 rounded-xl'
+      />
+
+      <section className='max-w-full my-6 p-6 grid grid-cols-1 md:grid-cols-2 gap-10 bg-neutral-950 text-white rounded-lg shadow-gold-glow'>
         {/* Left: Calendar */}
         <AvailabilityCalendar
           bookedDates={bookedDates}

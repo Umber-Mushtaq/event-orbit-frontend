@@ -3,6 +3,7 @@ import CustomHeader from "../../shared_components/CustomHeader";
 import CustomLoading from "../../shared_components/CustomLoading";
 import CustomError from "../../shared_components/CustomError";
 import { useVerifiedVendors } from "../../hooks/useVerifiedVendors";
+import NothingFound from "../../shared_components/NotingFound";
 function VendorsPage() {
   const { vendors, loading, error } = useVerifiedVendors();
 

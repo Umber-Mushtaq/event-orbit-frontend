@@ -30,6 +30,7 @@ export const useVendorDashboard = () => {
         setMetrics(metricsRes.data.metrics);
         setBookings(bookingsRes.data.bookings);
         setReviews(reviewsRes.data.reviews);
+        console.log("upcomming bookings", bookingsRes.data.bookings);
       } catch (err) {
         setError(err.response?.data?.message || "Noting to show yet.");
       } finally {

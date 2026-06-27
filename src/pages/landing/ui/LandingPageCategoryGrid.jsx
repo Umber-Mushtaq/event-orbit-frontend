@@ -8,6 +8,7 @@ import { ArrowUpRight } from "lucide-react";
 
 function LandingPageCategoriesGrid() {
   const { categories, loading, error } = useCategories();
+  console.log(categories);
   const navigate = useNavigate();
 
   const handleCategoryClick = (categoryId) => {

@@ -10,6 +10,7 @@ import { useNavigate } from "react-router";
 
 function VendorCard({ vendor }) {
   const navigate = useNavigate();
+  console.log(vendor);
 
   const handleClick = () => {
     navigate(`/vendor/${vendor._id}`);

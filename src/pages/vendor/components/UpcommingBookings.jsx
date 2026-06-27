@@ -4,6 +4,7 @@ import BookingRow from "./BookingRow.jsx";
 
 export function UpcomingBookings() {
   const { bookings, loading, error } = useVendorDashboard();
+  console.log(bookings);
 
   if (loading) {
     return (
