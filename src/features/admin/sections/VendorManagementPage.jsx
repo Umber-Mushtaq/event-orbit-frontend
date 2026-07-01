@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapPin, Plus, Star } from "lucide-react";
 import SharedHeader from "../components/shared/SharedHeader";
 import SharedCards from "../components/shared/SharedCards";
@@ -6,17 +6,12 @@ import SharedTable from "../components/shared/SharedTable";
 import VendorActionMenu from "../components/vendors/VendorActionMenu";
 import VendorFormModal from "../components/vendors/VendorFormModal";
 import VendorDetailModal from "../components/vendors/VendorDetailModal";
-import {
-  emptyVendorForm,
-  initialVendors,
-  vendorFilters,
-  vendorSortOptions,
-  vendorStatusStyles,
-  vendorStats,
-} from "../data/vendorManagementData";
+import { emptyVendorForm, vendorFilters, vendorSortOptions, vendorStatusStyles } from "../data/vendorManagementData";
+import { adminVendorsApi, getAdminErrorMessage } from "../api/adminApi";
+import { mapAdminVendor } from "../utils/adminTransformers";
 
 function VendorManagementPage() {
-  const [vendors, setVendors] = useState(initialVendors);
+  const [vendors, setVendors] = useState([]);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("All");
   const [sortKey, setSortKey] = useState("revenue");
@@ -24,22 +19,47 @@ function VendorManagementPage() {
   const [editingVendor, setEditingVendor] = useState(null);
   const [viewingVendor, setViewingVendor] = useState(null);
   const [deletingVendor, setDeletingVendor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const rows = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    const filtered = vendors.filter((vendor) => {
-      const matchesFilter = filter === "All" || vendor.status === filter;
-      const matchesQuery =
-        `${vendor.name} ${vendor.category} ${vendor.location}`.toLowerCase().includes(normalized);
-      return matchesFilter && matchesQuery;
-    });
+  const loadVendors = useCallback(async () => {
+    setLoading(true);
+    setError("");
 
-    return [...filtered].sort((left, right) => {
-      if (sortKey === "name") return left.name.localeCompare(right.name);
-      const toNumber = (value) => Number(String(value).replace(/[$,]/g, "")) || 0;
-      return toNumber(right[sortKey]) - toNumber(left[sortKey]);
-    });
-  }, [filter, query, sortKey, vendors]);
+    try {
+      const response = await adminVendorsApi.list({
+        search: query,
+        status: filter,
+        sortBy: sortKey,
+        limit: 100,
+      });
+      setVendors((response.data?.data?.items || []).map(mapAdminVendor));
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to load vendors."));
+    } finally {
+      setLoading(false);
+    }
+  }, [filter, query, sortKey]);
+
+  useEffect(() => {
+    loadVendors();
+  }, [loadVendors]);
+
+  const rows = useMemo(() => vendors, [vendors]);
+
+  const stats = useMemo(() => {
+    const total = vendors.length;
+    const approved = vendors.filter((vendor) => vendor.status === "Approved").length;
+    const pending = vendors.filter((vendor) => vendor.status === "Pending").length;
+    const suspended = vendors.filter((vendor) => vendor.status === "Suspended").length;
+
+    return [
+      { label: "Total Vendors", value: String(total), icon: "briefcase-business" },
+      { label: "Approved", value: String(approved), growth: total ? `${Math.round((approved / total) * 100)}%` : null, icon: "circle-check-big" },
+      { label: "Pending", value: String(pending), icon: "clock-3" },
+      { label: "Suspended", value: String(suspended), icon: "circle-x" },
+    ];
+  }, [vendors]);
 
   const columns = [
     {
@@ -109,45 +129,34 @@ function VendorManagementPage() {
     },
   ];
 
-  const handleSave = (payload) => {
+  const handleSave = async (payload) => {
     if (!payload.name.trim() || !payload.category.trim() || !payload.location.trim()) return;
 
-    if (editingVendor) {
-      setVendors((current) =>
-        current.map((item) =>
-          item.id === editingVendor.id
-            ? {
-                ...item,
-                name: payload.name,
-                category: payload.category,
-                location: payload.location,
-                rating: Number(payload.rating) || item.rating,
-                bookings: Number(payload.bookings) || item.bookings,
-                revenue: payload.revenue,
-                status: payload.status,
-              }
-            : item,
-        ),
-      );
-    } else {
-      setVendors((current) => [
-        {
-          id: `VND-${Date.now().toString().slice(-3)}`,
-          name: payload.name,
-          category: payload.category,
-          location: payload.location,
-          rating: Number(payload.rating) || 4.5,
-          bookings: Number(payload.bookings) || 0,
-          revenue: payload.revenue || "$0",
-          status: payload.status,
-          avatar: current[0]?.avatar || "",
-        },
-        ...current,
-      ]);
-    }
+    try {
+      if (editingVendor) {
+        await adminVendorsApi.update(editingVendor.id, payload);
+      } else {
+        await adminVendorsApi.create(payload);
+      }
 
-    setFormOpen(false);
-    setEditingVendor(null);
+      await loadVendors();
+      setFormOpen(false);
+      setEditingVendor(null);
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to save vendor."));
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deletingVendor) return;
+
+    try {
+      await adminVendorsApi.remove(deletingVendor.id);
+      await loadVendors();
+      setDeletingVendor(null);
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to delete vendor."));
+    }
   };
 
   return (
@@ -163,7 +172,18 @@ function VendorManagementPage() {
         }}
       />
 
-      <SharedCards items={vendorStats} />
+      <SharedCards items={stats} />
+
+      {error ? (
+        <div className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+          {error}
+        </div>
+      ) : null}
+      {loading ? (
+        <div className='rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm text-stone-300'>
+          Loading vendors...
+        </div>
+      ) : null}
 
       <SharedTable
         rows={rows}
@@ -199,6 +219,7 @@ function VendorManagementPage() {
           setEditingVendor(null);
         }}
         onSave={handleSave}
+        submitError={error}
       />
 
       <VendorDetailModal
@@ -227,10 +248,7 @@ function VendorManagementPage() {
               </button>
               <button
                 type='button'
-                onClick={() => {
-                  setVendors((current) => current.filter((item) => item.id !== deletingVendor.id));
-                  setDeletingVendor(null);
-                }}
+                onClick={handleDelete}
                 className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/30 hover:text-red-100'
               >
                 Delete

@@ -7,10 +7,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { revenueAnalytics } from "../data/adminMetricsData";
 import ChartCard from "./ChartCard";
 
-function BookingAnalyticsChart() {
+function BookingAnalyticsChart({ data = [] }) {
   return (
     <ChartCard
       title='Booking Analytics'
@@ -18,7 +17,7 @@ function BookingAnalyticsChart() {
     >
       <div className='h-80'>
         <ResponsiveContainer width='100%' height='100%'>
-          <BarChart data={revenueAnalytics} margin={{ left: 0, right: 8 }}>
+          <BarChart data={data} margin={{ left: 0, right: 8 }}>
             <CartesianGrid stroke='rgba(255,255,255,0.08)' vertical={false} />
             <XAxis
               dataKey='month'

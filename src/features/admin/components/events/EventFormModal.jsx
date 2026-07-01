@@ -11,12 +11,12 @@ const emptyEvent = {
   date: "",
 };
 
-function EventFormModal({ open, onClose, onSave }) {
+function EventFormModal({ open, mode = "create", onClose, onSave, initialValue, submitError = "" }) {
   const [form, setForm] = useState(emptyEvent);
 
   useEffect(() => {
-    if (open) setForm(emptyEvent);
-  }, [open]);
+    if (open) setForm(initialValue || emptyEvent);
+  }, [initialValue, open]);
 
   if (!open) return null;
 
@@ -32,9 +32,11 @@ function EventFormModal({ open, onClose, onSave }) {
         <div className='flex items-start justify-between gap-4'>
           <div>
             <p className='text-xs font-semibold uppercase tracking-[0.24em] text-border-gold-hover/80'>
-              Add Event
+              {mode === "edit" ? "Edit Event" : "Add Event"}
             </p>
-            <h3 className='mt-2 text-2xl font-black text-white'>Create a new event</h3>
+            <h3 className='mt-2 text-2xl font-black text-white'>
+              {mode === "edit" ? "Update event details" : "Create a new event"}
+            </h3>
           </div>
           <button
             type='button'
@@ -47,6 +49,11 @@ function EventFormModal({ open, onClose, onSave }) {
         </div>
 
         <form onSubmit={handleSubmit} className='mt-6 grid gap-4 md:grid-cols-2'>
+          {submitError ? (
+            <p className='md:col-span-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+              {submitError}
+            </p>
+          ) : null}
           {[
             ["Event Name", "name", "text"],
             ["Category", "category", "text"],
@@ -93,12 +100,12 @@ function EventFormModal({ open, onClose, onSave }) {
             >
               Cancel
             </button>
-            <button
-              type='submit'
-              className='rounded-2xl border border-border-gold/25 bg-glass-gold px-5 py-3 text-sm font-semibold text-border-gold-hover shadow-gold-glow transition hover:border-border-gold/40 hover:bg-glass-gold-hover'
-            >
-              Save Event
-            </button>
+              <button
+                type='submit'
+                className='rounded-2xl border border-border-gold/25 bg-glass-gold px-5 py-3 text-sm font-semibold text-border-gold-hover shadow-gold-glow transition hover:border-border-gold/40 hover:bg-glass-gold-hover'
+              >
+              {mode === "edit" ? "Update Event" : "Save Event"}
+              </button>
           </div>
         </form>
       </div>

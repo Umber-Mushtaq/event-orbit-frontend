@@ -60,7 +60,7 @@ function RecentEventsTable({ rows = [], searchOverride = "" }) {
             <tbody className='divide-y divide-white/8'>
               {displayRows.length ? (
                 displayRows.map((row) => (
-                  <tr key={row.name} className='bg-black/10 transition-colors hover:bg-white/3'>
+                  <tr key={row.id || row.name} className='bg-black/10 transition-colors hover:bg-white/3'>
                     <td className='px-4 py-4 font-semibold text-white'>{row.name}</td>
                     <td className='px-4 py-4 text-stone-300'>{row.category}</td>
                     <td className='px-4 py-4 text-stone-300'>{row.date}</td>

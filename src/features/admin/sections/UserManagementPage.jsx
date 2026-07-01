@@ -1,13 +1,55 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SharedCards from "../components/shared/SharedCards";
 import SharedHeader from "../components/shared/SharedHeader";
 import SharedTable from "../components/shared/SharedTable";
-import { initialUsers, userStats, userStatusStyles } from "../data/userManagementData";
+import { userStatusStyles } from "../data/userManagementData";
+import { adminUsersApi, getAdminErrorMessage } from "../api/adminApi";
 
 function UserManagementPage() {
-  const [users] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadUsers = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await adminUsersApi.list({ limit: 100 });
+      setUsers(response.data?.data?.items || []);
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to load users."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
 
   const rows = useMemo(() => users, [users]);
+
+  const stats = useMemo(() => {
+    const totalUsers = users.length;
+    const active = users.filter((user) => user.status === "Active").length;
+    const newThisMonth = users.filter((user) => {
+      const created = user.createdAt ? new Date(user.createdAt) : null;
+      if (!created || Number.isNaN(created.getTime())) return false;
+      const now = new Date();
+      return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+    }).length;
+    const avgEvents = totalUsers
+      ? Number((users.reduce((sum, user) => sum + Number(user.events || 0), 0) / totalUsers).toFixed(1))
+      : 0;
+
+    return [
+      { label: "Total Users", value: String(totalUsers), icon: "users" },
+      { label: "Active", value: String(active), icon: "badge-check" },
+      { label: "New This Month", value: String(newThisMonth), icon: "user-plus" },
+      { label: "Avg Events / User", value: String(avgEvents), icon: "calendar-range" },
+    ];
+  }, [users]);
 
   const columns = [
     {
@@ -65,7 +107,13 @@ function UserManagementPage() {
         description='Directory of platform users and their activity.'
       />
 
-      <SharedCards items={userStats} />
+      <SharedCards items={stats} />
+
+      {error ? (
+        <div className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+          {error}
+        </div>
+      ) : null}
 
       <section className='rounded-[2rem] border border-white/8 bg-[linear-gradient(180deg,rgba(12,12,12,0.98),rgba(7,7,7,0.98))] p-4 shadow-[0_14px_40px_rgba(0,0,0,0.35)] md:p-5'>
         <div className='mb-4'>
@@ -80,7 +128,7 @@ function UserManagementPage() {
           showFilters={false}
           showSort={false}
           showActions={false}
-          emptyMessage='No users found.'
+          emptyMessage={loading ? "Loading users..." : "No users found."}
         />
       </section>
     </div>

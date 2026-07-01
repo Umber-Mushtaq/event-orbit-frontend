@@ -6,38 +6,7 @@ const toneStyles = {
   emerald: "border-emerald-500/20 bg-emerald-500/10 text-emerald-300",
 };
 
-function RecentActivities() {
-  const items = [
-    {
-      title: "New booking request received",
-      description: "Windsor Grand Gala requested premium catering.",
-      time: "3 min ago",
-      tone: "gold",
-      icon: "calendar-plus",
-    },
-    {
-      title: "Vendor profile updated",
-      description: "Royal Bloom refreshed their gallery and pricing.",
-      time: "18 min ago",
-      tone: "neutral",
-      icon: "badge-check",
-    },
-    {
-      title: "New user registered",
-      description: "A premium customer account was created successfully.",
-      time: "42 min ago",
-      tone: "emerald",
-      icon: "user-plus",
-    },
-    {
-      title: "Payment cleared",
-      description: "Invoice #INV-24019 was settled in full.",
-      time: "2 hrs ago",
-      tone: "emerald",
-      icon: "credit-card",
-    },
-  ];
-
+function RecentActivities({ items = [] }) {
   return (
     <section className='rounded-3xl border border-border-gold/15 bg-[#141414]/90 p-5 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
       <div className='mb-5 flex items-center justify-between'>

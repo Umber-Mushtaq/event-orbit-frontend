@@ -1,0 +1,1861 @@
+ADMIN API ENDPOINT REFERENCE
+Version: 1.0
+Source of truth: current backend implementation in `/api/admin`
+
+===============================================================================
+GENERAL CONVENTIONS
+===============================================================================
+
+Authentication
+- Protected admin routes require: `Authorization: Bearer <admin-jwt>`
+- Admin JWTs are issued by `POST /api/admin/auth/login`
+- `401` means missing, invalid, or expired token
+- `403` means authenticated but not allowed as admin
+
+Common success envelope
+```json
+{
+  "success": true,
+  "message": "Optional message",
+  "data": {}
+}
+```
+
+Common error envelope
+```json
+{
+  "message": "Readable error message"
+}
+```
+
+Notes
+- Validation and duplicate-key failures are normalized to `400` by the backend error handler.
+- `409` is not currently emitted by the backend, but the frontend may treat conflict-style failures as validation errors.
+- Image upload endpoints use `multipart/form-data` with `upload.single(...)`.
+- List responses generally use `items` plus `pagination`, and some include `summary`.
+
+===============================================================================
+AUTH MODULE
+===============================================================================
+
+1) Admin Login
+- Method: `POST`
+- Route: `/api/admin/auth/login`
+- Purpose: Authenticate an admin and return a JWT.
+- Authentication: Public
+- Headers:
+  - `Content-Type: application/json`
+- Query params: None
+- URL params: None
+- Request body:
+  - `email` string, required, valid email
+  - `password` string, required
+- Sample request:
+```json
+{
+  "email": "admin@example.com",
+  "password": "password"
+}
+```
+- Success response `200`:
+```json
+{
+  "success": true,
+  "token": "jwt-token",
+  "admin": {
+    "id": "66b2f1f4c7c4d13c2f9d1111",
+    "firstName": "Amna",
+    "lastName": "Malik",
+    "email": "admin@example.com",
+    "role": "admin",
+    "avatar": "https://..."
+  }
+}
+```
+- Errors:
+  - `400`: missing required fields
+  - `401`: invalid credentials
+  - `403`: user exists but is not admin
+  - `500`: unexpected server error
+- Notes:
+  - This is the first call in the admin flow.
+  - The returned token must be reused for all protected admin endpoints.
+
+2) Admin Session
+- Method: `GET`
+- Route: `/api/admin/auth/me`
+- Purpose: Return the currently authenticated admin profile.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- URL params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "admin": {
+    "id": "66b2f1f4c7c4d13c2f9d1111",
+    "firstName": "Amna",
+    "lastName": "Malik",
+    "email": "admin@example.com",
+    "role": "admin",
+    "avatar": "https://..."
+  }
+}
+```
+- Errors:
+  - `401`: missing/invalid/expired token
+  - `403`: authenticated user is not admin
+  - `500`: unexpected server error
+
+3) Admin Logout
+- Method: `POST`
+- Route: `/api/admin/auth/logout`
+- Purpose: Client-side logout confirmation endpoint.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- URL params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+- Errors:
+  - `401`: missing/invalid/expired token
+  - `403`: authenticated user is not admin
+
+===============================================================================
+DASHBOARD MODULE
+===============================================================================
+
+4) Dashboard Summary
+- Method: `GET`
+- Route: `/api/admin/dashboard/summary`
+- Purpose: High-level KPIs for the admin dashboard.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `range` optional, string, allowed: `7d`, `30d`, `90d`, `1y`
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "totalRevenue": 284500,
+    "totalBookings": 1240,
+    "totalVendors": 318,
+    "totalUsers": 9824,
+    "activeEvents": 86,
+    "upcomingEvents": 24,
+    "completedEvents": 146,
+    "pendingApprovals": 17,
+    "growth": {
+      "revenue": 18.4,
+      "bookings": 12.9,
+      "vendors": 8.2,
+      "users": 21.1
+    }
+  }
+}
+```
+- Notes:
+  - Empty datasets return zeros.
+  - Growth is calculated from the requested time window.
+
+5) Revenue Analytics
+- Method: `GET`
+- Route: `/api/admin/dashboard/revenue-analytics`
+- Purpose: Chart data for revenue and bookings by month.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `range` optional, string, same accepted values as summary
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    { "month": "Jan", "revenue": 18000, "bookings": 72 },
+    { "month": "Feb", "revenue": 22000, "bookings": 88 }
+  ]
+}
+```
+
+6) Booking Analytics
+- Method: `GET`
+- Route: `/api/admin/dashboard/booking-analytics`
+- Purpose: Chart data for booking volume by month.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `range` optional
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    { "month": "Jan", "bookings": 72 },
+    { "month": "Feb", "bookings": 88 }
+  ]
+}
+```
+
+7) Event Status Distribution
+- Method: `GET`
+- Route: `/api/admin/dashboard/event-status`
+- Purpose: Pie/donut chart data for event status counts.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    { "name": "Upcoming", "value": 24, "color": "#D4AF37" },
+    { "name": "Live", "value": 18, "color": "#F5D76E" },
+    { "name": "Completed", "value": 46, "color": "#8B6B12" },
+    { "name": "Cancelled", "value": 7, "color": "#3B3B3B" }
+  ]
+}
+```
+
+8) Vendor Performance
+- Method: `GET`
+- Route: `/api/admin/dashboard/vendor-performance`
+- Purpose: Ranking cards/chart for top vendors.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    { "name": "Royal Bloom", "score": 96 },
+    { "name": "Golden Lights", "score": 91 }
+  ]
+}
+```
+
+9) Recent Events
+- Method: `GET`
+- Route: `/api/admin/dashboard/recent-events`
+- Purpose: Table data for the dashboard recent-events widget.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `search` optional string
+  - `sortBy` optional string
+  - `sortOrder` optional string, `asc` or `desc`
+  - `page` optional number
+  - `limit` optional number
+- Pagination format:
+```json
+{
+  "items": [],
+  "pagination": {
+    "page": 1,
+    "limit": 5,
+    "total": 0,
+    "totalPages": 0
+  }
+}
+```
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "EVT-1042",
+        "name": "Mehta-Kapoor Wedding",
+        "category": "Marriage Halls",
+        "date": "2026-06-22",
+        "venue": "The Royal Ballroom",
+        "status": "Upcoming",
+        "attendees": 480,
+        "revenue": 28400,
+        "organizer": "Aisha Khan",
+        "createdAt": "2026-06-22T10:15:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 5,
+      "total": 1,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+10) Recent Activities
+- Method: `GET`
+- Route: `/api/admin/dashboard/activities`
+- Purpose: Notifications/activities feed card data.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "act_1",
+      "title": "New booking request received",
+      "description": "Windsor Grand Gala requested premium catering.",
+      "time": "3 min ago",
+      "tone": "gold",
+      "icon": "calendar-plus"
+    }
+  ]
+}
+```
+
+===============================================================================
+EVENTS MODULE
+===============================================================================
+
+11) Events List
+- Method: `GET`
+- Route: `/api/admin/events`
+- Purpose: Paginated event management table.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `search` optional string
+  - `status` optional string
+  - `category` optional string
+  - `dateFrom` optional ISO date string
+  - `dateTo` optional ISO date string
+  - `sortBy` optional string
+  - `sortOrder` optional string, `asc` or `desc`
+  - `page` optional number
+  - `limit` optional number
+- Request body: None
+- Pagination format:
+```json
+{
+  "items": [],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 0,
+    "totalPages": 0
+  },
+  "summary": {
+    "upcoming": 0,
+    "live": 0,
+    "completed": 0,
+    "drafts": 0
+  }
+}
+```
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "EVT-1042",
+        "name": "Mehta-Kapoor Wedding",
+        "category": "Marriage Halls",
+        "date": "2026-06-22",
+        "venue": "The Royal Ballroom",
+        "status": "Upcoming",
+        "attendees": 480,
+        "revenue": 28400,
+        "organizer": "Aisha Khan",
+        "createdAt": "2026-06-22T10:15:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1
+    },
+    "summary": {
+      "upcoming": 1,
+      "live": 0,
+      "completed": 0,
+      "drafts": 0
+    }
+  }
+}
+```
+- Notes:
+  - `id` can be the returned event display ID.
+  - Search is case-insensitive across id, name, category, venue, status, organizer.
+
+12) Event Detail
+- Method: `GET`
+- Route: `/api/admin/events/:id`
+- Purpose: Fetch a single event.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` string, event display ID or Mongo ObjectId accepted by backend lookup helper
+- Success response `200`:
+```json
+{
+  "success": true,
+  "event": {
+    "id": "EVT-1042",
+    "name": "Mehta-Kapoor Wedding",
+    "category": "Marriage Halls",
+    "date": "2026-06-22",
+    "venue": "The Royal Ballroom",
+    "status": "Upcoming",
+    "attendees": 480,
+    "revenue": 28400,
+    "organizer": "Aisha Khan",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+13) Create Event
+- Method: `POST`
+- Route: `/api/admin/events`
+- Purpose: Create an admin-managed event record.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Request body:
+  - `name` string, required
+  - `category` string, required
+  - `venue` string, required
+  - `date` string/date, required
+  - `status` string, optional, recommended values: `Upcoming`, `Live`, `Completed`, `Draft`, `Cancelled`
+  - `attendees` number, optional, non-negative
+  - `revenue` number, optional, non-negative
+  - `organizerName` string, optional
+  - `organizerEmail` string, optional
+  - `vendorId` string, optional
+- Sample request:
+```json
+{
+  "name": "Mehta-Kapoor Wedding",
+  "category": "Marriage Halls",
+  "venue": "The Royal Ballroom",
+  "date": "2026-06-22",
+  "status": "Upcoming",
+  "attendees": 480,
+  "revenue": 28400
+}
+```
+- Success response `201`:
+```json
+{
+  "success": true,
+  "message": "Event created successfully",
+  "event": {
+    "id": "EVT-1042",
+    "name": "Mehta-Kapoor Wedding",
+    "category": "Marriage Halls",
+    "date": "2026-06-22",
+    "venue": "The Royal Ballroom",
+    "status": "Upcoming",
+    "attendees": 480,
+    "revenue": 28400,
+    "organizer": "",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+- Errors:
+  - `400`: missing required fields or invalid numeric values
+  - `401`: missing/invalid token
+  - `403`: non-admin token
+
+14) Update Event
+- Method: `PATCH`
+- Route: `/api/admin/events/:id`
+- Purpose: Update an event partially.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- URL params:
+  - `id` string
+- Request body: same fields as create, all optional
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Event updated successfully",
+  "event": {
+    "id": "EVT-1042",
+    "name": "Mehta-Kapoor Wedding",
+    "category": "Marriage Halls",
+    "date": "2026-06-22",
+    "venue": "The Royal Ballroom",
+    "status": "Live",
+    "attendees": 500,
+    "revenue": 30000,
+    "organizer": "",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+15) Delete Event
+- Method: `DELETE`
+- Route: `/api/admin/events/:id`
+- Purpose: Delete an event.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` string
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Event deleted successfully"
+}
+```
+
+===============================================================================
+EVENT CATEGORIES MODULE
+===============================================================================
+
+16) Category List
+- Method: `GET`
+- Route: `/api/admin/event-categories`
+- Purpose: Paginated category management table.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `search` optional string
+  - `status` optional string
+  - `sortBy` optional string
+  - `sortOrder` optional string
+  - `page` optional number
+  - `limit` optional number
+- Notes:
+  - Backed by the shared `Category` model.
+  - Metrics are synchronized from services, bookings, and vendor assignments before the list is returned.
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "66b2f1f4c7c4d13c2f9d2222",
+        "name": "Marriage Halls",
+        "image": "https://...",
+        "icon": "grid",
+        "status": "Active",
+        "vendors": 86,
+        "bookings": 1240,
+        "revenue": 320000,
+        "listings": 120,
+        "createdAt": "2026-06-22T10:15:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1
+    },
+    "summary": {
+      "categories": 1,
+      "totalVendors": 86,
+      "totalBookings": 1240,
+      "revenueGenerated": 320000
+    }
+  }
+}
+```
+
+17) Category Detail
+- Method: `GET`
+- Route: `/api/admin/event-categories/:id`
+- Purpose: Fetch a single category.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` MongoDB ObjectId
+- Success response `200`:
+```json
+{
+  "success": true,
+  "category": {
+    "id": "66b2f1f4c7c4d13c2f9d2222",
+    "name": "Marriage Halls",
+    "image": "https://...",
+    "icon": "grid",
+    "status": "Active",
+    "vendors": 86,
+    "bookings": 1240,
+    "revenue": 320000,
+    "listings": 120,
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+18) Create Category
+- Method: `POST`
+- Route: `/api/admin/event-categories`
+- Purpose: Create a category with image upload or URL.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: multipart/form-data` or `application/json`
+- Request body:
+  - `name` string, required
+  - `image` file or URL string, required
+  - `icon` string, required, must be one of supported keys:
+    - `tags`
+    - `sparkles`
+    - `utensils-crossed`
+    - `camera`
+    - `video`
+    - `music`
+    - `flower`
+    - `paintbrush`
+    - `briefcase`
+    - `grid`
+  - `status` string, optional, default `Active`
+- Sample multipart fields:
+  - `name=Marriage Halls`
+  - `icon=grid`
+  - `status=Active`
+  - `image=<file>`
+- Sample JSON request:
+```json
+{
+  "name": "Marriage Halls",
+  "icon": "grid",
+  "status": "Active",
+  "image": "https://..."
+}
+```
+- Success response `201`:
+```json
+{
+  "success": true,
+  "message": "Category created successfully",
+  "category": {
+    "id": "66b2f1f4c7c4d13c2f9d2222",
+    "name": "Marriage Halls",
+    "image": "https://...",
+    "icon": "grid",
+    "status": "Active",
+    "vendors": 0,
+    "bookings": 0,
+    "revenue": 0,
+    "listings": 0,
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+19) Update Category
+- Method: `PATCH`
+- Route: `/api/admin/event-categories/:id`
+- Purpose: Update category metadata and optionally replace image.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: multipart/form-data` or `application/json`
+- URL params:
+  - `id` MongoDB ObjectId
+- Request body:
+  - `name` string, optional
+  - `image` file or URL string, optional
+  - `icon` string, optional, same allowed values
+  - `status` string, optional
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Category updated successfully",
+  "category": {
+    "id": "66b2f1f4c7c4d13c2f9d2222",
+    "name": "Marriage Halls",
+    "image": "https://...",
+    "icon": "grid",
+    "status": "Active",
+    "vendors": 86,
+    "bookings": 1240,
+    "revenue": 320000,
+    "listings": 120,
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+20) Delete Category
+- Method: `DELETE`
+- Route: `/api/admin/event-categories/:id`
+- Purpose: Remove a category.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` MongoDB ObjectId
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Category deleted successfully"
+}
+```
+
+===============================================================================
+VENDORS MODULE
+===============================================================================
+
+21) Vendor List
+- Method: `GET`
+- Route: `/api/admin/vendors`
+- Purpose: Paginated vendor management table.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `search` optional string
+  - `status` optional string
+  - `category` optional string
+  - `location` optional string
+  - `sortBy` optional string
+  - `sortOrder` optional string
+  - `page` optional number
+  - `limit` optional number
+- Notes:
+  - Backed by the shared `User` model.
+  - Uses `role: "vendor"` users only.
+  - Vendor stats are derived from stored vendor fields and booking/review data.
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "66b2f1f4c7c4d13c2f9d3333",
+        "name": "Royal Ballroom",
+        "category": "Marriage Halls",
+        "location": "Mumbai",
+        "rating": 4.9,
+        "bookings": 142,
+        "revenue": 184000,
+        "status": "Approved",
+        "avatar": "https://...",
+        "createdAt": "2026-06-22T10:15:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1
+    },
+    "summary": {
+      "totalVendors": 1,
+      "approved": 1,
+      "pending": 0,
+      "suspended": 0
+    }
+  }
+}
+```
+
+22) Vendor Detail
+- Method: `GET`
+- Route: `/api/admin/vendors/:id`
+- Purpose: Fetch a single vendor profile.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` MongoDB ObjectId
+- Success response `200`:
+```json
+{
+  "success": true,
+  "vendor": {
+    "id": "66b2f1f4c7c4d13c2f9d3333",
+    "name": "Royal Ballroom",
+    "category": "Marriage Halls",
+    "location": "Mumbai",
+    "rating": 4.9,
+    "bookings": 142,
+    "revenue": 184000,
+    "status": "Approved",
+    "avatar": "https://...",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+23) Create Vendor
+- Method: `POST`
+- Route: `/api/admin/vendors`
+- Purpose: Create a vendor account/profile.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Request body:
+  - `name` string, required
+  - `category` string, required
+  - `location` string, required
+  - `rating` number, optional, `0` to `5`
+  - `bookings` number, optional, `>= 0`
+  - `revenue` number, optional, `>= 0`
+  - `status` string, optional, allowed: `Approved`, `Pending`, `Rejected`, `Suspended`
+  - `avatar` string, optional URL
+  - `email` string, optional
+  - `phone` string, optional
+  - `businessName` string, optional
+  - `password` string, optional
+- Sample request:
+```json
+{
+  "name": "Royal Ballroom",
+  "category": "Marriage Halls",
+  "location": "Mumbai",
+  "rating": 4.9,
+  "bookings": 142,
+  "revenue": 184000,
+  "status": "Approved"
+}
+```
+- Success response `201`:
+```json
+{
+  "success": true,
+  "message": "Vendor created successfully",
+  "vendor": {
+    "id": "66b2f1f4c7c4d13c2f9d3333",
+    "name": "Royal Ballroom",
+    "category": "Marriage Halls",
+    "location": "Mumbai",
+    "rating": 4.9,
+    "bookings": 142,
+    "revenue": 184000,
+    "status": "Approved",
+    "avatar": "",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+24) Update Vendor
+- Method: `PATCH`
+- Route: `/api/admin/vendors/:id`
+- Purpose: Update vendor fields and status.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- URL params:
+  - `id` MongoDB ObjectId
+- Request body: same fields as create, all optional
+- Notes:
+  - `name` is split into `firstName` and `lastName` in the shared `User` model.
+  - Updating `status` also updates `isApproved`.
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Vendor updated successfully",
+  "vendor": {
+    "id": "66b2f1f4c7c4d13c2f9d3333",
+    "name": "Royal Ballroom",
+    "category": "Marriage Halls",
+    "location": "Mumbai",
+    "rating": 4.9,
+    "bookings": 142,
+    "revenue": 184000,
+    "status": "Approved",
+    "avatar": "https://...",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+25) Delete Vendor
+- Method: `DELETE`
+- Route: `/api/admin/vendors/:id`
+- Purpose: Remove a vendor account/profile.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` MongoDB ObjectId
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Vendor deleted successfully"
+}
+```
+
+===============================================================================
+BOOKINGS MODULE
+===============================================================================
+
+26) Booking List
+- Method: `GET`
+- Route: `/api/admin/bookings`
+- Purpose: Paginated booking management table.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `search` optional string
+  - `paymentStatus` optional string
+  - `status` optional string
+  - `dateFrom` optional date string
+  - `dateTo` optional date string
+  - `sortBy` optional string
+  - `sortOrder` optional string
+  - `page` optional number
+  - `limit` optional number
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "BK-4820",
+        "event": "Mehta-Kapoor Wedding",
+        "eventId": "EVT-1042",
+        "paymentStatus": "Pending",
+        "status": "Pending",
+        "amount": 28400,
+        "currency": "USD",
+        "date": "2026-06-22",
+        "createdAt": "2026-06-22T10:15:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1
+    },
+    "summary": {
+      "totalBookings": 1,
+      "confirmed": 0,
+      "pending": 1,
+      "cancelled": 0
+    }
+  }
+}
+```
+
+27) Booking Detail
+- Method: `GET`
+- Route: `/api/admin/bookings/:id`
+- Purpose: Fetch a single booking.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` string
+- Success response `200`:
+```json
+{
+  "success": true,
+  "booking": {
+    "id": "BK-4820",
+    "event": "Mehta-Kapoor Wedding",
+    "eventId": "EVT-1042",
+    "paymentStatus": "Pending",
+    "status": "Pending",
+    "amount": 28400,
+    "currency": "USD",
+    "date": "2026-06-22",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+28) Create Booking
+- Method: `POST`
+- Route: `/api/admin/bookings`
+- Purpose: Create an admin booking record.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Request body:
+  - `event` string, required unless `eventId` is provided
+  - `eventId` string, required unless `event` is provided
+  - `paymentStatus` string, required, allowed: `Paid`, `Pending`, `Cancelled`
+  - `amount` number, required, `>= 0`
+  - `status` string, optional
+  - `currency` string, optional, default `USD`
+  - `eventDate` string/date, optional
+  - `userId` string, optional
+- Sample request:
+```json
+{
+  "eventId": "EVT-1042",
+  "event": "Mehta-Kapoor Wedding",
+  "paymentStatus": "Pending",
+  "amount": 28400
+}
+```
+- Success response `201`:
+```json
+{
+  "success": true,
+  "message": "Booking created successfully",
+  "booking": {
+    "id": "BK-4820",
+    "event": "Mehta-Kapoor Wedding",
+    "eventId": "EVT-1042",
+    "paymentStatus": "Pending",
+    "status": "Pending",
+    "amount": 28400,
+    "currency": "USD",
+    "date": "2026-06-22",
+    "createdAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+===============================================================================
+USERS MODULE
+===============================================================================
+
+29) User List
+- Method: `GET`
+- Route: `/api/admin/users`
+- Purpose: Paginated user directory.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `search` optional string
+  - `status` optional string
+  - `role` optional string
+  - `sortBy` optional string
+  - `sortOrder` optional string
+  - `page` optional number
+  - `limit` optional number
+- Search fields:
+  - name
+  - email
+  - id
+- Pagination format:
+```json
+{
+  "items": [],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 0,
+    "totalPages": 0
+  },
+  "summary": {
+    "totalUsers": 0,
+    "active": 0,
+    "newThisMonth": 0,
+    "avgEventsPerUser": 0
+  }
+}
+```
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "66b2f1f4c7c4d13c2f9d4444",
+        "name": "Riya Mehta",
+        "email": "riya@orbit.com",
+        "status": "Active",
+        "role": "customer",
+        "events": 12
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "totalPages": 1
+    },
+    "summary": {
+      "totalUsers": 1,
+      "active": 1,
+      "newThisMonth": 1,
+      "avgEventsPerUser": 12
+    }
+  }
+}
+```
+
+30) User Detail
+- Method: `GET`
+- Route: `/api/admin/users/:id`
+- Purpose: Fetch a user summary record.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` MongoDB ObjectId
+- Success response `200`:
+```json
+{
+  "success": true,
+  "user": {
+    "id": "66b2f1f4c7c4d13c2f9d4444",
+    "name": "Riya Mehta",
+    "email": "riya@orbit.com",
+    "role": "customer",
+    "status": "Active",
+    "avatar": "https://...",
+    "phone": "",
+    "events": 12
+  }
+}
+```
+
+===============================================================================
+CALENDAR MODULE
+===============================================================================
+
+31) Calendar View
+- Method: `GET`
+- Route: `/api/admin/calendar`
+- Purpose: Render month/week/day calendar grid data.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `view` optional string, allowed: `day`, `week`, `month`
+  - `month` optional string in `YYYY-MM`
+  - `date` optional date string for day view
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "month": "2026-06",
+    "view": "month",
+    "days": [
+      {
+        "date": "2026-06-22",
+        "label": 22,
+        "events": [
+          {
+            "id": "EVT-1042",
+            "title": "Mehta-Kapoor Wedding",
+            "status": "Upcoming"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+32) Calendar Events
+- Method: `GET`
+- Route: `/api/admin/calendar/events`
+- Purpose: Event markers/dots for the month grid.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    { "date": "2026-06-02", "title": "Khanna Engagement" },
+    { "date": "2026-06-12", "title": "Patel Reception" }
+  ]
+}
+```
+
+===============================================================================
+BLOGS MODULE
+===============================================================================
+
+33) Blog List
+- Method: `GET`
+- Route: `/api/admin/blogs`
+- Purpose: Paginated blog management list.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params:
+  - `search` optional string
+  - `category` optional string
+  - `status` optional string
+  - `sortBy` optional string
+  - `sortOrder` optional string
+  - `page` optional number
+  - `limit` optional number
+- Pagination format:
+```json
+{
+  "items": [],
+  "pagination": {
+    "page": 1,
+    "limit": 12,
+    "total": 0,
+    "totalPages": 0
+  }
+}
+```
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": "post-1",
+        "title": "How to plan a luxury wedding timeline",
+        "slug": "luxury-wedding-timeline",
+        "category": "Planning",
+        "status": "Published",
+        "excerpt": "A practical guide to keep premium weddings calm...",
+        "content": "<p>Rich HTML content</p>",
+        "featureImage": "https://...",
+        "updatedAt": "2026-06-12T10:15:00.000Z",
+        "createdAt": "2026-06-12T10:15:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 12,
+      "total": 1,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+34) Blog Detail
+- Method: `GET`
+- Route: `/api/admin/blogs/:id`
+- Purpose: Fetch a single blog post.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` string
+- Success response `200`:
+```json
+{
+  "success": true,
+  "blog": {
+    "id": "post-1",
+    "title": "How to plan a luxury wedding timeline",
+    "slug": "luxury-wedding-timeline",
+    "category": "Planning",
+    "status": "Published",
+    "excerpt": "A practical guide to keep premium weddings calm...",
+    "content": "<p>Rich HTML content</p>",
+    "featureImage": "https://...",
+    "updatedAt": "2026-06-12T10:15:00.000Z",
+    "createdAt": "2026-06-12T10:15:00.000Z"
+  }
+}
+```
+
+35) Create Blog
+- Method: `POST`
+- Route: `/api/admin/blogs`
+- Purpose: Create a blog post with optional image upload or URL.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: multipart/form-data` or `application/json`
+- Request body:
+  - `title` string, required
+  - `slug` string, required, unique
+  - `category` string, required
+  - `content` string, required
+  - `status` string, optional, allowed: `Draft`, `Published`
+  - `excerpt` string, optional
+  - `featureImage` file or URL string, required
+- Sample request:
+```json
+{
+  "title": "How to plan a luxury wedding timeline",
+  "slug": "luxury-wedding-timeline",
+  "category": "Planning",
+  "status": "Draft",
+  "excerpt": "Short summary...",
+  "content": "<p>Rich HTML content</p>",
+  "featureImage": "https://..."
+}
+```
+- Success response `201`:
+```json
+{
+  "success": true,
+  "message": "Blog created successfully",
+  "blog": {
+    "id": "post-1",
+    "title": "How to plan a luxury wedding timeline",
+    "slug": "luxury-wedding-timeline",
+    "category": "Planning",
+    "status": "Draft",
+    "excerpt": "Short summary...",
+    "content": "<p>Rich HTML content</p>",
+    "featureImage": "https://...",
+    "updatedAt": "2026-06-12T10:15:00.000Z",
+    "createdAt": "2026-06-12T10:15:00.000Z"
+  }
+}
+```
+
+36) Update Blog
+- Method: `PATCH`
+- Route: `/api/admin/blogs/:id`
+- Purpose: Update blog fields and optionally replace featured image.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: multipart/form-data` or `application/json`
+- URL params:
+  - `id` string
+- Request body: same as create, all optional
+- Notes:
+  - Slug remains unique.
+  - `featureImage` can be a URL or uploaded file.
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Blog updated successfully",
+  "blog": {
+    "id": "post-1",
+    "title": "How to plan a luxury wedding timeline",
+    "slug": "luxury-wedding-timeline",
+    "category": "Planning",
+    "status": "Published",
+    "excerpt": "Short summary...",
+    "content": "<p>Rich HTML content</p>",
+    "featureImage": "https://...",
+    "updatedAt": "2026-06-12T10:15:00.000Z",
+    "createdAt": "2026-06-12T10:15:00.000Z"
+  }
+}
+```
+
+37) Delete Blog
+- Method: `DELETE`
+- Route: `/api/admin/blogs/:id`
+- Purpose: Delete a blog post.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` string
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Blog deleted successfully"
+}
+```
+
+===============================================================================
+NOTIFICATIONS AND MESSAGES MODULE
+===============================================================================
+
+38) Notifications List
+- Method: `GET`
+- Route: `/api/admin/notifications`
+- Purpose: Notification feed for the topbar dropdown.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "ntf_1",
+      "title": "Pending vendor approval",
+      "description": "3 vendors are waiting for review.",
+      "time": "5 min ago",
+      "read": false
+    }
+  ]
+}
+```
+
+39) Mark Notification Read
+- Method: `PATCH`
+- Route: `/api/admin/notifications/:id/read`
+- Purpose: Mark a notification as read.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` string
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Notification marked as read"
+}
+```
+
+40) Messages List
+- Method: `GET`
+- Route: `/api/admin/messages`
+- Purpose: Message feed for the topbar dropdown.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "msg_1",
+      "title": "Nadia from Royal Bloom",
+      "description": "Can we revise the gallery pricing?",
+      "time": "7 min ago",
+      "read": false
+    }
+  ]
+}
+```
+
+41) Mark Message Read
+- Method: `PATCH`
+- Route: `/api/admin/messages/:id/read`
+- Purpose: Mark a message as read.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- URL params:
+  - `id` string
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Message marked as read"
+}
+```
+
+===============================================================================
+SETTINGS MODULE
+===============================================================================
+
+42) Get Settings
+- Method: `GET`
+- Route: `/api/admin/settings`
+- Purpose: Load platform, team, roles, and category settings.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "roles": ["Super Admin", "Admin", "Vendor", "User", "Viewer"],
+    "team": {
+      "totalMembers": 12,
+      "admins": 3,
+      "staff": 9
+    },
+    "categories": {
+      "total": 14,
+      "hidden": 2,
+      "autoApprove": false
+    },
+    "platform": {
+      "currency": "USD",
+      "timezone": "Asia/Kolkata",
+      "themeModes": ["Light", "Dark"]
+    }
+  }
+}
+```
+
+43) Update Settings
+- Method: `PATCH`
+- Route: `/api/admin/settings`
+- Purpose: Update platform-level admin settings.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Request body:
+  - `currency` string, optional, valid ISO currency code
+  - `timezone` string, optional, valid IANA timezone
+  - `autoApproveCategories` boolean, optional
+  - `themeModes` string array, optional
+- Sample request:
+```json
+{
+  "currency": "USD",
+  "timezone": "Asia/Kolkata",
+  "autoApproveCategories": false,
+  "themeModes": ["Light", "Dark"]
+}
+```
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Settings updated successfully",
+  "data": {
+    "key": "global",
+    "currency": "USD",
+    "timezone": "Asia/Kolkata",
+    "autoApproveCategories": false,
+    "themeModes": ["Light", "Dark"],
+    "createdAt": "2026-06-22T10:15:00.000Z",
+    "updatedAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+===============================================================================
+ADMIN PROFILE MODULE
+===============================================================================
+
+44) Get Admin Profile
+- Method: `GET`
+- Route: `/api/admin/profile`
+- Purpose: Load the current admin profile and workspace preferences.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+- Query params: None
+- Success response `200`:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "66b2f1f4c7c4d13c2f9d1111",
+    "firstName": "Amna",
+    "lastName": "Malik",
+    "email": "admin@example.com",
+    "role": "admin",
+    "avatar": "https://...",
+    "phone": "555-0100",
+    "preferences": {
+      "theme": "Dark",
+      "sidebarCollapsed": false,
+      "language": "en",
+      "notificationsEnabled": true
+    }
+  }
+}
+```
+
+45) Update Admin Profile
+- Method: `PATCH`
+- Route: `/api/admin/profile`
+- Purpose: Update admin profile fields and optional avatar.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: multipart/form-data` or `application/json`
+- Request body:
+  - `firstName` string, optional
+  - `lastName` string, optional
+  - `email` string, optional
+  - `avatar` string or file, optional
+  - `phone` string, optional
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "admin": {
+    "id": "66b2f1f4c7c4d13c2f9d1111",
+    "firstName": "Amna",
+    "lastName": "Malik",
+    "email": "admin@example.com",
+    "role": "admin",
+    "avatar": "https://..."
+  }
+}
+```
+
+46) Update Admin Preferences
+- Method: `PATCH`
+- Route: `/api/admin/profile/preferences`
+- Purpose: Update workspace preferences for the current admin.
+- Authentication: Admin JWT
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Request body:
+  - `theme` string, optional
+  - `sidebarCollapsed` boolean, optional
+  - `language` string, optional
+  - `notificationsEnabled` boolean, optional
+- Success response `200`:
+```json
+{
+  "success": true,
+  "message": "Preferences updated successfully",
+  "data": {
+    "adminId": "66b2f1f4c7c4d13c2f9d1111",
+    "theme": "Dark",
+    "sidebarCollapsed": false,
+    "language": "en",
+    "notificationsEnabled": true,
+    "createdAt": "2026-06-22T10:15:00.000Z",
+    "updatedAt": "2026-06-22T10:15:00.000Z"
+  }
+}
+```
+
+===============================================================================
+FRONTEND INTEGRATION GUIDE
+===============================================================================
+
+1) Recommended API call sequence
+- Login page:
+  - Call `POST /api/admin/auth/login`
+  - Store JWT securely in client state/storage
+  - Immediately call `GET /api/admin/auth/me` to hydrate the admin session
+- App bootstrap after login:
+  - Call `GET /api/admin/dashboard/summary`
+  - Call `GET /api/admin/dashboard/revenue-analytics`
+  - Call `GET /api/admin/dashboard/booking-analytics`
+  - Call `GET /api/admin/dashboard/event-status`
+  - Call `GET /api/admin/dashboard/vendor-performance`
+  - Call `GET /api/admin/dashboard/recent-events`
+  - Call `GET /api/admin/dashboard/activities`
+- Navigation pages:
+  - Load list endpoint first
+  - Open detail endpoint when row/card is selected
+  - Use create/update/delete endpoints from form/modal actions
+  - Refresh list after mutations
+
+2) Page-to-endpoint mapping
+- Admin login page:
+  - `POST /api/admin/auth/login`
+- Admin shell/layout session check:
+  - `GET /api/admin/auth/me`
+- Dashboard overview:
+  - `GET /api/admin/dashboard/summary`
+  - `GET /api/admin/dashboard/revenue-analytics`
+  - `GET /api/admin/dashboard/booking-analytics`
+  - `GET /api/admin/dashboard/event-status`
+  - `GET /api/admin/dashboard/vendor-performance`
+  - `GET /api/admin/dashboard/recent-events`
+  - `GET /api/admin/dashboard/activities`
+- Events page:
+  - List: `GET /api/admin/events`
+  - Detail modal: `GET /api/admin/events/:id`
+  - Create form: `POST /api/admin/events`
+  - Edit form: `PATCH /api/admin/events/:id`
+  - Delete action: `DELETE /api/admin/events/:id`
+- Service Categories page:
+  - List: `GET /api/admin/event-categories`
+  - Detail modal: `GET /api/admin/event-categories/:id`
+  - Create modal: `POST /api/admin/event-categories`
+  - Edit modal: `PATCH /api/admin/event-categories/:id`
+  - Delete modal: `DELETE /api/admin/event-categories/:id`
+- Vendors page:
+  - List: `GET /api/admin/vendors`
+  - Detail modal: `GET /api/admin/vendors/:id`
+  - Create modal: `POST /api/admin/vendors`
+  - Edit modal: `PATCH /api/admin/vendors/:id`
+  - Delete action: `DELETE /api/admin/vendors/:id`
+- Bookings page:
+  - List: `GET /api/admin/bookings`
+  - Detail modal: `GET /api/admin/bookings/:id`
+  - Create modal: `POST /api/admin/bookings`
+- Users page:
+  - List: `GET /api/admin/users`
+  - Detail modal: `GET /api/admin/users/:id`
+- Calendar page:
+  - Month/week/day grid: `GET /api/admin/calendar`
+  - Event markers for grid: `GET /api/admin/calendar/events`
+- Blog list/editor pages:
+  - List: `GET /api/admin/blogs`
+  - Detail page: `GET /api/admin/blogs/:id`
+  - Create form: `POST /api/admin/blogs`
+  - Edit form: `PATCH /api/admin/blogs/:id`
+  - Delete modal: `DELETE /api/admin/blogs/:id`
+- Notifications widget:
+  - List: `GET /api/admin/notifications`
+  - Mark read: `PATCH /api/admin/notifications/:id/read`
+- Messages widget:
+  - List: `GET /api/admin/messages`
+  - Mark read: `PATCH /api/admin/messages/:id/read`
+- Settings page:
+  - Load: `GET /api/admin/settings`
+  - Save: `PATCH /api/admin/settings`
+- Admin profile page:
+  - Load: `GET /api/admin/profile`
+  - Save: `PATCH /api/admin/profile`
+  - Preferences: `PATCH /api/admin/profile/preferences`
+
+3) Which endpoints feed which UI pieces
+- Dashboard KPI cards:
+  - `GET /api/admin/dashboard/summary`
+- Dashboard revenue chart:
+  - `GET /api/admin/dashboard/revenue-analytics`
+- Dashboard booking chart:
+  - `GET /api/admin/dashboard/booking-analytics`
+- Dashboard event distribution chart:
+  - `GET /api/admin/dashboard/event-status`
+- Dashboard vendor ranking chart:
+  - `GET /api/admin/dashboard/vendor-performance`
+- Dashboard recent events table:
+  - `GET /api/admin/dashboard/recent-events`
+- Dashboard activity feed:
+  - `GET /api/admin/dashboard/activities`
+- Events table cards/rows:
+  - `GET /api/admin/events`
+- Category table/cards:
+  - `GET /api/admin/event-categories`
+- Vendor table/cards:
+  - `GET /api/admin/vendors`
+- Booking table/cards:
+  - `GET /api/admin/bookings`
+- User table/cards:
+  - `GET /api/admin/users`
+- Calendar grid:
+  - `GET /api/admin/calendar`
+  - `GET /api/admin/calendar/events`
+- Blog cards:
+  - `GET /api/admin/blogs`
+- Topbar notifications/messages:
+  - `GET /api/admin/notifications`
+  - `GET /api/admin/messages`
+- Settings cards and chips:
+  - `GET /api/admin/settings`
+- Profile panel:
+  - `GET /api/admin/profile`
+
+4) Dropdown and filter sources
+- Category dropdowns:
+  - Use `GET /api/admin/event-categories`
+- Vendor category filters:
+  - Use `GET /api/admin/event-categories` if the UI wants the canonical category list
+- Event status filters:
+  - Use the UI enum `Upcoming`, `Live`, `Completed`, `Draft`, `Cancelled`
+- Vendor status filters:
+  - Use `Approved`, `Pending`, `Rejected`, `Suspended`
+- Booking payment status filters:
+  - Use `Paid`, `Pending`, `Cancelled`
+- Blog status filters:
+  - Use `Draft`, `Published`
+- Settings role chips:
+  - Hardcoded by backend response: `Super Admin`, `Admin`, `Vendor`, `User`, `Viewer`
+
+5) CRUD and special action mapping
+- Create:
+  - Events, categories, vendors, bookings, blogs
+- Read:
+  - All list and detail endpoints
+- Update:
+  - Events, categories, vendors, blogs, settings, profile, preferences
+- Delete:
+  - Events, categories, vendors, blogs
+- Status changes:
+  - Events: via `PATCH /api/admin/events/:id`
+  - Categories: via `PATCH /api/admin/event-categories/:id`
+  - Vendors: via `PATCH /api/admin/vendors/:id`
+  - Blog publish/draft: via `PATCH /api/admin/blogs/:id`
+  - Read flags: notifications/messages read endpoints
+- File uploads:
+  - Category image: `POST/PATCH /api/admin/event-categories`
+  - Blog feature image: `POST/PATCH /api/admin/blogs`
+  - Profile avatar: `PATCH /api/admin/profile`
+
+6) Authentication and headers
+- Every protected admin request must include:
+  - `Authorization: Bearer <admin-jwt>`
+- Use `Content-Type: application/json` for JSON requests.
+- Use `multipart/form-data` for upload requests.
+- Do not send the token to public `POST /api/admin/auth/login`.
+
+7) Expected response patterns
+- List endpoints:
+  - `data.items`
+  - `data.pagination`
+  - optional `data.summary`
+- Detail endpoints:
+  - `event`, `category`, `vendor`, `booking`, `blog`, or `user`
+- Mutation endpoints:
+  - `success`
+  - `message`
+  - updated record in `event`, `category`, `vendor`, `booking`, `blog`, `admin`, or `data`
+
+8) Frontend error-handling guidelines
+- `401`:
+  - Clear token and redirect to login
+  - Show “session expired” or “login required”
+- `403`:
+  - Show “access denied” or “admin access required”
+- `404`:
+  - Show empty/detail-not-found state
+- `400`:
+  - Display validation message returned by backend
+  - Highlight missing/invalid form fields
+- `500`:
+  - Show generic server error toast and retry option
+- Duplicate/conflict cases:
+  - Backend currently normalizes them to `400`
+  - Treat as form conflict/validation error in the UI
+
+9) Dependency notes
+- Login must succeed before all other admin calls.
+- Dashboard widgets can be loaded independently after login.
+- Category and vendor create/edit forms can use the category list endpoint for dropdowns.
+- Event and booking forms may reference each other through `eventId` and `event`.
+- Blog create/update forms need image upload support or an image URL fallback.
+- Notifications/messages read actions should refresh the feed after success.
+
+10) Recommended frontend loading order
+- Login
+- Session validation
+- Dashboard summary and charts
+- Sidebar/layout data
+- Current page list endpoint
+- Detail endpoint on demand
+- Mutation endpoints from forms/modals
+- Refresh current list after mutation
+
+END OF DOCUMENT

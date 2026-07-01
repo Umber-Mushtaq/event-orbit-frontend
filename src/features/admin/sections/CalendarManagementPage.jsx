@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { calendarDayLabels, calendarMonthCells } from "../data/calendarManagementData";
+import { calendarDayLabels } from "../data/calendarManagementData";
+import { adminCalendarApi, getAdminErrorMessage } from "../api/adminApi";
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const views = ["Day", "Week", "Month"];
@@ -8,16 +9,53 @@ const views = ["Day", "Week", "Month"];
 function CalendarManagementPage() {
   const [activeView, setActiveView] = useState("Month");
   const [monthOffset, setMonthOffset] = useState(0);
+  const [days, setDays] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const { monthLabel, yearLabel, cells } = useMemo(() => {
-    const monthIndex = (5 + monthOffset + 12) % 12;
-    const year = 2026 + Math.floor((5 + monthOffset) / 12);
+    const baseDate = new Date();
+    const targetDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + monthOffset, 1);
+    const monthIndex = targetDate.getMonth();
+    const year = targetDate.getFullYear();
     return {
       monthLabel: monthNames[monthIndex],
       yearLabel: year,
-      cells: calendarMonthCells,
+      cells: days,
     };
-  }, [monthOffset]);
+  }, [days, monthOffset]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadCalendar = async () => {
+      setLoading(true);
+      setError("");
+
+      const baseDate = new Date();
+      const targetDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + monthOffset, 1);
+      const month = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}`;
+
+      try {
+        const response = await adminCalendarApi.get({ view: activeView.toLowerCase(), month });
+        if (!active) return;
+
+        const data = response.data?.data || {};
+        setDays(data.days || []);
+      } catch (requestError) {
+        if (!active) return;
+        setError(getAdminErrorMessage(requestError, "Failed to load calendar."));
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadCalendar();
+
+    return () => {
+      active = false;
+    };
+  }, [activeView, monthOffset]);
 
   return (
     <div className='space-y-6'>
@@ -93,17 +131,32 @@ function CalendarManagementPage() {
                 }`}
               >
                 <div className='flex items-start justify-between gap-2'>
-                  <span className='text-xs font-semibold text-stone-400'>{cell.day || ""}</span>
+                  <span className='text-xs font-semibold text-stone-400'>{cell.label || cell.day || ""}</span>
                 </div>
-                {cell.event ? (
-                  <div className='mt-3 rounded-full border border-border-gold/25 bg-[linear-gradient(180deg,rgba(243,200,92,0.18),rgba(214,157,47,0.24))] px-3 py-1.5 text-left text-[11px] font-semibold text-border-gold-hover shadow-[0_10px_20px_rgba(212,175,55,0.08)]'>
-                    {cell.event}
+                {Array.isArray(cell.events) && cell.events.length ? (
+                  <div className='mt-3 space-y-2'>
+                    {cell.events.slice(0, 2).map((event) => (
+                      <div
+                        key={event.id || event.title}
+                        className='rounded-full border border-border-gold/25 bg-[linear-gradient(180deg,rgba(243,200,92,0.18),rgba(214,157,47,0.24))] px-3 py-1.5 text-left text-[11px] font-semibold text-border-gold-hover shadow-[0_10px_20px_rgba(212,175,55,0.08)]'
+                      >
+                        {event.title}
+                      </div>
+                    ))}
                   </div>
                 ) : null}
               </article>
             );
           })}
         </div>
+        {error ? (
+          <div className='mt-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+            {error}
+          </div>
+        ) : null}
+        {loading ? (
+          <p className='mt-4 text-xs text-stone-500'>Loading calendar...</p>
+        ) : null}
       </section>
     </div>
   );

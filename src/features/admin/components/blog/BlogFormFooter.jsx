@@ -1,6 +1,6 @@
 import { FileText, RotateCcw, Save } from "lucide-react";
 
-function BlogFormFooter({ form, mode, onReset }) {
+function BlogFormFooter({ form, mode, onReset, submitting = false }) {
   return (
     <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
       <div className='min-w-0 space-y-3'>
@@ -26,7 +26,7 @@ function BlogFormFooter({ form, mode, onReset }) {
               {form.title || "Blog title preview"}
             </p>
             <p className='mt-1 text-xs text-stone-400'>
-              {form.category || "Planning"} â€¢ {form.status}
+              {form.category || "Planning"} - {form.status}
             </p>
           </div>
         </div>
@@ -43,10 +43,11 @@ function BlogFormFooter({ form, mode, onReset }) {
         </button>
         <button
           type='submit'
-          className='inline-flex items-center justify-center gap-2 rounded-2xl border border-border-gold/25 bg-glass-gold px-5 py-3 text-sm font-semibold text-border-gold-hover shadow-gold-glow transition hover:border-border-gold/40 hover:bg-glass-gold-hover'
+          disabled={submitting}
+          className='inline-flex items-center justify-center gap-2 rounded-2xl border border-border-gold/25 bg-glass-gold px-5 py-3 text-sm font-semibold text-border-gold-hover shadow-gold-glow transition hover:border-border-gold/40 hover:bg-glass-gold-hover disabled:cursor-not-allowed disabled:opacity-60'
         >
           <Save className='h-4 w-4' />
-          {mode === "edit" ? "Update Blog" : "Publish Blog"}
+          {submitting ? "Saving..." : mode === "edit" ? "Update Blog" : "Publish Blog"}
         </button>
       </div>
     </div>

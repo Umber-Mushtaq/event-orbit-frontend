@@ -7,10 +7,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { vendorPerformance } from "../data/adminMetricsData";
 import ChartCard from "./ChartCard";
 
-function VendorPerformanceChart() {
+function VendorPerformanceChart({ data = [] }) {
   return (
     <ChartCard
       title='Vendor Performance'
@@ -19,7 +18,7 @@ function VendorPerformanceChart() {
       <div className='h-80'>
         <ResponsiveContainer width='100%' height='100%'>
           <BarChart
-            data={vendorPerformance}
+            data={data}
             layout='vertical'
             margin={{ left: 0, right: 12 }}
           >

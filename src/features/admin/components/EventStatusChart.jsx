@@ -1,26 +1,26 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { eventStatusDistribution } from "../data/adminMetricsData";
 import ChartCard from "./ChartCard";
 
-function EventStatusChart() {
+function EventStatusChart({ data = [], className = "" }) {
   return (
     <ChartCard
       title='Event Status Distribution'
       subtitle='A quick view of how the event pipeline is distributed right now.'
+      className={`min-w-0 h-full ${className}`.trim()}
     >
-      <div className='grid gap-4 lg:grid-cols-[1.3fr_0.7fr]'>
-        <div className='h-72'>
+      <div className='grid h-[calc(100%-4.5rem)] gap-4 lg:grid-cols-[1.3fr_0.7fr]'>
+        <div className='min-w-0 h-full'>
           <ResponsiveContainer width='100%' height='100%'>
             <PieChart>
               <Pie
-                data={eventStatusDistribution}
+                data={data}
                 dataKey='value'
                 nameKey='name'
                 innerRadius={78}
                 outerRadius={110}
                 paddingAngle={4}
               >
-                {eventStatusDistribution.map((entry) => (
+                {data.map((entry) => (
                   <Cell key={entry.name} fill={entry.color} />
                 ))}
               </Pie>
@@ -36,7 +36,7 @@ function EventStatusChart() {
           </ResponsiveContainer>
         </div>
         <div className='flex flex-col justify-center gap-3'>
-          {eventStatusDistribution.map((item) => (
+          {data.map((item) => (
             <div
               key={item.name}
               className='flex items-center justify-between rounded-2xl border border-white/8 bg-white/3 px-4 py-3'

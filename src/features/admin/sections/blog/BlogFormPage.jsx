@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import BlogEditorToolbar from "../../components/blog/BlogEditorToolbar";
 import BlogFormFooter from "../../components/blog/BlogFormFooter";
 import { useAdminBlogs, slugifyBlogTitle } from "../../hooks/blog/useAdminBlogs";
+import { getAdminErrorMessage } from "../../api/adminApi";
 
 const emptyForm = {
   title: "",
@@ -18,11 +19,13 @@ const emptyForm = {
 function BlogFormPage({ mode = "create" }) {
   const navigate = useNavigate();
   const { blogId } = useParams();
-  const { getBlogById, createBlog, updateBlog } = useAdminBlogs();
+  const { getBlogById, createBlog, updateBlog, loading } = useAdminBlogs();
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [form, setForm] = useState(emptyForm);
   const [loaded, setLoaded] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (mode === "edit" && blogId) {
@@ -104,18 +107,30 @@ function BlogFormPage({ mode = "create" }) {
       featureImage: form.featureImage,
     };
 
-    if (mode === "edit" && blogId) {
-      updateBlog(blogId, payload);
-      navigate(`/admin/blog/${blogId}`);
-      return;
-    }
+    const submit = async () => {
+      setSubmitting(true);
+      setError("");
 
-    const nextId = `post-${Date.now()}`;
-    createBlog({ id: nextId, ...payload });
-    navigate(`/admin/blog/${nextId}`);
+      try {
+        if (mode === "edit" && blogId) {
+          const updated = await updateBlog(blogId, payload);
+          navigate(`/admin/blog/${updated.id || blogId}`);
+          return;
+        }
+
+        const created = await createBlog(payload);
+        navigate(`/admin/blog/${created.id}`);
+      } catch (requestError) {
+        setError(getAdminErrorMessage(requestError, "Failed to save blog post."));
+      } finally {
+        setSubmitting(false);
+      }
+    };
+
+    submit();
   };
 
-  if (mode === "edit" && loaded && blogId && !getBlogById(blogId)) {
+  if (mode === "edit" && !loading && loaded && blogId && !getBlogById(blogId)) {
     return (
       <section className='rounded-[2rem] border border-border-gold/15 bg-[#141414]/90 p-6 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
         <p className='text-sm text-stone-300'>Blog post not found.</p>
@@ -144,6 +159,12 @@ function BlogFormPage({ mode = "create" }) {
           </button>
         </div>
       </div>
+
+      {error ? (
+        <div className='mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+          {error}
+        </div>
+      ) : null}
 
       <form className='space-y-5' onSubmit={handleSubmit}>
         <div className='grid gap-4 md:grid-cols-2'>
@@ -256,7 +277,7 @@ function BlogFormPage({ mode = "create" }) {
           />
         </div>
 
-        <BlogFormFooter form={form} mode={mode} onReset={resetForm} />
+        <BlogFormFooter form={form} mode={mode} onReset={resetForm} submitting={submitting} />
       </form>
     </section>
   );

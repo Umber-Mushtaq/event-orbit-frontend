@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { emptyBookingForm } from "../../data/bookingManagementData";
 
-function BookingFormModal({ open, mode = "create", initialValue, onClose, onSave }) {
+function BookingFormModal({ open, mode = "create", initialValue, onClose, onSave, submitError = "" }) {
   const [form, setForm] = useState(emptyBookingForm);
 
   useEffect(() => {
@@ -47,6 +47,11 @@ function BookingFormModal({ open, mode = "create", initialValue, onClose, onSave
         </div>
 
         <form onSubmit={handleSubmit} className='mt-6 grid gap-4 md:grid-cols-2'>
+          {submitError ? (
+            <p className='md:col-span-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+              {submitError}
+            </p>
+          ) : null}
           <label className='block'>
             <span className='mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-stone-400'>
               Booking ID

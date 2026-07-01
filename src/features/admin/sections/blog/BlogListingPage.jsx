@@ -4,7 +4,7 @@ import BlogCard from "../../components/blog/BlogCard";
 import { useAdminBlogs } from "../../hooks/blog/useAdminBlogs";
 
 function BlogListingPage() {
-  const { blogs } = useAdminBlogs();
+  const { blogs, loading, error } = useAdminBlogs();
 
   return (
     <section className='space-y-6'>
@@ -32,7 +32,15 @@ function BlogListingPage() {
         </div>
       </div>
 
-      {blogs.length ? (
+      {error ? (
+        <div className='rounded-[2rem] border border-red-500/20 bg-red-500/10 p-8 text-center text-red-200 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
+          {error}
+        </div>
+      ) : loading ? (
+        <div className='rounded-[2rem] border border-white/8 bg-[#141414]/90 p-8 text-center text-stone-400 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
+          Loading blog posts...
+        </div>
+      ) : blogs.length ? (
         <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3'>
           {blogs.map((blog) => (
             <BlogCard key={blog.id} blog={blog} />

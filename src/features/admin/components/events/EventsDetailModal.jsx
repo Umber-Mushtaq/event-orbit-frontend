@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 
-function EventsDetailModal({ open, event, onClose }) {
+function EventsDetailModal({ open, event, onClose, onDelete }) {
   useEffect(() => {
     const handleEscape = (eventKey) => {
       if (eventKey.key === "Escape") onClose();
@@ -52,6 +52,25 @@ function EventsDetailModal({ open, event, onClose }) {
             </div>
           ))}
         </div>
+
+        {typeof onDelete === "function" ? (
+          <div className='mt-6 flex justify-end gap-3'>
+            <button
+              type='button'
+              onClick={onClose}
+              className='rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-stone-200 transition hover:border-border-gold/30 hover:text-white'
+            >
+              Close
+            </button>
+            <button
+              type='button'
+              onClick={onDelete}
+              className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 transition hover:border-red-400/30 hover:text-red-100'
+            >
+              Delete Event
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

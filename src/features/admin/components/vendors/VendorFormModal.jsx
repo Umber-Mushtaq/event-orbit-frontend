@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { emptyVendorForm } from "../../data/vendorManagementData";
 
-function VendorFormModal({ open, mode = "create", initialValue, onClose, onSave }) {
+function VendorFormModal({ open, mode = "create", initialValue, onClose, onSave, submitError = "" }) {
   const [form, setForm] = useState(emptyVendorForm);
 
   useEffect(() => {
@@ -40,6 +40,11 @@ function VendorFormModal({ open, mode = "create", initialValue, onClose, onSave 
         </div>
 
         <form onSubmit={handleSubmit} className='mt-6 grid gap-4 md:grid-cols-2'>
+          {submitError ? (
+            <p className='md:col-span-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+              {submitError}
+            </p>
+          ) : null}
           {[
             ["Vendor Name", "name", "text", "Enter vendor name"],
             ["Category", "category", "text", "Enter category"],

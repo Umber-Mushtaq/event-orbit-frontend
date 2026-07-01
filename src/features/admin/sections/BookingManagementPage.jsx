@@ -1,53 +1,65 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import SharedCards from "../components/shared/SharedCards";
 import SharedHeader from "../components/shared/SharedHeader";
 import SharedTable from "../components/shared/SharedTable";
 import BookingFormModal from "../components/bookings/BookingFormModal";
-import {
-  bookingPaymentStyles,
-  bookingStats,
-  emptyBookingForm,
-  initialBookings,
-} from "../data/bookingManagementData";
+import { bookingPaymentStyles, emptyBookingForm } from "../data/bookingManagementData";
+import { adminBookingsApi, getAdminErrorMessage } from "../api/adminApi";
+import { formatAdminCurrency, mapAdminBooking } from "../utils/adminTransformers";
 
 function BookingManagementPage() {
-  const [bookings, setBookings] = useState(initialBookings);
+  const [bookings, setBookings] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [editingBooking, setEditingBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadBookings = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await adminBookingsApi.list({ limit: 100 });
+      setBookings((response.data?.data?.items || []).map(mapAdminBooking));
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to load bookings."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
 
   const rows = useMemo(() => bookings, [bookings]);
 
-  const handleSave = (payload) => {
+  const stats = useMemo(() => {
+    const total = bookings.length;
+    const confirmed = bookings.filter((booking) => booking.status === "Confirmed").length;
+    const pending = bookings.filter((booking) => booking.status === "Pending").length;
+    const cancelled = bookings.filter((booking) => booking.status === "Cancelled").length;
+
+    return [
+      { label: "Total Bookings", value: String(total), icon: "credit-card" },
+      { label: "Confirmed", value: String(confirmed), icon: "badge-check" },
+      { label: "Pending", value: String(pending), icon: "clock-3" },
+      { label: "Cancelled", value: String(cancelled), icon: "circle-x" },
+    ];
+  }, [bookings]);
+
+  const handleSave = async (payload) => {
     if (!payload.event.trim() || !payload.amount.trim()) return;
 
-    if (editingBooking) {
-      setBookings((current) =>
-        current.map((item) =>
-          item.id === editingBooking.id
-            ? {
-                ...item,
-                event: payload.event,
-                paymentStatus: payload.paymentStatus,
-                amount: payload.amount,
-              }
-            : item,
-        ),
-      );
-    } else {
-      setBookings((current) => [
-        {
-          id: payload.id || `BK-${Date.now().toString().slice(-4)}`,
-          event: payload.event,
-          paymentStatus: payload.paymentStatus,
-          amount: payload.amount,
-        },
-        ...current,
-      ]);
+    try {
+      await adminBookingsApi.create(payload);
+      await loadBookings();
+      setFormOpen(false);
+      setEditingBooking(null);
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to save booking."));
     }
-
-    setFormOpen(false);
-    setEditingBooking(null);
   };
 
   return (
@@ -63,7 +75,18 @@ function BookingManagementPage() {
         }}
       />
 
-      <SharedCards items={bookingStats} />
+      <SharedCards items={stats} />
+
+      {error ? (
+        <div className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+          {error}
+        </div>
+      ) : null}
+      {loading ? (
+        <div className='rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm text-stone-300'>
+          Loading bookings...
+        </div>
+      ) : null}
 
       <SharedTable
         rows={rows}
@@ -91,21 +114,27 @@ function BookingManagementPage() {
                   bookingPaymentStyles[item.paymentStatus] || bookingPaymentStyles.Pending
                 }`}
               >
-                $ {item.paymentStatus}
+                {item.paymentStatus}
               </span>
             ),
           },
           {
             key: "amount",
             label: "Amount",
-            render: (item) => <span className='font-semibold text-white'>{item.amount}</span>,
+            render: (item) => (
+              <span className='font-semibold text-white'>
+                {typeof item.amount === "number"
+                  ? formatAdminCurrency(item.amount, item.currency || "USD")
+                  : item.amount}
+              </span>
+            ),
           },
         ]}
         showSearch={false}
         showFilters={false}
         showSort={false}
         showActions={false}
-        emptyMessage='No bookings found.'
+        emptyMessage={loading ? "Loading bookings..." : "No bookings found."}
       />
 
       <BookingFormModal
@@ -117,6 +146,7 @@ function BookingManagementPage() {
           setEditingBooking(null);
         }}
         onSave={handleSave}
+        submitError={error}
       />
     </div>
   );

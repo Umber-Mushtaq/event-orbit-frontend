@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ImagePlus, Sparkles, X } from "lucide-react";
 import { categoryIconOptions, emptyCategoryForm } from "../../data/eventCategoriesData";
 
-function CategoryFormModal({ open, mode = "create", initialValue, onClose, onSave }) {
+function CategoryFormModal({ open, mode = "create", initialValue, onClose, onSave, submitError = "" }) {
   const fileInputRef = useRef(null);
   const [form, setForm] = useState(emptyCategoryForm);
   const [error, setError] = useState("");
@@ -67,9 +67,9 @@ function CategoryFormModal({ open, mode = "create", initialValue, onClose, onSav
         </div>
 
         <form onSubmit={handleSubmit} className='mt-6 space-y-5'>
-          {error ? (
+          {error || submitError ? (
             <p className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
-              {error}
+              {error || submitError}
             </p>
           ) : null}
 

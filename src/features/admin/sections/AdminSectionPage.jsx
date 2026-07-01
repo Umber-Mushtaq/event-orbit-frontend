@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { adminSectionCopy } from "../data/adminNavigationData";
 import EventCategoriesPage from "./EventCategoriesPage";
 import EventsManagementPage from "./EventsManagementPage";
@@ -11,6 +11,7 @@ import VendorPerformanceChart from "../components/VendorPerformanceChart";
 import RecentActivities from "../components/RecentActivities";
 import ChartCard from "../components/ChartCard";
 import Badge from "../components/Badge";
+import { adminDashboardApi, getAdminErrorMessage } from "../api/adminApi";
 
 function MiniCard({ label, value, tone = "default" }) {
   return (
@@ -49,6 +50,51 @@ function SectionHero({ title, description }) {
 
 function AdminSectionPage({ sectionKey }) {
   const copy = adminSectionCopy[sectionKey] || adminSectionCopy.dashboard;
+  const [analytics, setAnalytics] = useState({
+    revenue: [],
+    eventStatus: [],
+    vendorPerformance: [],
+    activities: [],
+    notifications: [],
+  });
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    const loadSectionData = async () => {
+      if (!["analytics", "notifications"].includes(sectionKey)) return;
+
+      try {
+        const [revenueRes, statusRes, vendorRes, activitiesRes, notificationsRes] = await Promise.all([
+          adminDashboardApi.revenueAnalytics(),
+          adminDashboardApi.eventStatus(),
+          adminDashboardApi.vendorPerformance(),
+          adminDashboardApi.activities(),
+          adminDashboardApi.notifications(),
+        ]);
+
+        if (!active) return;
+
+        setAnalytics({
+          revenue: revenueRes.data?.data || [],
+          eventStatus: statusRes.data?.data || [],
+          vendorPerformance: vendorRes.data?.data || [],
+          activities: activitiesRes.data?.data || [],
+          notifications: notificationsRes.data?.data || [],
+        });
+      } catch (requestError) {
+        if (!active) return;
+        setError(getAdminErrorMessage(requestError, "Failed to load admin section data."));
+      }
+    };
+
+    loadSectionData();
+
+    return () => {
+      active = false;
+    };
+  }, [sectionKey]);
 
   const content = useMemo(() => {
     switch (sectionKey) {
@@ -64,10 +110,10 @@ function AdminSectionPage({ sectionKey }) {
         return (
           <section className='grid gap-6'>
             <div className='grid gap-6 xl:grid-cols-2'>
-              <RevenueAnalyticsChart />
-              <EventStatusChart />
+              <RevenueAnalyticsChart data={analytics.revenue} />
+              <EventStatusChart data={analytics.eventStatus} />
             </div>
-            <VendorPerformanceChart />
+            <VendorPerformanceChart data={analytics.vendorPerformance} />
           </section>
         );
       case "calendar":
@@ -75,7 +121,17 @@ function AdminSectionPage({ sectionKey }) {
       case "notifications":
         return (
           <section className='grid gap-6'>
-            <RecentActivities />
+            <RecentActivities
+              items={(analytics.notifications.length ? analytics.notifications : analytics.activities).map(
+                (item) => ({
+                  title: item.title,
+                  description: item.description,
+                  time: item.time,
+                  tone: item.read ? "neutral" : "gold",
+                  icon: item.icon || "bell",
+                }),
+              )}
+            />
           </section>
         );
       case "settings":
@@ -93,11 +149,11 @@ function AdminSectionPage({ sectionKey }) {
       default:
         return (
           <section className='grid gap-6'>
-            <ChartCard title='Workspace Preview' subtitle='This module is ready for your next iteration.'>
+              <ChartCard title='Workspace Preview' subtitle='This module is ready for your next iteration.'>
               <div className='grid gap-3'>
-                <MiniCard label='Scope' value='Mock data' tone='confirmed' />
+                <MiniCard label='Scope' value='Live backend' tone='confirmed' />
                 <MiniCard label='Status' value='Ready' tone='active' />
-                <MiniCard label='Next step' value='Connect API' tone='pending' />
+                <MiniCard label='Next step' value='Refine filters' tone='pending' />
               </div>
             </ChartCard>
           </section>
@@ -108,6 +164,11 @@ function AdminSectionPage({ sectionKey }) {
   return (
     <div className='space-y-6'>
       <SectionHero title={copy.title} description={copy.description} />
+      {error ? (
+        <div className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+          {error}
+        </div>
+      ) : null}
       {content}
     </div>
   );

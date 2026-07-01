@@ -3,17 +3,27 @@ import { useNavigate, useParams } from "react-router";
 import BlogActionMenu from "../../components/blog/BlogActionMenu";
 import BlogDeleteModal from "../../components/blog/BlogDeleteModal";
 import { formatBlogDate, useAdminBlogs } from "../../hooks/blog/useAdminBlogs";
+import { getAdminErrorMessage } from "../../api/adminApi";
 
 function BlogDetailsPage() {
   const navigate = useNavigate();
   const { blogId } = useParams();
-  const { getBlogById, deleteBlog } = useAdminBlogs();
+  const { getBlogById, deleteBlog, loading } = useAdminBlogs();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [blog, setBlog] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setBlog(blogId ? getBlogById(blogId) || null : null);
   }, [blogId, getBlogById]);
+
+  if (loading) {
+    return (
+      <section className='rounded-[2rem] border border-border-gold/15 bg-[#141414]/90 p-6 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
+        <p className='text-sm text-stone-300'>Loading blog post...</p>
+      </section>
+    );
+  }
 
   if (!blog) {
     return (
@@ -30,14 +40,25 @@ function BlogDetailsPage() {
     );
   }
 
-  const handleDelete = () => {
-    deleteBlog(blog.id);
-    navigate("/admin/blog");
+  const handleDelete = async () => {
+    try {
+      await deleteBlog(blog.id);
+      navigate("/admin/blog");
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to delete blog post."));
+    }
   };
 
   return (
     <>
       <section className='overflow-hidden rounded-[2rem] border border-border-gold/15 bg-[#141414]/90 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
+        {error ? (
+          <div className='px-6 pt-6 md:px-8'>
+            <div className='rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
+              {error}
+            </div>
+          </div>
+        ) : null}
         <div className='relative'>
           <img src={blog.featureImage} alt={blog.title} className='h-80 w-full object-cover' />
           <div className='absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent' />

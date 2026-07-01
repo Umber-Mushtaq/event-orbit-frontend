@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bell,
   ChevronDown,
@@ -9,7 +9,7 @@ import {
   Sparkles,
   UserCircle2,
 } from "lucide-react";
-import { messages, notifications } from "../data/adminMetricsData";
+import { adminDashboardApi, adminProfileApi } from "../api/adminApi";
 
 function Menu({ trigger, children, align = "right" }) {
   const [open, setOpen] = useState(false);
@@ -50,8 +50,51 @@ function AdminTopbar({
   themeMode,
   toggleTheme,
 }) {
-  const notificationCount = useMemo(() => notifications.length, []);
-  const messageCount = useMemo(() => messages.length, []);
+  const [notifications, setNotifications] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadTopbarData = async () => {
+      try {
+        const [notificationsRes, messagesRes, profileRes] = await Promise.allSettled([
+          adminDashboardApi.notifications(),
+          adminDashboardApi.messages(),
+          adminProfileApi.get(),
+        ]);
+
+        if (!active) return;
+
+        if (notificationsRes.status === "fulfilled") {
+          setNotifications(notificationsRes.value.data?.data || []);
+        }
+        if (messagesRes.status === "fulfilled") {
+          setMessages(messagesRes.value.data?.data || []);
+        }
+        if (profileRes.status === "fulfilled") {
+          setProfile(profileRes.value.data?.data || profileRes.value.data?.admin || null);
+        }
+      } catch {
+        if (!active) return;
+      }
+    };
+
+    loadTopbarData();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const notificationCount = useMemo(() => notifications.length, [notifications.length]);
+  const messageCount = useMemo(() => messages.length, [messages.length]);
+  const profileName =
+    `${profile?.firstName || profile?.name?.split(" ")?.[0] || "Admin"} ${
+      profile?.lastName || profile?.name?.split(" ")?.slice(1).join(" ") || ""
+    }`.trim();
+  const profileRole = profile?.role || "Admin";
 
   return (
     <header className='sticky top-0 z-30 -mx-4 border-b border-white/5 bg-[#0b0b0b]/85 px-4 py-4 backdrop-blur-xl md:-mx-6 md:px-6 lg:-mx-8 lg:px-8'>
@@ -94,7 +137,7 @@ function AdminTopbar({
                 </p>
                 {notifications.map((item) => (
                   <button
-                    key={item.title}
+                    key={item.id || item.title}
                     onClick={close}
                     className='w-full rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left transition hover:border-border-gold/30'
                   >
@@ -124,7 +167,7 @@ function AdminTopbar({
                 </p>
                 {messages.map((item) => (
                   <button
-                    key={item.title}
+                    key={item.id || item.title}
                     onClick={close}
                     className='w-full rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left transition hover:border-border-gold/30'
                   >
@@ -161,8 +204,8 @@ function AdminTopbar({
                   <UserCircle2 className='h-full w-full p-1.5 text-border-gold-hover' />
                 </div>
                 <div className='text-left'>
-                  <p className='text-sm font-semibold text-white'>Amna Malik</p>
-                  <p className='text-[11px] text-stone-400'>Admin</p>
+                  <p className='text-sm font-semibold text-white'>{profileName}</p>
+                  <p className='text-[11px] text-stone-400'>{profileRole}</p>
                 </div>
                 <ChevronDown className='h-4 w-4 text-stone-400' />
               </button>

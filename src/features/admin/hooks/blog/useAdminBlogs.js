@@ -1,37 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
-const STORAGE_KEY = "event-orbit-admin-blog-posts";
-
-const seedBlogs = [
-  {
-    id: "post-1",
-    title: "How to plan a luxury wedding timeline",
-    slug: "luxury-wedding-timeline",
-    category: "Planning",
-    status: "Published",
-    excerpt:
-      "A practical guide to keep premium weddings calm, elegant, and on schedule.",
-    content:
-      "<p>A luxury timeline should feel effortless for guests while giving every vendor clear direction.</p><h2>Start with the ceremony</h2><p>Work backward from the main moment and protect time for setup, photography, and guest arrival.</p>",
-    featureImage:
-      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
-    updatedAt: "2026-06-12T10:15:00.000Z",
-  },
-  {
-    id: "post-2",
-    title: "Choosing the right venue lighting palette",
-    slug: "venue-lighting-palette",
-    category: "Design",
-    status: "Draft",
-    excerpt:
-      "Use warm lighting layers to elevate floral details, tablescapes, and entrances.",
-    content:
-      "<p>Lighting changes the entire mood of an event, especially in indoor venues with dark finishes.</p><blockquote>Always test the room at the same time of day the event will happen.</blockquote>",
-    featureImage:
-      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80",
-    updatedAt: "2026-06-16T08:30:00.000Z",
-  },
-];
+import {
+  adminBlogsApi,
+  getAdminErrorMessage,
+} from "../../api/adminApi";
 
 export function slugifyBlogTitle(value) {
   return value
@@ -43,7 +14,7 @@ export function slugifyBlogTitle(value) {
 }
 
 export function stripBlogHtml(html) {
-  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return String(html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 export function formatBlogDate(value) {
@@ -54,23 +25,40 @@ export function formatBlogDate(value) {
   }).format(new Date(value));
 }
 
-export function useAdminBlogs() {
-  const ready = true;
-  const [blogs, setBlogs] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return seedBlogs;
+const normalizeBlog = (blog) => ({
+  id: blog.id || blog._id,
+  title: blog.title || "",
+  slug: blog.slug || "",
+  category: blog.category || "",
+  status: blog.status || "Draft",
+  excerpt: blog.excerpt || "",
+  content: blog.content || "",
+  featureImage: blog.featureImage || "",
+  updatedAt: blog.updatedAt || blog.createdAt || new Date().toISOString(),
+});
 
-      const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) && parsed.length ? parsed : seedBlogs;
-    } catch {
-      return seedBlogs;
+export function useAdminBlogs() {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const refreshBlogs = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await adminBlogsApi.list({ limit: 100 });
+      setBlogs((response.data?.data?.items || []).map(normalizeBlog));
+    } catch (requestError) {
+      setError(getAdminErrorMessage(requestError, "Failed to load blogs."));
+    } finally {
+      setLoading(false);
     }
-  });
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(blogs));
-  }, [blogs]);
+    refreshBlogs();
+  }, [refreshBlogs]);
 
   const stats = useMemo(() => {
     const published = blogs.filter((blog) => blog.status === "Published").length;
@@ -83,45 +71,35 @@ export function useAdminBlogs() {
     };
   }, [blogs]);
 
-  const getBlogById = useCallback(
-    (blogId) => blogs.find((blog) => blog.id === blogId),
-    [blogs],
-  );
+  const getBlogById = useCallback((blogId) => blogs.find((blog) => String(blog.id) === String(blogId)), [blogs]);
 
-  const createBlog = useCallback((blog) => {
-    setBlogs((current) => [
-      {
-        ...blog,
-        id: blog.id || `post-${Date.now()}`,
-        updatedAt: blog.updatedAt || new Date().toISOString(),
-      },
-      ...current,
-    ]);
+  const createBlog = useCallback(async (payload) => {
+    const response = await adminBlogsApi.create(payload);
+    const blog = normalizeBlog(response.data?.blog || response.data?.data?.blog || {});
+    setBlogs((current) => [blog, ...current.filter((item) => String(item.id) !== String(blog.id))]);
+    return blog;
   }, []);
 
-  const updateBlog = useCallback((blogId, blog) => {
+  const updateBlog = useCallback(async (blogId, payload) => {
+    const response = await adminBlogsApi.update(blogId, payload);
+    const blog = normalizeBlog(response.data?.blog || response.data?.data?.blog || {});
     setBlogs((current) =>
-      current.map((item) =>
-        item.id === blogId
-          ? {
-              ...item,
-              ...blog,
-              id: blogId,
-              updatedAt: new Date().toISOString(),
-            }
-          : item,
-      ),
+      current.map((item) => (String(item.id) === String(blog.id) ? blog : item)),
     );
+    return blog;
   }, []);
 
-  const deleteBlog = useCallback((blogId) => {
-    setBlogs((current) => current.filter((item) => item.id !== blogId));
+  const deleteBlog = useCallback(async (blogId) => {
+    await adminBlogsApi.remove(blogId);
+    setBlogs((current) => current.filter((item) => String(item.id) !== String(blogId)));
   }, []);
 
   return {
     blogs,
     stats,
-    ready,
+    loading,
+    error,
+    refreshBlogs,
     getBlogById,
     createBlog,
     updateBlog,

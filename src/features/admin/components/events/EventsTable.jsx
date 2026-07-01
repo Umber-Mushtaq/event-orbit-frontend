@@ -1,4 +1,4 @@
-import { Eye, MoreHorizontal } from "lucide-react";
+import { Eye, MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import EventsActionMenu from "./EventsActionMenu";
 import { statusStyles } from "../../data/eventsManagementData";
 import { useRecentEventsTable } from "../../hooks/useRecentEventsTable";
@@ -9,6 +9,8 @@ function EventsTable({
   viewMode = "List",
   queryOverride = "",
   onViewRow,
+  onEditRow,
+  onDeleteRow,
 }) {
   const table = useRecentEventsTable(rows, searchOverride, 8, queryOverride);
   const displayRows = rows.length ? table.pagedRows : [];
@@ -76,6 +78,17 @@ function EventsTable({
                             icon: Eye,
                             onClick: () => onViewRow?.(row),
                           },
+                          {
+                            label: "Edit",
+                            icon: PencilLine,
+                            onClick: () => onEditRow?.(row),
+                          },
+                          {
+                            label: "Delete",
+                            icon: Trash2,
+                            variant: "danger",
+                            onClick: () => onDeleteRow?.(row),
+                          },
                         ]}
                       />
                     </td>
@@ -96,7 +109,7 @@ function EventsTable({
       <div className='mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <p className='text-xs text-stone-500'>
           Showing {displayRows.length} of {rows.length} records
-          <span className='ml-2 text-stone-600'>• {viewMode} view</span>
+          <span className='ml-2 text-stone-600'>- {viewMode} view</span>
         </p>
         <div className='flex items-center gap-2'>
           <button
