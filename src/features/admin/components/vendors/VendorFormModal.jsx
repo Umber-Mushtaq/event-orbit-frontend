@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { emptyVendorForm } from "../../data/vendorManagementData";
+import ModalShell from "../shared/ModalShell";
 
 function VendorFormModal({ open, mode = "create", initialValue, onClose, onSave, submitError = "" }) {
   const [form, setForm] = useState(emptyVendorForm);
@@ -18,8 +19,8 @@ function VendorFormModal({ open, mode = "create", initialValue, onClose, onSave,
   };
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm'>
-      <div className='w-full max-w-2xl rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'>
+    <ModalShell open={open} innerClassName='max-w-2xl'>
+      <div className='rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)] overflow-y-auto'>
         <div className='flex items-start justify-between gap-4'>
           <div>
             <p className='text-xs font-semibold uppercase tracking-[0.24em] text-border-gold-hover/80'>
@@ -103,7 +104,7 @@ function VendorFormModal({ open, mode = "create", initialValue, onClose, onSave,
           </div>
         </form>
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

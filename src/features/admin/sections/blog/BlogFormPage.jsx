@@ -21,6 +21,7 @@ function BlogFormPage({ mode = "create" }) {
   const { blogId } = useParams();
   const { getBlogById, createBlog, updateBlog, loading } = useAdminBlogs();
   const editorRef = useRef(null);
+  const savedSelectionRef = useRef(null);
   const fileInputRef = useRef(null);
   const [form, setForm] = useState(emptyForm);
   const [loaded, setLoaded] = useState(false);
@@ -68,10 +69,74 @@ function BlogFormPage({ mode = "create" }) {
     }));
   };
 
+  const saveEditorSelection = () => {
+    if (typeof window === "undefined") return;
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    if (!editorRef.current?.contains(range.commonAncestorContainer)) return;
+
+    savedSelectionRef.current = range;
+  };
+
+  const restoreEditorSelection = () => {
+    if (typeof window === "undefined") return false;
+    const selection = window.getSelection();
+    const range = savedSelectionRef.current;
+
+    if (!selection || !range || !editorRef.current) return false;
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editorRef.current.focus();
+    return true;
+  };
+
+  const escapeHtml = (value) =>
+    String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const insertCodeBlock = () => {
+    if (!editorRef.current) return;
+
+    restoreEditorSelection();
+
+    const selection = window.getSelection();
+    const selectedText = selection && selection.rangeCount > 0 ? selection.toString() : "";
+
+    const codeText =
+      selectedText ||
+      `// Script example\nfunction initBlogSection() {\n  console.log("Write your script here");\n}\n\ninitBlogSection();`;
+
+    document.execCommand(
+      "insertHTML",
+      false,
+      `<pre><code>${escapeHtml(codeText)}</code></pre>`,
+    );
+
+    setForm((current) => ({
+      ...current,
+      content: editorRef.current?.innerHTML || current.content,
+    }));
+  };
+
   const runEditorCommand = (command, value) => {
     if (!editorRef.current) return;
-    editorRef.current.focus();
-    document.execCommand(command, false, value);
+
+    restoreEditorSelection();
+    if (command === "codeBlock") {
+      insertCodeBlock();
+      return;
+    }
+    const nextValue =
+      command === "formatBlock" && typeof value === "string" ? value.toUpperCase() : value;
+    document.execCommand(command, false, nextValue);
+    saveEditorSelection();
     setForm((current) => ({
       ...current,
       content: editorRef.current?.innerHTML || current.content,
@@ -273,7 +338,10 @@ function BlogFormPage({ mode = "create" }) {
             contentEditable
             suppressContentEditableWarning
             onInput={handleEditorInput}
-            className='min-h-[240px] rounded-2xl border border-white/10 bg-[#0f0f0f] px-4 py-4 text-sm leading-7 text-stone-200 outline-none [&_h2]:mt-4 [&_h2]:text-xl [&_h2]:font-black [&_blockquote]:mt-4 [&_blockquote]:border-l-2 [&_blockquote]:border-border-gold/40 [&_blockquote]:pl-4 [&_ul]:ml-5 [&_ol]:ml-5'
+            onFocus={saveEditorSelection}
+            onKeyUp={saveEditorSelection}
+            onMouseUp={saveEditorSelection}
+            className='min-h-[240px] rounded-2xl border border-white/10 bg-[#0f0f0f] px-4 py-4 text-sm leading-7 text-stone-200 outline-none [&_h1]:mt-5 [&_h1]:text-3xl [&_h1]:font-black [&_h1]:leading-tight [&_h2]:mt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:leading-tight [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_h4]:mt-3 [&_h4]:text-lg [&_h4]:font-bold [&_h5]:mt-3 [&_h5]:text-base [&_h5]:font-bold [&_h6]:mt-3 [&_h6]:text-sm [&_h6]:font-bold [&_blockquote]:mt-4 [&_blockquote]:border-l-2 [&_blockquote]:border-border-gold/40 [&_blockquote]:pl-4 [&_pre]:mt-4 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-white/10 [&_pre]:bg-black/40 [&_pre]:px-4 [&_pre]:py-3 [&_pre]:font-mono [&_pre]:text-[13px] [&_pre_code]:whitespace-pre-wrap [&_pre_code]:break-words [&_pre_code]:text-stone-100 [&_code]:rounded-lg [&_code]:bg-black/30 [&_code]:px-1.5 [&_code]:py-0.5 [&_ul]:ml-5 [&_ul]:list-disc [&_ol]:ml-5 [&_ol]:list-decimal [&_li]:marker:text-border-gold-hover'
           />
         </div>
 
@@ -284,3 +352,5 @@ function BlogFormPage({ mode = "create" }) {
 }
 
 export default BlogFormPage;
+
+

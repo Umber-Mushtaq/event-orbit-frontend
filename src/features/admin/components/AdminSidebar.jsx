@@ -2,16 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router";
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
   X,
 } from "lucide-react";
-import avatar from "../../../assets/avatar3.jpg";
 import AppLogo from "../../../global_components/AppLogo";
 import { adminNavigation } from "../data/adminNavigationData";
 import { iconMap } from "./adminIconMap";
 import { adminAuthApi, adminProfileApi, getAdminErrorMessage } from "../api/adminApi";
+import ModalShell from "./shared/ModalShell";
 
 function AdminSidebar({
   isCollapsed,
@@ -142,7 +142,7 @@ function AdminSidebar({
     }
   };
 
-  const sidebarWidth = isCollapsed ? "lg:w-[92px]" : "lg:w-[286px]";
+  const sidebarWidth = isCollapsed ? "lg:w-[84px]" : "lg:w-[286px]";
   const mobileClass = isMobileOpen
     ? "translate-x-0"
     : "-translate-x-full lg:translate-x-0";
@@ -151,7 +151,13 @@ function AdminSidebar({
       profile?.lastName || profile?.name?.split(" ")?.slice(1).join(" ") || ""
     }`.trim();
   const profileRole = profile?.role || "Admin";
-  const profileAvatar = profile?.avatar || profile?.profileImage || avatar;
+  const profileAvatar = profile?.avatar || profile?.profileImage || "";
+  const profileInitials = useMemo(() => {
+    const first = profile?.firstName || profile?.name?.split(" ")?.[0] || "A";
+    const last =
+      profile?.lastName || profile?.name?.split(" ")?.slice(1).join(" ") || "";
+    return `${first?.[0] || "A"}${last?.[0] || ""}`.toUpperCase();
+  }, [profile]);
 
   return (
     <>
@@ -165,25 +171,33 @@ function AdminSidebar({
       ) : null}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-[286px] flex-col border-r border-border-gold/10 bg-[#090909]/95 px-3 py-4 backdrop-blur-xl transition-all duration-300 ${sidebarWidth} ${mobileClass}`}
+        className={`fixed left-0 top-0 z-50 flex h-screen w-[286px] flex-col border-r border-border-gold/10 bg-[#090909]/95 px-2 py-4 backdrop-blur-xl transition-all duration-300 ${sidebarWidth} ${mobileClass}`}
       >
-        <div className='mb-4 flex items-start justify-between gap-3 px-1'>
-          <div className='flex flex-col gap-2'>
-            <AppLogo to='/admin/dashboard' />
-            <div className='text-[11px] font-semibold uppercase tracking-[0.3em] text-border-gold-hover/80'>
+        <div className='mb-4 flex items-center gap-2 px-1 relative'>
+          <div className='flex min-w-0 flex-1 items-center gap-2'>
+            <AppLogo
+              to='/admin/dashboard'
+              className='shrink-0'
+              imgClassName={isCollapsed ? "w-8" : ""}
+            />
+            <div
+              className={`text-[11px] font-semibold uppercase tracking-[0.3em] text-border-gold-hover/80 ${
+                isCollapsed ? "hidden" : ""
+              }`}
+            >
               Workspace
             </div>
           </div>
           <button
             type='button'
             onClick={toggleCollapsed}
-            className='hidden rounded-full border border-white/10 bg-white/5 p-2 text-stone-300 transition hover:border-border-gold/30 hover:text-white lg:inline-flex'
-            aria-label='Collapse sidebar'
+            className='hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#111111] text-stone-300 transition hover:border-border-gold/30 hover:text-white lg:inline-flex absolute -right-6 top-1/2 -translate-y-1/2'
+            aria-label='Collapse sidebar' 
           >
             {isCollapsed ? (
-              <PanelLeftOpen className='h-4 w-4' />
+              <ChevronRight className='h-5 w-5' />
             ) : (
-              <PanelLeftClose className='h-4 w-4' />
+              <ChevronLeft className='h-5 w-5' />
             )}
           </button>
           <button
@@ -196,7 +210,7 @@ function AdminSidebar({
           </button>
         </div>
 
-        <nav className='flex-1 space-y-1.5 overflow-y-auto pr-1'>
+        <nav className='flex-1 space-y-1.5 overflow-y-auto pr-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'>
           {adminNavigation.map((item) => {
             const Icon = iconMap[item.icon];
             const isActive =
@@ -209,41 +223,77 @@ function AdminSidebar({
                 key={item.path}
                 to={item.path}
                 onClick={closeMobileOpen}
-                className={`group flex items-center gap-4 rounded-2xl border px-3 py-2.5 text-[17px] font-semibold transition-all duration-300 ${
+                className={`group relative flex items-center gap-4 rounded-2xl border px-3 py-2.5 text-[17px] font-semibold transition-all duration-300 ${
                   isActive
                     ? "border-border-gold/35 bg-[#111318] text-[#ffd778] shadow-[0_0_0_1px_rgba(212,175,55,0.16)]"
                     : "border-transparent text-stone-300 hover:bg-white/5 hover:text-white"
-                } ${isCollapsed ? "lg:justify-center lg:px-2" : ""}`}
+                } ${
+                  isCollapsed
+                    ? "lg:mx-auto lg:h-12 lg:w-12 lg:justify-center lg:gap-0 lg:px-0"
+                    : ""
+                }`}
                 title={isCollapsed ? item.label : undefined}
               >
-                <Icon className='h-5 w-5 shrink-0 text-border-gold-hover/80' />
-                <span className={isCollapsed ? "lg:hidden" : "block"}>{item.label}</span>
+                {isActive ? (
+                  <span
+                    className={`absolute bg-border-gold ${
+                      isCollapsed
+                        ? "left-1/2 top-1 h-1 w-6 -translate-x-1/2 rounded-full"
+                        : "left-0 top-2 bottom-2 w-1 rounded-r-full"
+                    }`}
+                  />
+                ) : null}
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/5 bg-black/20 transition-all duration-300 ${
+                    isActive
+                      ? "text-border-gold-hover shadow-[0_0_0_1px_rgba(212,175,55,0.18)]"
+                      : "text-border-gold-hover/80 group-hover:border-border-gold/20 group-hover:bg-white/5"
+                  } ${isCollapsed ? "lg:h-11 lg:w-11" : ""}`}
+                >
+                  <Icon className='h-5 w-5 shrink-0' />
+                </span>
+                <span className={isCollapsed ? "lg:sr-only" : "block"}>{item.label}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        <div className='relative mt-4 rounded-3xl border border-white/8 bg-[#111111] p-3'>
+        <div className={`relative mt-4 rounded-[1.6rem] border border-white/8 bg-[#111111] p-3 ${isCollapsed ? "lg:p-2" : ""}`}>
           <button
             type='button'
             onClick={() => setProfileMenuOpen((open) => !open)}
-            className={`flex w-full items-center gap-3 text-left ${isCollapsed ? "lg:justify-center" : ""}`}
+            className={`flex w-full items-center gap-3 text-left ${
+              isCollapsed ? "lg:flex-col lg:items-center lg:gap-2" : ""
+            }`}
             aria-expanded={profileMenuOpen}
             aria-haspopup='menu'
           >
-            <img
-              src={profileAvatar}
-              alt='Admin profile'
-              className='h-12 w-12 rounded-full object-cover ring-1 ring-border-gold/20'
-            />
+            {profileAvatar ? (
+              <img
+                src={profileAvatar}
+                alt='Admin profile'
+                className={`h-12 w-12 rounded-full object-cover ring-1 ring-border-gold/20 ${
+                  isCollapsed ? "lg:h-11 lg:w-11" : ""
+                }`}
+              />
+            ) : (
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-full border border-border-gold/25 bg-gradient-to-br from-[#251c09] to-[#111111] text-sm font-extrabold tracking-[0.08em] text-[#ffd36c] ring-1 ring-border-gold/20 ${
+                  isCollapsed ? "lg:h-11 lg:w-11" : ""
+                }`}
+                aria-label='Admin profile initials'
+              >
+                {profileInitials}
+              </div>
+            )}
             <div className={isCollapsed ? "lg:hidden" : "min-w-0 flex-1"}>
               <p className='truncate text-sm font-semibold text-white'>{profileName}</p>
               <p className='text-xs text-stone-400'>{profileRole}</p>
             </div>
             <ChevronDown
-              className={`h-4 w-4 text-stone-300 transition-transform ${profileMenuOpen ? "rotate-180" : ""} ${
-                isCollapsed ? "lg:hidden" : ""
-              }`}
+              className={`h-4 w-4 text-stone-300 transition-transform ${
+                profileMenuOpen ? "rotate-180" : ""
+              } ${isCollapsed ? "lg:hidden" : ""}`}
             />
           </button>
 
@@ -289,8 +339,8 @@ function AdminSidebar({
       </aside>
 
       {profileEditorOpen ? (
-        <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm'>
-          <div className='w-full max-w-lg rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'>
+        <ModalShell open={profileEditorOpen} outerClassName='z-[70]' innerClassName='max-w-lg'>
+          <div className='rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)] overflow-y-auto'>
             <h3 className='text-2xl font-black text-white'>Profile settings</h3>
             {profileError ? (
               <p className='mt-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
@@ -337,12 +387,12 @@ function AdminSidebar({
               </button>
             </div>
           </div>
-        </div>
+        </ModalShell>
       ) : null}
 
       {preferencesEditorOpen ? (
-        <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm'>
-          <div className='w-full max-w-lg rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'>
+        <ModalShell open={preferencesEditorOpen} outerClassName='z-[70]' innerClassName='max-w-lg'>
+          <div className='rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)] overflow-y-auto'>
             <h3 className='text-2xl font-black text-white'>Workspace preferences</h3>
             {preferencesError ? (
               <p className='mt-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200'>
@@ -424,7 +474,7 @@ function AdminSidebar({
               </button>
             </div>
           </div>
-        </div>
+        </ModalShell>
       ) : null}
     </>
   );

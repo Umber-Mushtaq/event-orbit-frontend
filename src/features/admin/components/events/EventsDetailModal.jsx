@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
+import ModalShell from "../shared/ModalShell";
 
 function EventsDetailModal({ open, event, onClose, onDelete }) {
   useEffect(() => {
@@ -17,8 +18,8 @@ function EventsDetailModal({ open, event, onClose, onDelete }) {
   if (!open || !event) return null;
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm'>
-      <div className='w-full max-w-2xl rounded-[2rem] border border-border-gold/15 bg-[#111111] p-5 shadow-[0_20px_70px_rgba(0,0,0,0.55)]'>
+    <ModalShell open={open} innerClassName='max-w-2xl'>
+      <div className='rounded-[2rem] border border-border-gold/15 bg-[#111111] p-5 shadow-[0_20px_70px_rgba(0,0,0,0.55)] max-h-[calc(100vh-4rem)] overflow-y-auto'>
         <div className='flex items-start justify-between gap-4'>
           <div>
             <p className='text-xs font-semibold uppercase tracking-[0.24em] text-border-gold-hover/80'>
@@ -72,7 +73,7 @@ function EventsDetailModal({ open, event, onClose, onDelete }) {
           </div>
         ) : null}
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

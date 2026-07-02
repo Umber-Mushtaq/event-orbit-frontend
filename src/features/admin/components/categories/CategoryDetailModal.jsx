@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { categoryIconOptions, categoryStatusStyles } from "../../data/eventCategoriesData";
+import ModalShell from "../shared/ModalShell";
 
 function CategoryDetailModal({ open, category, onClose }) {
   if (!open || !category) return null;
@@ -8,8 +9,8 @@ function CategoryDetailModal({ open, category, onClose }) {
   const Icon = icon.Icon;
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm'>
-      <div className='w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border-gold/15 bg-[#111111] shadow-[0_30px_80px_rgba(0,0,0,0.6)]'>
+    <ModalShell open={open} innerClassName='max-w-2xl'>
+      <div className='overflow-hidden rounded-[2rem] border border-border-gold/15 bg-[#111111] shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)]'>
         <div className='relative h-56'>
           <img src={category.image} alt={category.name} className='h-full w-full object-cover' />
           <div className='absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent' />
@@ -59,7 +60,7 @@ function CategoryDetailModal({ open, category, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

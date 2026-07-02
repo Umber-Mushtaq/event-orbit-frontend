@@ -6,6 +6,7 @@ import SharedTable from "../components/shared/SharedTable";
 import VendorActionMenu from "../components/vendors/VendorActionMenu";
 import VendorFormModal from "../components/vendors/VendorFormModal";
 import VendorDetailModal from "../components/vendors/VendorDetailModal";
+import ModalShell from "../components/shared/ModalShell";
 import { emptyVendorForm, vendorFilters, vendorSortOptions, vendorStatusStyles } from "../data/vendorManagementData";
 import { adminVendorsApi, getAdminErrorMessage } from "../api/adminApi";
 import { mapAdminVendor } from "../utils/adminTransformers";
@@ -229,8 +230,8 @@ function VendorManagementPage() {
       />
 
       {deletingVendor ? (
-        <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm'>
-          <div className='w-full max-w-md rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'>
+        <ModalShell open={Boolean(deletingVendor)} outerClassName='z-[60]' innerClassName='max-w-md'>
+          <div className='rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)] overflow-y-auto'>
             <p className='text-xs font-semibold uppercase tracking-[0.24em] text-border-gold-hover/80'>
               Delete Vendor
             </p>
@@ -255,7 +256,7 @@ function VendorManagementPage() {
               </button>
             </div>
           </div>
-        </div>
+        </ModalShell>
       ) : null}
     </div>
   );

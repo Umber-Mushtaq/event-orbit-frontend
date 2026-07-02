@@ -1,9 +1,11 @@
+import ModalShell from "../shared/ModalShell";
+
 function BlogDeleteModal({ open, title, onCancel, onConfirm }) {
   if (!open) return null;
 
   return (
-    <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm'>
-      <div className='w-full max-w-md rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)]'>
+    <ModalShell open={open} innerClassName='max-w-md'>
+      <div className='rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)] overflow-y-auto'>
         {/* Confirmation modal keeps deletion explicit and reversible. */}
         <p className='text-xs font-semibold uppercase tracking-[0.24em] text-border-gold-hover/80'>
           Delete Blog
@@ -31,7 +33,7 @@ function BlogDeleteModal({ open, title, onCancel, onConfirm }) {
           </button>
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

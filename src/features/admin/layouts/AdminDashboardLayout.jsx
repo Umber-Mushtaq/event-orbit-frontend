@@ -20,7 +20,7 @@ function AdminDashboardLayout() {
 
       <div
         className={`min-h-screen transition-all duration-300 ${
-          layout.isCollapsed ? "lg:pl-[92px]" : "lg:pl-[286px]"
+          layout.isCollapsed ? "lg:pl-[84px]" : "lg:pl-[286px]"
         }`}
       >
         <AdminTopbar

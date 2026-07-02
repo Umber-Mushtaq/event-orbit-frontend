@@ -1,12 +1,13 @@
 import { X, MapPin, Star } from "lucide-react";
 import { vendorStatusStyles } from "../../data/vendorManagementData";
+import ModalShell from "../shared/ModalShell";
 
 function VendorDetailModal({ open, vendor, onClose }) {
   if (!open || !vendor) return null;
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm'>
-      <div className='w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border-gold/15 bg-[#111111] shadow-[0_30px_80px_rgba(0,0,0,0.6)]'>
+    <ModalShell open={open} innerClassName='max-w-2xl'>
+      <div className='overflow-hidden rounded-[2rem] border border-border-gold/15 bg-[#111111] shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)]'>
         <div className='relative h-56 bg-[#0f0f0f]'>
           <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.14),transparent_40%)]' />
           <div className='absolute right-4 top-4'>
@@ -64,7 +65,7 @@ function VendorDetailModal({ open, vendor, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }
 
