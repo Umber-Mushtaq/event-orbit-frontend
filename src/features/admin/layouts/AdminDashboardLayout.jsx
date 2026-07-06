@@ -1,9 +1,9 @@
 import { Outlet, useLocation } from "react-router";
 import { useEffect, useState } from "react";
-import AdminSidebar from "../components/AdminSidebar";
-import AdminTopbar from "../components/AdminTopbar";
-import AdminBreadcrumbs from "../components/AdminBreadcrumbs";
-import { useAdminLayout } from "../hooks/useAdminLayout";
+import AdminSidebar from "../components/adminComponent/AdminSidebar";
+import AdminTopbar from "../components/adminComponent/AdminTopbar";
+import AdminBreadcrumbs from "../components/adminComponent/AdminBreadcrumbs";
+import { useAdminLayout } from "../hooks/admin-hook/useAdminLayout";
 
 function AdminDashboardLayout() {
   const location = useLocation();
