@@ -38,7 +38,7 @@ function VendorManagementPage() {
     try {
       const response = await adminVendorsApi.list({
         search: query,
-        status: filter,
+        status: filter === "All" ? undefined : filter,
         sortBy: sortKey,
         limit: 100,
       });
@@ -194,6 +194,24 @@ function VendorManagementPage() {
     }
   };
 
+  const handleStatusChange = async (vendor, nextStatus) => {
+    if (!vendor?.id) return;
+
+    try {
+      await adminVendorsApi.update(vendor.id, {
+        status: nextStatus,
+        isApproved: nextStatus === "Approved",
+      });
+
+      await loadVendors();
+      setError("");
+    } catch (requestError) {
+      setError(
+        getAdminErrorMessage(requestError, `Failed to mark vendor as ${nextStatus.toLowerCase()}.`),
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <SharedHeader
@@ -236,6 +254,9 @@ function VendorManagementPage() {
         renderActions={(vendor) => (
           <VendorActionMenu
             onView={() => setViewingVendor(vendor)}
+            onApprove={() => handleStatusChange(vendor, "Approved")}
+            onReject={() => handleStatusChange(vendor, "Rejected")}
+            onSuspend={() => handleStatusChange(vendor, "Suspended")}
             onEdit={() => {
               setEditingVendor(vendor);
               setFormOpen(true);

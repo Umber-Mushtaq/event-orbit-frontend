@@ -94,6 +94,18 @@ export const mapAdminCategory = (item = {}) => ({
 export const mapAdminVendor = (item = {}) => ({
   ...item,
   revenue: typeof item.revenue === "number" ? formatAdminCurrency(item.revenue) : item.revenue,
+  status: (() => {
+    const rawStatus = item.status || item.approvalStatus || item.vendorStatus;
+
+    if (typeof rawStatus === "string" && rawStatus.trim()) {
+      return rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase();
+    }
+
+    if (item.isApproved === true) return "Approved";
+    if (item.isApproved === false) return "Pending";
+
+    return "Pending";
+  })(),
 });
 
 export const mapAdminBooking = (item = {}) => ({

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MoreVertical } from "lucide-react";
 
-function VendorActionMenu({ onView, onEdit, onDelete }) {
+function VendorActionMenu({ onView, onApprove, onReject, onSuspend, onEdit, onDelete }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -40,6 +40,9 @@ function VendorActionMenu({ onView, onEdit, onDelete }) {
         <div className='absolute right-0 top-[calc(100%+10px)] z-20 w-44 rounded-3xl border border-border-gold/15 bg-[#111111] p-2 shadow-[0_20px_60px_rgba(0,0,0,0.45)]'>
           {[
             ["View", onView],
+            ["Approve", onApprove],
+            ["Reject", onReject, "danger"],
+            ["Suspend", onSuspend],
             ["Edit", onEdit],
             ["Delete", onDelete, "danger"],
           ].map(([label, action, variant]) => (
