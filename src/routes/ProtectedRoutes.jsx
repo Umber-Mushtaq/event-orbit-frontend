@@ -25,7 +25,7 @@ function ProtectedRoute({ allowedRoles }) {
   }
 
   if (!allowedRoles.includes(user.role)) {
-    return <Navigate to='/unauthorized' replace />;
+    return <Navigate to='/auth/login' replace />;
   }
 
   return <Outlet />;

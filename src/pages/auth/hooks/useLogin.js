@@ -40,7 +40,9 @@ export const useLogin = () => {
       setSuccess("Welcome back! Redirecting...");
 
       setTimeout(() => {
-        if (user.role === "vendor") {
+        if (user.role === "admin") {
+          navigate("/admin/dashboard");
+        } else if (user.role === "vendor") {
           navigate("/vendor/dashboard");
         } else {
           navigate("/customer/dashboard");
