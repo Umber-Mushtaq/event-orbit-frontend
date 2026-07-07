@@ -5,18 +5,28 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: none;
+  background-color: #eaeaea;
+  /* --color-neutral-950: #2b2a2a; */
 }
 
 @theme {
-  --color-glass-gold: rgba(245, 158, 11, 0.1);
-  --color-glass-gold-hover: rgba(245, 158, 11, 0.2);
+  --color-neutral-950: #2b2a2a;
+  --color-neutral-800: #eaeaea;
+
   --color-border-gold: rgba(251, 191, 36, 0.6);
   --color-border-gold-hover: rgb(252, 211, 77);
-  --color-black-bg: #0d0d0d;
-  --color-light-text: #f2f2f2;
+  --color-glass-gold: rgba(245, 158, 11, 0.1);
+  --color-glass-gold-hover: rgba(245, 158, 11, 0.2);
 
-  --shadow-gold-glow: 0 0 15px rgba(251, 191, 36, 0.15);
-  --shadow-gold-glow-hover: 0 0 25px rgba(252, 211, 77, 0.4);
+  --color-light-text: #a8a29e;
+  --color-stone-300: #d6d3d1;
+  --color-stone-400: #a8a29e;
+  --color-stone-500: #78716c;
+
+  --color-emerald-400: #34d399;
+  --color-amber-400: #fbbf24;
+  --color-red-400: #f87171;
+  --color-blue-400: #60a5fa;
 
   --font-montserrat: "Montserrat", sans-serif;
   --font-nunito: "Nunito", sans-serif;
@@ -28,7 +38,12 @@ html {
   --font-sans: "Montserrat", sans-serif;
   --font-display: "Playfair Display SC", serif;
 
-  --animate-shimmer: shimmer 10s infinite linear;
+  --shadow-gold-glow: 0 0 15px rgba(251, 191, 36, 0.15);
+  --shadow-gold-glow-hover: 0 0 25px rgba(252, 211, 77, 0.4);
+
+  --animate-shimmer: shimmer 3s infinite linear;
+  --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-scale-fade: scaleFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   @keyframes shimmer {
     0% {
@@ -38,12 +53,44 @@ html {
       background-position: 200% center;
     }
   }
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes scaleFade {
+    0% {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 }
 
-@layer base {
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(251, 191, 36, 0.25);
+    border-radius: 9999px;
+    border: 1px solid rgba(251, 191, 36, 0.1);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(252, 211, 77, 0.5);
+    box-shadow: 0 0 10px rgba(252, 211, 77, 0.3);
   }
 }

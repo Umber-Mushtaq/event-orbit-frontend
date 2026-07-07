@@ -1,11 +1,5 @@
-function App() {
-  return (
-    <>
-      {/* <LandingPage /> */}
-      {/* <AuthPage /> */}
-      {/* <VendorDashboard /> */}
-    </>
-  );
+import { BrowserRouter, RouterProvider } from "react-router";
+import router from "./routes/routes";
+export default function App() {
+  return <RouterProvider router={router} />;
 }
-
-export default App;
