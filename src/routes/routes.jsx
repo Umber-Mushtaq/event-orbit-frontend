@@ -28,6 +28,12 @@ import ContactPage from "../pages/landing/ContactPage";
 import AboutPage from "../pages/landing/AboutPage";
 import CheckoutPage from "../pages/user/sections/CheckoutPage";
 import CustomerProfile from "../pages/user/sections/CustomerProfile";
+import HelpCenter from "../pages/landing/HelpCenter";
+import {
+  BillingArticlePage,
+  PasswordResetArticlePage,
+  SignupArticlePage,
+} from "../pages/landing/ui/HelpArticle";
 
 const router = createBrowserRouter([
   {
@@ -65,6 +71,22 @@ const router = createBrowserRouter([
       {
         path: "/checkout/:serviceId/vendor/:vendorId",
         element: <CheckoutPage />,
+      },
+      {
+        path: "/help",
+        element: <HelpCenter />,
+      },
+      {
+        path: "/help/signup",
+        element: <SignupArticlePage />,
+      },
+      {
+        path: "/help/password-reset",
+        element: <PasswordResetArticlePage />,
+      },
+      {
+        path: "/help/billing",
+        element: <BillingArticlePage />,
       },
     ],
   },
