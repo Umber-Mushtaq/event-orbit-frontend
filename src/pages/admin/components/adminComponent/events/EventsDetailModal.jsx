@@ -26,7 +26,7 @@ function EventsDetailModal({ open, event, onClose, onDelete }) {
               Event Details
             </p>
             <h2 className="mt-2 text-2xl font-black text-white">
-              {event.name}
+              {event.name || event.title || event.eventName}
             </h2>
             <p className="mt-1 text-sm text-stone-400">{event.id}</p>
           </div>
@@ -43,7 +43,8 @@ function EventsDetailModal({ open, event, onClose, onDelete }) {
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {[
             ["Category", event.category],
-            ["Date", event.date],
+            ["Date", event.eventDateLabel || event.date],
+            ["Time", event.eventTimeLabel || event.eventTime],
             ["Venue", event.venue],
             ["Status", event.status],
             ["Attendees", event.attendees],

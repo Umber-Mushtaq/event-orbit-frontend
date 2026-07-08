@@ -29,7 +29,7 @@ function AdminDashboardLayout() {
           setGlobalSearch={setGlobalSearch}
         />
 
-        <main className='px-4 py-6 md:px-6 lg:px-8'>
+        <main className='px-4 py-6'>
           <AdminBreadcrumbs />
           <div className='animate-page-enter'>
             <Outlet context={{ globalSearch, setGlobalSearch }} />

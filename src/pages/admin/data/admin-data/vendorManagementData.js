@@ -43,7 +43,7 @@ export const vendorStatusStyles = {
   Approved: "border-emerald-500/25 bg-emerald-500/10 text-emerald-300",
   Pending: "border-amber-500/25 bg-amber-500/10 text-amber-300",
   Rejected: "border-red-500/25 bg-red-500/10 text-red-300",
-  Suspended: "border-stone-500/25 bg-stone-500/10 text-stone-300",
+  Suspended: "border-amber-500/25 bg-amber-500/10 text-amber-300",
 };
 
 export const vendorIconMap = {

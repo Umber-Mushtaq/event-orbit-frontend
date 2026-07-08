@@ -1,22 +1,47 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import {
-  Bell,
   ChevronDown,
-  Mail,
-  MoonStar,
-  Plus,
+  Home,
+  KeyRound,
   Search,
+  Settings,
   Sparkles,
   UserCircle2,
+  LogOut,
 } from "lucide-react";
-import { adminDashboardApi, adminProfileApi } from "../../../../services/adminApi";
+import { adminAuthApi, adminProfileApi } from "../../../../services/adminApi";
 
 function Menu({ trigger, children, align = "right" }) {
   const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleOutsideClick = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
 
   return (
-    <div className="relative">
+    <div ref={menuRef} className="relative">
       <div
         role="button"
         tabIndex={0}
@@ -33,7 +58,7 @@ function Menu({ trigger, children, align = "right" }) {
       </div>
       {open ? (
         <div
-          className={`absolute top-[calc(100%+10px)] z-50 w-80 rounded-3xl border border-border-gold/15 bg-[#111111] p-3 shadow-[0_20px_70px_rgba(0,0,0,0.5)] ${
+          className={`absolute top-[calc(100%+10px)] z-50 w-80 rounded-3xl border border-admin-border bg-admin-surface p-3 shadow-[0_20px_70px_rgba(0,0,0,0.5)] ${
             align === "right" ? "right-0" : "left-0"
           }`}
         >
@@ -44,43 +69,19 @@ function Menu({ trigger, children, align = "right" }) {
   );
 }
 
-function AdminTopbar({
-  toggleMobileOpen,
-  globalSearch,
-  setGlobalSearch,
-  themeMode,
-  toggleTheme,
-}) {
-  const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
-  const [messages, setMessages] = useState([]);
+function AdminTopbar({ toggleMobileOpen, globalSearch, setGlobalSearch }) {
   const [profile, setProfile] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
 
     const loadTopbarData = async () => {
       try {
-        const [notificationsRes, messagesRes, profileRes] =
-          await Promise.allSettled([
-            adminDashboardApi.notifications(),
-            adminDashboardApi.messages(),
-            adminProfileApi.get(),
-          ]);
-
+        const profileRes = await adminProfileApi.get();
         if (!active) return;
-
-        if (notificationsRes.status === "fulfilled") {
-          setNotifications(notificationsRes.value.data?.data || []);
-        }
-        if (messagesRes.status === "fulfilled") {
-          setMessages(messagesRes.value.data?.data || []);
-        }
-        if (profileRes.status === "fulfilled") {
-          setProfile(
-            profileRes.value.data?.data || profileRes.value.data?.admin || null,
-          );
-        }
+        setProfile(profileRes.data?.data || profileRes.data?.admin || null);
       } catch {
         if (!active) return;
       }
@@ -93,19 +94,40 @@ function AdminTopbar({
     };
   }, []);
 
-  const notificationCount = useMemo(
-    () => notifications.length,
-    [notifications.length],
-  );
-  const messageCount = useMemo(() => messages.length, [messages.length]);
   const profileName =
     `${profile?.firstName || profile?.name?.split(" ")?.[0] || "Admin"} ${
       profile?.lastName || profile?.name?.split(" ")?.slice(1).join(" ") || ""
     }`.trim();
   const profileRole = profile?.role || "Admin";
 
+  const handleLogout = async () => {
+    try {
+      await adminAuthApi.logout();
+    } catch {
+      // Keep logout resilient even if the API is unavailable.
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      navigate("/auth/login");
+    }
+  };
+
+  const menuItems = useMemo(
+    () => [
+      { label: "Home", icon: Home, to: "/" },
+      { label: "Profile", icon: UserCircle2, to: "/admin/profile" },
+      { label: "Account Settings", icon: Settings, to: "/admin/settings" },
+      {
+        label: "Change Password",
+        icon: KeyRound,
+        to: "/admin/change-password",
+      },
+    ],
+    [],
+  );
+
   return (
-    <header className="sticky top-0 z-30 -mx-4 border-b border-white/5 bg-[#0b0b0b]/85 px-4 py-4 backdrop-blur-xl md:-mx-6 md:px-6 lg:-mx-8 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-white/5 bg-[#0b0b0b]/85 px-4 py-4 backdrop-blur-xl md:px-6 lg:px-8">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex items-center gap-3">
           <button
@@ -130,96 +152,6 @@ function AdminTopbar({
         <div className="flex flex-wrap items-center gap-3">
           <Menu
             trigger={
-              <button className="relative inline-flex rounded-2xl border border-white/10 bg-white/5 p-3 text-white transition hover:border-border-gold/30">
-                <Bell className="h-4 w-4" />
-                <span className="absolute -right-1 -top-1 rounded-full bg-border-gold px-1.5 py-0.5 text-[10px] font-bold text-black">
-                  {notificationCount}
-                </span>
-              </button>
-            }
-          >
-            {({ close }) => (
-              <div className="space-y-3">
-                <p className="px-1 text-xs font-semibold uppercase tracking-[0.2em] text-border-gold-hover/80">
-                  Notifications
-                </p>
-                {notifications.map((item) => (
-                  <button
-                    key={item.id || item.title}
-                    onClick={close}
-                    className="w-full rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left transition hover:border-border-gold/30"
-                  >
-                    <p className="text-sm font-semibold text-white">
-                      {item.title}
-                    </p>
-                    <p className="mt-1 text-xs text-stone-400">
-                      {item.description}
-                    </p>
-                    <p className="mt-2 text-[11px] text-stone-500">
-                      {item.time}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            )}
-          </Menu>
-
-          <Menu
-            trigger={
-              <button className="relative inline-flex rounded-2xl border border-white/10 bg-white/5 p-3 text-white transition hover:border-border-gold/30">
-                <Mail className="h-4 w-4" />
-                <span className="absolute -right-1 -top-1 rounded-full bg-emerald-400 px-1.5 py-0.5 text-[10px] font-bold text-black">
-                  {messageCount}
-                </span>
-              </button>
-            }
-          >
-            {({ close }) => (
-              <div className="space-y-3">
-                <p className="px-1 text-xs font-semibold uppercase tracking-[0.2em] text-border-gold-hover/80">
-                  Messages
-                </p>
-                {messages.map((item) => (
-                  <button
-                    key={item.id || item.title}
-                    onClick={close}
-                    className="w-full rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left transition hover:border-border-gold/30"
-                  >
-                    <p className="text-sm font-semibold text-white">
-                      {item.title}
-                    </p>
-                    <p className="mt-1 text-xs text-stone-400">
-                      {item.description}
-                    </p>
-                    <p className="mt-2 text-[11px] text-stone-500">
-                      {item.time}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            )}
-          </Menu>
-
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-border-gold/30"
-          >
-            <MoonStar className="h-4 w-4 text-border-gold-hover" />
-            {themeMode === "midnight" ? "Midnight" : "Obsidian"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate("/admin/events")}
-            className="inline-flex items-center gap-2 rounded-2xl border border-border-gold/25 bg-glass-gold px-4 py-3 text-sm font-semibold text-border-gold-hover shadow-gold-glow transition hover:border-border-gold/40 hover:bg-glass-gold-hover"
-          >
-            <Plus className="h-4 w-4" />
-            Add Event
-          </button>
-
-          <Menu
-            trigger={
               <button className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white transition hover:border-border-gold/30">
                 <div className="h-9 w-9 overflow-hidden rounded-2xl border border-border-gold/20 bg-black/30">
                   <UserCircle2 className="h-full w-full p-1.5 text-border-gold-hover" />
@@ -236,19 +168,43 @@ function AdminTopbar({
           >
             {({ close }) => (
               <div className="space-y-2">
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive =
+                    item.to === "/"
+                      ? location.pathname === "/"
+                      : location.pathname === item.to ||
+                        location.pathname.startsWith(`${item.to}/`);
+
+                  return (
+                    <button
+                      key={item.to}
+                      type="button"
+                      onClick={() => {
+                        close();
+                        navigate(item.to);
+                      }}
+                      className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                        isActive
+                          ? "border-border-gold/30 bg-glass-gold text-white"
+                          : "border-white/8 bg-white/5 text-stone-200 hover:border-border-gold/30 hover:text-white"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 text-border-gold-hover" />
+                      {item.label}
+                    </button>
+                  );
+                })}
                 <button
                   type="button"
-                  onClick={close}
-                  className="w-full rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left text-sm text-stone-200 transition hover:border-border-gold/30 hover:text-white"
+                  onClick={async () => {
+                    close();
+                    await handleLogout();
+                  }}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-stone-200 transition hover:border-red-400/30 hover:text-white"
                 >
-                  Profile settings
-                </button>
-                <button
-                  type="button"
-                  onClick={close}
-                  className="w-full rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left text-sm text-stone-200 transition hover:border-border-gold/30 hover:text-white"
-                >
-                  Workspace preferences
+                  <LogOut className="h-4 w-4 text-border-gold-hover" />
+                  Logout
                 </button>
               </div>
             )}

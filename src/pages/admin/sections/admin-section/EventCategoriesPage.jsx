@@ -9,7 +9,10 @@ import {
   categoryIconOptions,
   emptyCategoryForm,
 } from "../../data/admin-data/eventCategoriesData";
-import { adminCategoriesApi, getAdminErrorMessage } from "../../../../services/adminApi";
+import {
+  adminCategoriesApi,
+  getAdminErrorMessage,
+} from "../../../../services/adminApi";
 import { mapAdminCategory } from "../../../../utils/adminTransformers";
 
 function EventCategoriesPage() {
@@ -44,7 +47,16 @@ function EventCategoriesPage() {
   }, [query, sortKey]);
 
   useEffect(() => {
-    loadCategories();
+    let mounted = true;
+    // schedule the load on next microtask to avoid synchronous setState inside effect
+    Promise.resolve().then(() => {
+      if (mounted) {
+        loadCategories();
+      }
+    });
+    return () => {
+      mounted = false;
+    };
   }, [loadCategories]);
 
   const rows = useMemo(() => {
