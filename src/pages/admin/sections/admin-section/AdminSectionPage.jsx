@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { adminSectionCopy } from "../../data/admin-data/adminNavigationData";
 import EventCategoriesPage from "./EventCategoriesPage";
 import EventsManagementPage from "./EventsManagementPage";
-import BookingManagementPage from "./BookingManagementPage";
 import CalendarManagementPage from "./CalendarManagementPage";
 import VendorManagementPage from "./VendorManagementPage";
 import RevenueAnalyticsChart from "../../components/adminComponent/RevenueAnalyticsChart";
@@ -119,8 +118,6 @@ function AdminSectionPage({ sectionKey }) {
         return <EventCategoriesPage />;
       case "vendors":
         return <VendorManagementPage />;
-      case "bookings":
-        return <BookingManagementPage />;
       case "analytics":
         return (
           <section className="grid gap-6">

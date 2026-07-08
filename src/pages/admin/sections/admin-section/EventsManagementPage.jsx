@@ -6,7 +6,10 @@ import EventsToolbar from "../../components/adminComponent/events/EventsToolbar"
 import EventsTable from "../../components/adminComponent/events/EventsTable";
 import EventsDetailModal from "../../components/adminComponent/events/EventsDetailModal";
 import EventFormModal from "../../components/adminComponent/events/EventFormModal";
-import { adminEventsApi, getAdminErrorMessage } from "../../../../services/adminApi";
+import {
+  adminEventsApi,
+  getAdminErrorMessage,
+} from "../../../../services/adminApi";
 import { mapAdminEvents } from "../../../../utils/adminTransformers";
 
 function EventsManagementPage() {
@@ -42,7 +45,14 @@ function EventsManagementPage() {
   }, [activeFilter, globalSearch, searchQuery]);
 
   useEffect(() => {
-    loadEvents();
+    let mounted = true;
+    // schedule loadEvents on next microtask to avoid synchronous setState inside effect
+    Promise.resolve().then(() => {
+      if (mounted) loadEvents();
+    });
+    return () => {
+      mounted = false;
+    };
   }, [loadEvents]);
 
   const filteredRows = useMemo(() => {
@@ -93,6 +103,7 @@ function EventsManagementPage() {
         await adminEventsApi.create(payload);
       }
       await loadEvents();
+      window.dispatchEvent(new Event("admin-events-updated"));
       setCreateOpen(false);
       setSelectedEvent(null);
       setEditingEvent(null);
@@ -108,6 +119,7 @@ function EventsManagementPage() {
       const target = selectedEvent || editingEvent;
       await adminEventsApi.remove(target.id);
       await loadEvents();
+      window.dispatchEvent(new Event("admin-events-updated"));
       setSelectedEvent(null);
       setEditingEvent(null);
     } catch (requestError) {
