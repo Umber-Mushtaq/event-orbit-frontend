@@ -3,13 +3,10 @@ export const adminNavigation = [
   { label: "Events", path: "/admin/events", icon: "calendar-days" },
   { label: "Service Categories", path: "/admin/event-categories", icon: "tags" },
   { label: "Vendors", path: "/admin/vendors", icon: "store" },
-  { label: "Bookings", path: "/admin/bookings", icon: "calendar-check-2" },
   { label: "Blog", path: "/admin/blog", icon: "file-text" },
   { label: "Users", path: "/admin/users", icon: "users" },
   { label: "Analytics", path: "/admin/analytics", icon: "bar-chart-3" },
   { label: "Calendar", path: "/admin/calendar", icon: "calendar-range" },
-  { label: "Notifications", path: "/admin/notifications", icon: "bell" },
-  { label: "Settings", path: "/admin/settings", icon: "settings" },
 ];
 
 export const adminSectionCopy = {
@@ -28,10 +25,6 @@ export const adminSectionCopy = {
   vendors: {
     title: "Vendors",
     description: "Review vendor onboarding, performance, and approval status.",
-  },
-  bookings: {
-    title: "Bookings",
-    description: "Monitor reservation flow, confirmations, and cancellations.",
   },
   users: {
     title: "Users",

@@ -80,6 +80,10 @@ export const adminVendorsApi = {
   remove: (id) => adminApi.delete(`/api/admin/vendors/${id}`),
 };
 
+export const adminVenuesApi = {
+  list: (params) => adminApi.get("/api/admin/venues", { params: buildParams(params) }),
+};
+
 export const adminBookingsApi = {
   list: (params) => adminApi.get("/api/admin/bookings", { params: buildParams(params) }),
   getById: (id) => adminApi.get(`/api/admin/bookings/${id}`),
@@ -111,6 +115,18 @@ export const adminSettingsApi = {
 
 export const adminProfileApi = {
   get: () => adminApi.get("/api/admin/profile"),
-  update: (payload) => adminApi.patch("/api/admin/profile", payload),
+  update: (payload) => {
+    const isFormData =
+      typeof FormData !== "undefined" && payload instanceof FormData;
+
+    return adminApi.patch(
+      "/api/admin/profile",
+      payload,
+      isFormData
+        ? { headers: { "Content-Type": "multipart/form-data" } }
+        : undefined,
+    );
+  },
   updatePreferences: (payload) => adminApi.patch("/api/admin/profile/preferences", payload),
+  changePassword: (payload) => adminApi.patch("/api/admin/profile/password", payload),
 };

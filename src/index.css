@@ -9,7 +9,29 @@ html {
   /* --color-neutral-950: #2b2a2a; */
 }
 
+:root {
+  --admin-background: #0b0b0b;
+  --admin-surface: #111111;
+  --admin-surface-2: #151515;
+  --admin-surface-3: #1a1a1a;
+  --admin-foreground: #ffffff;
+  --admin-muted: #a8a29e;
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-border-strong: rgba(251, 191, 36, 0.22);
+  --admin-input: rgba(255, 255, 255, 0.05);
+}
+
 @theme {
+  --color-admin-background: var(--admin-background);
+  --color-admin-surface: var(--admin-surface);
+  --color-admin-surface-2: var(--admin-surface-2);
+  --color-admin-surface-3: var(--admin-surface-3);
+  --color-admin-foreground: var(--admin-foreground);
+  --color-admin-muted: var(--admin-muted);
+  --color-admin-border: var(--admin-border);
+  --color-admin-border-strong: var(--admin-border-strong);
+  --color-admin-input: var(--admin-input);
+
   --color-neutral-950: #2b2a2a;
   --color-neutral-800: #eaeaea;
 
@@ -93,4 +115,34 @@ html {
     background: rgba(252, 211, 77, 0.5);
     box-shadow: 0 0 10px rgba(252, 211, 77, 0.3);
   }
+}
+
+.admin-date-input {
+  color-scheme: dark;
+}
+
+.admin-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(1) brightness(1.1);
+  opacity: 0.95;
+}
+
+.admin-date-input::-webkit-inner-spin-button,
+.admin-date-input::-webkit-clear-button {
+  display: none;
+}
+
+.admin-time-input {
+  color-scheme: dark;
+}
+
+.admin-time-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(1) brightness(1.1);
+  opacity: 0.95;
+}
+
+.admin-time-input::-webkit-inner-spin-button,
+.admin-time-input::-webkit-clear-button {
+  display: none;
 }

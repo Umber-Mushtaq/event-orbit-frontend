@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { MapPin, Search, Star } from "lucide-react";
 import VendorActionMenu from "./VendorActionMenu";
 import {
@@ -5,6 +6,37 @@ import {
   vendorSortOptions,
   vendorStatusStyles,
 } from "../../../data/admin-data/vendorManagementData";
+
+const getVendorInitials = (name = "") =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase() || "V";
+
+function VendorAvatar({ src, name, className = "" }) {
+  const [hasError, setHasError] = useState(false);
+  const initials = getVendorInitials(name);
+
+  return (
+    <div className={`relative overflow-hidden rounded-2xl ring-1 ring-white/10 ${className}`}>
+      {src && !hasError ? (
+        <img
+          src={src}
+          alt={name}
+          onError={() => setHasError(true)}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,rgba(243,200,92,0.2),rgba(17,17,17,0.95))] text-[11px] font-black uppercase tracking-[0.18em] text-border-gold-hover">
+          {initials}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function VendorsTable({
   rows = [],
@@ -86,10 +118,10 @@ function VendorsTable({
                   <tr key={vendor.id} className='bg-black/10 transition-colors hover:bg-white/3'>
                     <td className='px-4 py-4'>
                       <div className='flex items-center gap-3'>
-                        <img
+                        <VendorAvatar
                           src={vendor.avatar}
-                          alt={vendor.name}
-                          className='h-10 w-10 rounded-2xl object-cover ring-1 ring-white/10'
+                          name={vendor.name}
+                          className='h-10 w-10 shrink-0'
                         />
                         <div>
                           <p className='font-semibold text-white'>{vendor.name}</p>

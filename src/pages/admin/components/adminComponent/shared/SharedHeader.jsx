@@ -2,10 +2,10 @@ function SharedHeader({ title, description, actionLabel, onAction, actionIcon: A
   return (
     <section className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
       <div>
-        <h1 className='text-3xl font-black tracking-tight text-white md:text-4xl'>
+        <h1 className='text-3xl font-black tracking-tight text-admin-foreground md:text-4xl'>
           {title}
         </h1>
-        <p className='mt-2 text-sm text-stone-400'>{description}</p>
+        <p className='mt-2 text-sm text-admin-muted'>{description}</p>
       </div>
       {actionLabel ? (
         <button

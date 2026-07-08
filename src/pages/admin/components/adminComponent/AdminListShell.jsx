@@ -1,4 +1,4 @@
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { iconMap } from "./adminIconMap";
 
 function StatTile({ item }) {
@@ -29,7 +29,7 @@ function AdminListShell({
   description,
   actionLabel,
   onAction,
-  actionIcon = ChevronDown,
+  actionIcon = Plus,
   stats = [],
   children,
 }) {

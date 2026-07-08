@@ -33,11 +33,12 @@ import AdminDashboardOverview from "../pages/admin/sections/admin-section/AdminD
 import AdminSectionPage from "../pages/admin/sections/admin-section/AdminSectionPage";
 import EventCategoriesPage from "../pages/admin/sections/admin-section/EventCategoriesPage";
 import EventsManagementPage from "../pages/admin/sections/admin-section/EventsManagementPage";
-import BookingManagementPage from "../pages/admin/sections/admin-section/BookingManagementPage";
 import CalendarManagementPage from "../pages/admin/sections/admin-section/CalendarManagementPage";
 import VendorManagementPage from "../pages/admin/sections/admin-section/VendorManagementPage";
 import UserManagementPage from "../pages/admin/sections/admin-section/UserManagementPage";
 import SettingsManagementPage from "../pages/admin/sections/admin-section/SettingsManagementPage";
+import AdminProfilePage from "../pages/admin/sections/admin-section/AdminProfilePage";
+import AdminChangePasswordPage from "../pages/admin/sections/admin-section/AdminChangePasswordPage";
 import BlogListingPage from "../pages/admin/sections/admin-section/blog/BlogListingPage";
 import BlogDetailsPage from "../pages/admin/sections/admin-section/blog/BlogDetailsPage";
 import BlogFormPage from "../pages/admin/sections/admin-section/blog/BlogFormPage";
@@ -125,7 +126,6 @@ const router = createBrowserRouter([
           { path: "events", element: <EventsManagementPage /> },
           { path: "event-categories", element: <EventCategoriesPage /> },
           { path: "vendors", element: <VendorManagementPage /> },
-          { path: "bookings", element: <BookingManagementPage /> },
           { path: "users", element: <UserManagementPage /> },
           {
             path: "analytics",
@@ -140,6 +140,8 @@ const router = createBrowserRouter([
             path: "notifications",
             element: <AdminSectionPage sectionKey="notifications" />,
           },
+          { path: "profile", element: <AdminProfilePage /> },
+          { path: "change-password", element: <AdminChangePasswordPage /> },
           { path: "settings", element: <SettingsManagementPage /> },
         ],
       },

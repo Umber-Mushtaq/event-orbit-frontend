@@ -7,13 +7,14 @@ const titleMap = {
   "/admin/events": "Events",
   "/admin/event-categories": "Event Categories",
   "/admin/vendors": "Vendors",
-  "/admin/bookings": "Bookings",
   "/admin/users": "Users",
   "/admin/analytics": "Analytics",
   "/admin/calendar": "Calendar",
   "/admin/blog": "Blogs",
   "/admin/blog/add": "Add Blog",
   "/admin/notifications": "Notifications",
+  "/admin/profile": "Profile",
+  "/admin/change-password": "Change Password",
   "/admin/settings": "Settings",
 };
 
@@ -24,9 +25,10 @@ function AdminBreadcrumbs() {
     pathname === "/admin/events" ||
     pathname === "/admin/event-categories" ||
     pathname === "/admin/vendors" ||
-    pathname === "/admin/bookings" ||
     pathname === "/admin/users" ||
     pathname === "/admin/calendar" ||
+    pathname === "/admin/profile" ||
+    pathname === "/admin/change-password" ||
     pathname === "/admin/settings"
   ) {
     return null;
