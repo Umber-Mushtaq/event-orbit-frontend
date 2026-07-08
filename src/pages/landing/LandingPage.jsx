@@ -7,17 +7,22 @@ import LandingSteps from "./ui/LandingPageSteps";
 import LandingPageVerifiedVendors from "./ui/LandingPageVerifiedVendors";
 import ContactSection from "./ui/ContactSection";
 import FAQSection from "./ui/FAQSection";
+import SEO from "../../shared_components/SEO";
 function LandingPage() {
   return (
     <>
+      <SEO
+        title="Home | Event Orbit"
+        description="Discover and plan unforgettable events with Event Orbit."
+      />
       <section
-        className='relative flex flex-col items-center justify-center text-center py-32 px-6 bg-cover bg-no-repeat bg-center'
+        className="relative flex flex-col items-center justify-center text-center py-32 px-6 bg-cover bg-no-repeat bg-center"
         style={{
           backgroundImage: `url(${HeroBg})`,
         }}
       >
-        <div className='absolute inset-0 bg-black/60'></div>
-        <div className='relative z-10 max-w-5xl'>
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative z-10 max-w-5xl">
           <LandingPageTypography />
           <LandingPageSearchFilter />
         </div>
