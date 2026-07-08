@@ -4,6 +4,7 @@ import {
   FacebookSvg,
   EmailSvg,
 } from "../../../shared_components/SocialIcons";
+import { Link } from "react-router";
 
 function LandingPageFooter() {
   return (
@@ -78,6 +79,11 @@ function LandingPageFooter() {
               <a href='#' className='hover:text-amber-700 transition'>
                 FAQs
               </a>
+            </li>
+            <li>
+              <Link to='/help' className='hover:text-amber-700 transition'>
+                Help Center
+              </Link>
             </li>
           </ul>
         </div>
