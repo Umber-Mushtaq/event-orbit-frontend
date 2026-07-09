@@ -8,6 +8,8 @@ import { Link } from "react-router";
 function LandingPageVerifiedVendors() {
   const { vendors, loading, error } = useVerifiedVendors();
 
+  console.log("vendors-----", vendors);
+
   if (loading) return <CustomLoading msg='Loading Categories...' />;
   if (error) return <CustomError msg={error} />;
 

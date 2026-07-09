@@ -7,6 +7,9 @@ export const useRegister = () => {
     lastName: "",
     email: "",
     password: "",
+    businessName: "",
+    businessDescription: "",
+    profileImage: "",
   });
   const [isVendor, setIsVendor] = useState(false);
   const [error, setError] = useState("");
@@ -14,8 +17,12 @@ export const useRegister = () => {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, files } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
   };
 
   const handleCheckboxChange = (e) => {
@@ -31,26 +38,50 @@ export const useRegister = () => {
     const targetRole = isVendor ? "vendor" : "customer";
 
     try {
+      const dataToSend = new FormData();
+
+      dataToSend.append("firstName", formData.firstName);
+      dataToSend.append("lastName", formData.lastName);
+      dataToSend.append("email", formData.email);
+      dataToSend.append("password", formData.password);
+      dataToSend.append("role", targetRole);
+
+      if (isVendor) {
+        dataToSend.append("businessName", formData.businessName);
+        dataToSend.append("businessDescription", formData.businessDescription);
+
+        if (formData.profileImage) {
+          dataToSend.append("profileImage", formData.profileImage);
+        }
+      }
+
       const response = await axios.post(
         "http://localhost:5000/api/auth/register",
+        dataToSend,
         {
-          ...formData,
-          role: targetRole,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
       );
 
-      // Handle raw response message string or fallback directly
       setSuccess(
         response.data.message || "Registration completed successfully!",
       );
 
-      // If customer registers, save token immediately to storage
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
       }
 
-      // Clear layout fields on successful submission
-      setFormData({ firstName: "", lastName: "", email: "", password: "" });
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        businessName: "",
+        businessDescription: "",
+        profileImage: "",
+      });
       setIsVendor(false);
     } catch (err) {
       setError(
