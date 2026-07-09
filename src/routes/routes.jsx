@@ -28,6 +28,20 @@ import ContactPage from "../pages/landing/ContactPage";
 import AboutPage from "../pages/landing/AboutPage";
 import CheckoutPage from "../pages/user/sections/CheckoutPage";
 import CustomerProfile from "../pages/user/sections/CustomerProfile";
+import AdminDashboardLayout from "../pages/admin/layouts/AdminDashboardLayout";
+import AdminDashboardOverview from "../pages/admin/sections/admin-section/AdminDashboardOverview";
+import AdminSectionPage from "../pages/admin/sections/admin-section/AdminSectionPage";
+import EventCategoriesPage from "../pages/admin/sections/admin-section/EventCategoriesPage";
+import EventsManagementPage from "../pages/admin/sections/admin-section/EventsManagementPage";
+import CalendarManagementPage from "../pages/admin/sections/admin-section/CalendarManagementPage";
+import VendorManagementPage from "../pages/admin/sections/admin-section/VendorManagementPage";
+import UserManagementPage from "../pages/admin/sections/admin-section/UserManagementPage";
+import SettingsManagementPage from "../pages/admin/sections/admin-section/SettingsManagementPage";
+import AdminProfilePage from "../pages/admin/sections/admin-section/AdminProfilePage";
+import AdminChangePasswordPage from "../pages/admin/sections/admin-section/AdminChangePasswordPage";
+import BlogListingPage from "../pages/admin/sections/admin-section/blog/BlogListingPage";
+import BlogDetailsPage from "../pages/admin/sections/admin-section/blog/BlogDetailsPage";
+import BlogFormPage from "../pages/admin/sections/admin-section/blog/BlogFormPage";
 import HelpCenter from "../pages/landing/HelpCenter";
 import {
   BillingArticlePage,
@@ -94,7 +108,7 @@ const router = createBrowserRouter([
     path: "/auth",
     element: <AuthLayout />,
     children: [
-      { index: true, element: <Navigate to='login' replace /> },
+      { index: true, element: <Navigate to="login" replace /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "forgot-password", element: <ForgotPassword /> },
@@ -105,7 +119,7 @@ const router = createBrowserRouter([
     path: "/vendor",
     element: <ProtectedRoute allowedRoles={["vendor"]} />,
     children: [
-      { index: true, element: <Navigate to='dashboard' replace /> },
+      { index: true, element: <Navigate to="dashboard" replace /> },
       {
         path: "dashboard",
         element: <DashboardLayout />,
@@ -123,10 +137,43 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/admin",
+    element: <ProtectedRoute allowedRoles={["admin"]} />,
+    children: [
+      {
+        element: <AdminDashboardLayout />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <AdminDashboardOverview /> },
+          { path: "events", element: <EventsManagementPage /> },
+          { path: "event-categories", element: <EventCategoriesPage /> },
+          { path: "vendors", element: <VendorManagementPage /> },
+          { path: "users", element: <UserManagementPage /> },
+          {
+            path: "analytics",
+            element: <AdminSectionPage sectionKey="analytics" />,
+          },
+          { path: "calendar", element: <CalendarManagementPage /> },
+          { path: "blog", element: <BlogListingPage /> },
+          { path: "blog/add", element: <BlogFormPage mode="create" /> },
+          { path: "blog/:blogId", element: <BlogDetailsPage /> },
+          { path: "blog/:blogId/edit", element: <BlogFormPage mode="edit" /> },
+          {
+            path: "notifications",
+            element: <AdminSectionPage sectionKey="notifications" />,
+          },
+          { path: "profile", element: <AdminProfilePage /> },
+          { path: "change-password", element: <AdminChangePasswordPage /> },
+          { path: "settings", element: <SettingsManagementPage /> },
+        ],
+      },
+    ],
+  },
+  {
     path: "/customer",
     element: <ProtectedRoute allowedRoles={["customer"]} />,
     children: [
-      { index: true, element: <Navigate to='dashboard' replace /> },
+      { index: true, element: <Navigate to="dashboard" replace /> },
       {
         path: "dashboard",
         element: <UserDashboardLayout />,

@@ -28,7 +28,6 @@ export const useRegister = () => {
     setSuccess("");
     setLoading(true);
 
-    // Determine the string role based on the checkbox state
     const targetRole = isVendor ? "vendor" : "customer";
 
     try {
