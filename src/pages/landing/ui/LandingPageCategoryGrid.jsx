@@ -11,8 +11,11 @@ function LandingPageCategoriesGrid() {
   console.log(categories);
   const navigate = useNavigate();
 
-  const handleCategoryClick = (categoryId) => {
-    const params = new URLSearchParams({ category: categoryId }).toString();
+  const handleCategoryClick = (categoryId, categoryName) => {
+    const params = new URLSearchParams({
+      name: categoryName,
+      category: categoryId,
+    }).toString();
     navigate(`/services?${params}`);
   };
 
@@ -27,7 +30,7 @@ function LandingPageCategoriesGrid() {
         {categories.map((cat) => (
           <div
             key={cat.id}
-            onClick={() => handleCategoryClick(cat.id)}
+            onClick={() => handleCategoryClick(cat.id, cat.name)}
             className='group relative rounded-xl overflow-hidden shadow-gold-glow hover:shadow-gold-glow-hover transition-all duration-500 border border-border-gold h-64 w-full cursor-pointer'
           >
             <div

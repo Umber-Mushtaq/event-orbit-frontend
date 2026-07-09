@@ -42,6 +42,12 @@ import AdminChangePasswordPage from "../pages/admin/sections/admin-section/Admin
 import BlogListingPage from "../pages/admin/sections/admin-section/blog/BlogListingPage";
 import BlogDetailsPage from "../pages/admin/sections/admin-section/blog/BlogDetailsPage";
 import BlogFormPage from "../pages/admin/sections/admin-section/blog/BlogFormPage";
+import HelpCenter from "../pages/landing/HelpCenter";
+import {
+  BillingArticlePage,
+  PasswordResetArticlePage,
+  SignupArticlePage,
+} from "../pages/landing/ui/HelpArticle";
 
 const router = createBrowserRouter([
   {
@@ -79,6 +85,22 @@ const router = createBrowserRouter([
       {
         path: "/checkout/:serviceId/vendor/:vendorId",
         element: <CheckoutPage />,
+      },
+      {
+        path: "/help",
+        element: <HelpCenter />,
+      },
+      {
+        path: "/help/signup",
+        element: <SignupArticlePage />,
+      },
+      {
+        path: "/help/password-reset",
+        element: <PasswordResetArticlePage />,
+      },
+      {
+        path: "/help/billing",
+        element: <BillingArticlePage />,
       },
     ],
   },
