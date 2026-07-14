@@ -26,13 +26,15 @@ function LandingSteps() {
     },
   ];
   return (
-    <section className='py-20 px-6 md:px-16 lg:px-24 w-full flex flex-col items-center relative overflow-hidden bg-neutral-950'>
-      <CustomHeader
-        badge='How It Works'
-        title='Book Your Wedding in 3 simple steps.'
-      />
+    <section className='py-20 px-5 w-full flex flex-col items-center relative overflow-hidden bg-neutral-950'>
+      <div className='w-full max-w-7xl mx-auto'>
+        <CustomHeader
+          badge='How It Works'
+          title='Book Your Wedding in 3 simple steps.'
+        />
+      </div>
 
-      <div className=' flex flex-col lg:flex-row gap-8 lg:gap-6 items-center justify-between w-full max-w-6xl z-10 '>
+      <div className=' flex flex-col lg:flex-row gap-8 lg:gap-6 items-center justify-between w-full max-w-7xl mx-auto z-10 '>
         {STEPS_DATA.map((step, index) => {
           const IconComponent = step.Icon;
           return (

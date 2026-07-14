@@ -5,7 +5,7 @@ function ContactSection() {
   return (
     <div className='flex items-center justify-center py-20'>
       <section
-        className='relative w-full md:w-5xl h-[70vh] md:rounded-2xl overflow-hidden flex items-center justify-center text-center bg-cover bg-no-repeat bg-center'
+        className='relative w-full md:w-7xl h-[70vh] md:rounded-2xl overflow-hidden flex items-center justify-center text-center bg-cover bg-no-repeat bg-center'
         style={{
           backgroundImage: `url(${contactBG})`,
         }}

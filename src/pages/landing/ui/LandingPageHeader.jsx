@@ -1,20 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppLogo from "../../../shared_components/AppLogo";
 import { NavLink } from "react-router";
 
 function LandingPageHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
+
+  const isLoggedIn = localStorage.getItem("token");
+  const userString = localStorage.getItem("user");
+
+  const getDashboardPath = () => {
+    if (!isLoggedIn || !userString) return "/auth";
+
+    try {
+      const user = JSON.parse(userString);
+      const role = user.role?.toLowerCase();
+
+      if (role === "admin") return "/admin/dashboard";
+      if (role === "vendor") return "/vendor/dashboard";
+      if (role === "customer") return "/customer/dashboard";
+
+      return "/dashboard";
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+      return "/auth";
+    }
+  };
+
+  const dashboardPath = getDashboardPath();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const linkClasses = ({ isActive }) =>
     `transition ${
       isActive
-        ? "border-b-2 border-amber-400 font-semibold drop-shadow-md"
-        : "hover:text-amber-400"
+        ? "border-b-2 border-amber-400 font-semibold drop-shadow-md text-amber-400"
+        : "text-white hover:text-amber-400"
     }`;
 
   return (
-    <header className='sticky top-0 z-1000 flex items-center text-neutral-900 bg-neutral-800 justify-between px-6 py-4 border-b border-border-gold shadow-md'>
+    <header
+      className={`sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-all duration-300 ${
+        isSticky
+          ? "bg-neutral-900/70 backdrop-blur-md border-b border-border-gold shadow-md"
+          : "bg-neutral-900 border-b border-border-gold "
+      }`}
+    >
       <AppLogo />
+
       <nav className='hidden md:flex flex-1 justify-center space-x-6 font-medium'>
         <NavLink to='/' className={linkClasses}>
           Home
@@ -33,10 +77,9 @@ function LandingPageHeader() {
         </NavLink>
       </nav>
 
-      {/* Desktop Login */}
       <div className='hidden md:block'>
         <NavLink
-          to='/auth'
+          to={isLoggedIn ? dashboardPath : "/auth"}
           className={({ isActive }) =>
             `px-4 py-2 rounded-md font-semibold shadow-gold-glow transition ${
               isActive
@@ -45,15 +88,14 @@ function LandingPageHeader() {
             }`
           }
         >
-          Login
+          {isLoggedIn ? "Dashboard" : "Login"}
         </NavLink>
       </div>
 
-      {/* Mobile Hamburger */}
       <div className='md:hidden'>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className='text-neutral-900 hover:text-amber-400 transition'
+          className='text-white hover:text-amber-400 transition'
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -81,9 +123,8 @@ function LandingPageHeader() {
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
       {menuOpen && (
-        <div className='absolute top-full left-0 w-full bg-neutral-800 shadow-md md:hidden z-50'>
+        <div className='absolute top-full left-0 w-full bg-neutral-900/95 backdrop-blur-lg shadow-md md:hidden z-50'>
           <nav className='flex flex-col px-5 space-y-4 py-6 font-medium'>
             <NavLink to='/' className={linkClasses}>
               Home
@@ -100,9 +141,8 @@ function LandingPageHeader() {
             <NavLink to='/contact' className={linkClasses}>
               Contact
             </NavLink>
-            {/* Mobile Login */}
             <NavLink
-              to='/auth'
+              to={isLoggedIn ? dashboardPath : "/auth"}
               className={({ isActive }) =>
                 `px-4 py-2 rounded-md text-center font-semibold shadow-gold-glow transition ${
                   isActive
@@ -111,7 +151,7 @@ function LandingPageHeader() {
                 }`
               }
             >
-              Login
+              {isLoggedIn ? "Dashboard" : "Login"}
             </NavLink>
           </nav>
         </div>
