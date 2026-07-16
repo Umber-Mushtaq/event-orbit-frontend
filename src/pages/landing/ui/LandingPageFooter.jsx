@@ -81,6 +81,11 @@ function LandingPageFooter() {
               </a>
             </li>
             <li>
+              <Link to='/blog' className='hover:text-amber-700 transition'>
+                Blog
+              </Link>
+            </li>
+            <li>
               <Link to='/help' className='hover:text-amber-700 transition'>
                 Help Center
               </Link>

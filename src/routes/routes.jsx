@@ -28,6 +28,8 @@ import ContactPage from "../pages/landing/ContactPage";
 import AboutPage from "../pages/landing/AboutPage";
 import CheckoutPage from "../pages/user/sections/CheckoutPage";
 import CustomerProfile from "../pages/user/sections/CustomerProfile";
+import BlogListingPage from "../pages/blog/BlogListingPage";
+import PublicBlogDetailPage from "../pages/blog/PublicBlogDetailPage";
 import HelpCenter from "../pages/landing/HelpCenter";
 import {
   BillingArticlePage,
@@ -45,7 +47,7 @@ import UserManagementPage from "../pages/admin/sections/admin-section/UserManage
 import SettingsManagementPage from "../pages/admin/sections/admin-section/SettingsManagementPage";
 import AdminProfilePage from "../pages/admin/sections/admin-section/AdminProfilePage";
 import AdminChangePasswordPage from "../pages/admin/sections/admin-section/AdminChangePasswordPage";
-import BlogListingPage from "../pages/admin/sections/admin-section/blog/BlogListingPage";
+import AdminBlogListingPage from "../pages/admin/sections/admin-section/blog/BlogListingPage";
 import BlogDetailsPage from "../pages/admin/sections/admin-section/blog/BlogDetailsPage";
 import BlogFormPage from "../pages/admin/sections/admin-section/blog/BlogFormPage";
 
@@ -85,6 +87,14 @@ const router = createBrowserRouter([
       {
         path: "/checkout/:serviceId/vendor/:vendorId",
         element: <CheckoutPage />,
+      },
+      {
+        path: "/blog",
+        element: <BlogListingPage />,
+      },
+      {
+        path: "/blog/:slug",
+        element: <PublicBlogDetailPage />,
       },
       {
         path: "/help",
@@ -154,7 +164,7 @@ const router = createBrowserRouter([
             element: <AdminSectionPage sectionKey="analytics" />,
           },
           { path: "calendar", element: <CalendarManagementPage /> },
-          { path: "blog", element: <BlogListingPage /> },
+          { path: "blog", element: <AdminBlogListingPage /> },
           { path: "blog/add", element: <BlogFormPage mode="create" /> },
           { path: "blog/:blogId", element: <BlogDetailsPage /> },
           { path: "blog/:blogId/edit", element: <BlogFormPage mode="edit" /> },

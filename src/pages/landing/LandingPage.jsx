@@ -4,6 +4,7 @@ import HeroBg from "../../assets/hero_bg.jpg";
 import LandingPageCategoriesGrid from "./ui/LandingPageCategoryGrid";
 import LandingPageStatistics from "./ui/LandingPageStatistics";
 import LandingSteps from "./ui/LandingPageSteps";
+import LandingPageBlogSection from "./ui/LandingPageBlogSection";
 import LandingPageVerifiedVendors from "./ui/LandingPageVerifiedVendors";
 import ContactSection from "./ui/ContactSection";
 import FAQSection from "./ui/FAQSection";
@@ -26,6 +27,7 @@ function LandingPage() {
       <LandingPageVerifiedVendors />
       <LandingPageStatistics />
       <LandingSteps />
+      <LandingPageBlogSection />
       <ContactSection />
       <FAQSection />
     </>

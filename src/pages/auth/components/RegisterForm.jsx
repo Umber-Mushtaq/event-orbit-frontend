@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
   User,
   Mail,
@@ -6,7 +6,6 @@ import {
   Loader2,
   Building2,
   FileText,
-  Image,
   Upload,
   X,
 } from "lucide-react";

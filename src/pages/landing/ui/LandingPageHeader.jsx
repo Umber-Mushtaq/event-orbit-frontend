@@ -75,6 +75,9 @@ function LandingPageHeader() {
         <NavLink to='/contact' className={linkClasses}>
           Contact
         </NavLink>
+        <NavLink to='/blog' className={linkClasses}>
+          Blog
+        </NavLink>
       </nav>
 
       <div className='hidden md:block'>
@@ -140,6 +143,9 @@ function LandingPageHeader() {
             </NavLink>
             <NavLink to='/contact' className={linkClasses}>
               Contact
+            </NavLink>
+            <NavLink to='/blog' className={linkClasses}>
+              Blog
             </NavLink>
             <NavLink
               to={isLoggedIn ? dashboardPath : "/auth"}
