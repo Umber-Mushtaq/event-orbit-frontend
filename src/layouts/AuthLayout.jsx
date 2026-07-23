@@ -1,14 +1,18 @@
 import { Link, Outlet } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import HeroImg from "../assets/hero_bg.jpg";
+import ThemeToggle from "../shared_components/ThemeToggle";
 
 function AuthLayout() {
   return (
-    <div className='min-h-screen w-full bg-neutral-950 text-white flex flex-col lg:flex-row relative overflow-hidden'>
-      <div className='w-full lg:w-1/2 relative min-h-[60vh] lg:min-h-screen flex flex-col justify-between p-8 md:p-12 lg:p-16 overflow-hidden'>
+    <div className='relative flex min-h-screen w-full overflow-hidden bg-background text-foreground lg:flex-row'>
+      <div className='relative flex min-h-[60vh] w-full flex-col justify-between overflow-hidden p-8 md:p-12 lg:min-h-screen lg:w-1/2 lg:p-16'>
+        <div className='absolute right-4 top-4 z-20'>
+          <ThemeToggle />
+        </div>
         <Link
           to='/'
-          className='absolute top-5 left-4 z-20 inline-flex items-center gap-2 font-poppins text-xs text-neutral-950 font-semibold bg-amber-400 px-3 py-1 rounded-md duration-200 cursor-pointer group'
+          className='absolute left-4 top-5 z-20 inline-flex cursor-pointer items-center gap-2 rounded-md bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground duration-200 group'
         >
           <ArrowLeft className='w-4 h-4 transition-transform group-hover:-translate-x-1' />
           Back to Home
@@ -19,15 +23,15 @@ function AuthLayout() {
             alt='Wedding Celebration'
             className='w-full h-full object-cover object-center'
           />
-          <div className='absolute inset-0 bg-gradient lg:bg-gradient bg-black/60 ' />
+          <div className='absolute inset-0 bg-gradient-to-b from-background/70 via-background/55 to-background/80 lg:bg-gradient-to-b lg:from-background/75 lg:via-background/45 lg:to-background/85' />
         </div>
 
-        <div className='my-auto z-10 max-w-lg pt-12 lg:pt-0 relative text-center'>
-          <h1 className='font-montserrat font-black text-4xl md:text-5xl tracking-tight leading-tight mb-4 text-balance text-white'>
+        <div className='relative z-10 my-auto max-w-lg pt-12 text-center lg:pt-0'>
+          <h1 className='mb-4 text-balance font-montserrat text-4xl font-black leading-tight tracking-tight text-foreground md:text-5xl'>
             Begin Planning Your <br />
-            <span className='text-amber-400'>Dream Wedding</span>
+            <span className='text-primary'>Dream Wedding</span>
           </h1>
-          <p className='font-poppins font-light text-sm text-stone-200 leading-relaxed text-pretty'>
+          <p className='text-pretty font-poppins text-sm leading-relaxed text-muted-foreground'>
             Join thousands of couples discovering trusted wedding professionals
             and creating unforgettable celebrations.
           </p>

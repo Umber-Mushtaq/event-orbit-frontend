@@ -22,25 +22,25 @@ function VendorPerformanceChart({ data = [] }) {
             layout='vertical'
             margin={{ left: 0, right: 12 }}
           >
-            <CartesianGrid stroke='rgba(255,255,255,0.08)' horizontal={false} />
+            <CartesianGrid stroke='hsl(var(--border))' horizontal={false} />
             <XAxis type='number' axisLine={false} tickLine={false} hide />
             <YAxis
               dataKey='name'
               type='category'
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#d6d3d1", fontSize: 12 }}
+              tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }}
               width={110}
             />
             <Tooltip
               contentStyle={{
-                background: "#111111",
-                border: "1px solid rgba(212, 175, 55, 0.25)",
+                background: "hsl(var(--popover))",
+                border: "1px solid hsl(var(--border))",
                 borderRadius: 16,
-                color: "#fff",
+                color: "hsl(var(--popover-foreground))",
               }}
             />
-            <Bar dataKey='score' fill='#D4AF37' radius={[0, 999, 999, 0]} barSize={18} />
+            <Bar dataKey='score' fill='hsl(var(--primary))' radius={[0, 999, 999, 0]} barSize={18} />
           </BarChart>
         </ResponsiveContainer>
       </div>

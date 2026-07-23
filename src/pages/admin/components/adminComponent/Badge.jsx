@@ -2,10 +2,10 @@ const badgeStyles = {
   confirmed: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
   pending: "bg-amber-500/10 text-amber-300 border-amber-500/20",
   "in progress": "bg-sky-500/10 text-sky-300 border-sky-500/20",
-  completed: "bg-white/10 text-stone-200 border-white/10",
+  completed: "bg-muted text-foreground border-border",
   cancelled: "bg-red-500/10 text-red-300 border-red-500/20",
   active: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
-  default: "bg-white/5 text-stone-300 border-white/10",
+  default: "bg-card text-muted-foreground border-border",
 };
 
 function Badge({ children, tone = "default", className = "" }) {

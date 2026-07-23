@@ -73,10 +73,10 @@ export const revenueAnalytics = [
 ];
 
 export const eventStatusDistribution = [
-  { name: "Upcoming", value: 24, color: "#D4AF37" },
-  { name: "Active", value: 18, color: "#F5D76E" },
-  { name: "Completed", value: 46, color: "#8B6B12" },
-  { name: "Cancelled", value: 7, color: "#3B3B3B" },
+  { name: "Upcoming", value: 24, color: "hsl(var(--primary))" },
+  { name: "Active", value: 18, color: "hsl(var(--primary) / 0.8)" },
+  { name: "Completed", value: 46, color: "hsl(var(--muted-foreground))" },
+  { name: "Cancelled", value: 7, color: "hsl(var(--destructive))" },
 ];
 
 export const vendorPerformance = [

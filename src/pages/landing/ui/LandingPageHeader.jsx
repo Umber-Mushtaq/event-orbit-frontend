@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AppLogo from "../../../shared_components/AppLogo";
 import { NavLink } from "react-router";
+import ThemeToggle from "../../../shared_components/ThemeToggle";
 
 function LandingPageHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,15 +47,15 @@ function LandingPageHeader() {
     `transition ${
       isActive
         ? "border-b-2 border-amber-400 font-semibold drop-shadow-md text-amber-400"
-        : "text-white hover:text-amber-400"
+        : "text-foreground hover:text-primary"
     }`;
 
   return (
     <header
       className={`sticky top-0 z-50 flex items-center justify-between px-6 py-4 transition-all duration-300 ${
         isSticky
-          ? "bg-neutral-900/70 backdrop-blur-md border-b border-border-gold shadow-md"
-          : "bg-neutral-900 border-b border-border-gold "
+          ? "bg-background/80 backdrop-blur-md border-b border-border shadow-md"
+          : "bg-background border-b border-border"
       }`}
     >
       <AppLogo />
@@ -80,14 +81,15 @@ function LandingPageHeader() {
         </NavLink>
       </nav>
 
-      <div className='hidden md:block'>
+      <div className='hidden items-center gap-3 md:flex'>
+        <ThemeToggle />
         <NavLink
           to={isLoggedIn ? dashboardPath : "/auth"}
           className={({ isActive }) =>
-            `px-4 py-2 rounded-md font-semibold shadow-gold-glow transition ${
+            `rounded-md px-4 py-2 font-semibold shadow-gold-glow transition ${
               isActive
-                ? "bg-amber-300 text-neutral-950 shadow-gold-glow-hover"
-                : "bg-amber-400 text-neutral-950 hover:bg-amber-300 hover:shadow-gold-glow-hover"
+                ? "bg-primary/90 text-primary-foreground shadow-gold-glow-hover"
+                : "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-gold-glow-hover"
             }`
           }
         >
@@ -95,10 +97,11 @@ function LandingPageHeader() {
         </NavLink>
       </div>
 
-      <div className='md:hidden'>
+      <div className='flex items-center gap-2 md:hidden'>
+        <ThemeToggle className='h-10 w-10' />
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className='text-white hover:text-amber-400 transition'
+          className='rounded-xl border border-border bg-background p-2 text-foreground transition hover:text-primary'
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -127,7 +130,7 @@ function LandingPageHeader() {
       </div>
 
       {menuOpen && (
-        <div className='absolute top-full left-0 w-full bg-neutral-900/95 backdrop-blur-lg shadow-md md:hidden z-50'>
+        <div className='absolute left-0 top-full z-50 w-full border-b border-border bg-background/95 shadow-md backdrop-blur-lg md:hidden'>
           <nav className='flex flex-col px-5 space-y-4 py-6 font-medium'>
             <NavLink to='/' className={linkClasses}>
               Home
@@ -150,10 +153,10 @@ function LandingPageHeader() {
             <NavLink
               to={isLoggedIn ? dashboardPath : "/auth"}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-md text-center font-semibold shadow-gold-glow transition ${
+                `rounded-md px-4 py-2 text-center font-semibold shadow-gold-glow transition ${
                   isActive
-                    ? "bg-amber-300 text-neutral-950 shadow-gold-glow-hover"
-                    : "bg-amber-400 text-neutral-950 hover:bg-amber-300 hover:shadow-gold-glow-hover"
+                    ? "bg-primary/90 text-primary-foreground shadow-gold-glow-hover"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-gold-glow-hover"
                 }`
               }
             >

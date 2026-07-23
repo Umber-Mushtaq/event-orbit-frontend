@@ -26,10 +26,10 @@ function EventStatusChart({ data = [], className = "" }) {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  background: "#111111",
-                  border: "1px solid rgba(212, 175, 55, 0.25)",
+                  background: "hsl(var(--popover))",
+                  border: "1px solid hsl(var(--border))",
                   borderRadius: 16,
-                  color: "#fff",
+                  color: "hsl(var(--popover-foreground))",
                 }}
               />
             </PieChart>
@@ -39,18 +39,18 @@ function EventStatusChart({ data = [], className = "" }) {
           {data.map((item) => (
             <div
               key={item.name}
-              className='flex items-center justify-between rounded-2xl border border-white/8 bg-white/3 px-4 py-3'
+              className='flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3'
             >
               <div className='flex items-center gap-3'>
                 <span
                   className='h-3.5 w-3.5 rounded-full'
                   style={{ backgroundColor: item.color }}
                 />
-                <span className='text-sm font-medium text-stone-200'>
+                <span className='text-sm font-medium text-foreground'>
                   {item.name}
                 </span>
               </div>
-              <span className='text-sm font-semibold text-white'>{item.value}</span>
+              <span className='text-sm font-semibold text-foreground'>{item.value}</span>
             </div>
           ))}
         </div>

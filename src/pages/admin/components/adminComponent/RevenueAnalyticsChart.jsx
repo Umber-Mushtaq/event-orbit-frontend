@@ -21,36 +21,36 @@ function RevenueAnalyticsChart({ data = [], className = "" }) {
           <AreaChart data={data} margin={{ left: 0, right: 8 }}>
             <defs>
               <linearGradient id='revenueGradient' x1='0' y1='0' x2='0' y2='1'>
-                <stop offset='5%' stopColor='#D4AF37' stopOpacity={0.45} />
-                <stop offset='95%' stopColor='#D4AF37' stopOpacity={0.03} />
+                <stop offset='5%' stopColor='hsl(var(--primary))' stopOpacity={0.45} />
+                <stop offset='95%' stopColor='hsl(var(--primary))' stopOpacity={0.03} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke='rgba(255,255,255,0.08)' vertical={false} />
+            <CartesianGrid stroke='hsl(var(--border))' vertical={false} />
             <XAxis
               dataKey='month'
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#a8a29e", fontSize: 12 }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#a8a29e", fontSize: 12 }}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               tickFormatter={(value) => `$${value / 1000}k`}
             />
             <Tooltip
-              cursor={{ stroke: "#D4AF37", strokeWidth: 1 }}
+              cursor={{ stroke: "hsl(var(--primary))", strokeWidth: 1 }}
               contentStyle={{
-                background: "#111111",
-                border: "1px solid rgba(212, 175, 55, 0.25)",
+                background: "hsl(var(--popover))",
+                border: "1px solid hsl(var(--border))",
                 borderRadius: 16,
-                color: "#fff",
+                color: "hsl(var(--popover-foreground))",
               }}
             />
             <Area
               type='monotone'
               dataKey='revenue'
-              stroke='#D4AF37'
+              stroke='hsl(var(--primary))'
               strokeWidth={3}
               fill='url(#revenueGradient)'
             />

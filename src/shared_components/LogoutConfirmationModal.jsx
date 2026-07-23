@@ -4,12 +4,12 @@ export function LogoutConfirmationModal({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
-    <div className='fixed inset-0 w-full h-full bg-white/10 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in'>
-      <div className='w-full max-w-md bg-neutral-900 border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl relative flex flex-col items-center text-center animate-scale-fade'>
+    <div className='fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-background/70 p-4 backdrop-blur-sm animate-fade-in'>
+      <div className='relative flex w-full max-w-md flex-col items-center rounded-3xl border border-border bg-card p-6 text-center shadow-2xl animate-scale-fade md:p-8'>
         {/* Close Button */}
         <button
           onClick={onClose}
-          className='absolute top-4 right-4 text-stone-500 hover:text-white transition-colors cursor-pointer'
+          className='absolute right-4 top-4 cursor-pointer text-muted-foreground transition-colors hover:text-foreground'
         >
           <X className='w-5 h-5' />
         </button>
@@ -19,20 +19,20 @@ export function LogoutConfirmationModal({ isOpen, onClose, onConfirm }) {
           <AlertTriangle className='w-6 h-6' />
         </div>
 
-        <h2 className='font-montserrat font-bold text-xl text-white tracking-tight'>
+        <h2 className='font-montserrat text-xl font-bold tracking-tight text-foreground'>
           Confirm Log Out
         </h2>
-        <p className='font-poppins font-light text-xs text-stone-400 mt-2 leading-relaxed max-w-xs'>
+        <p className='font-poppins mt-2 max-w-xs text-xs font-light leading-relaxed text-muted-foreground'>
           Are you sure you want to log out of your session? You will need to
           re-authenticate to access your vendor wedding dashboard planner again.
         </p>
 
         {/* Interactive Actions Grid */}
-        <div className='grid grid-cols-2 gap-4 w-full mt-8'>
+        <div className='mt-8 grid w-full grid-cols-2 gap-4'>
           <button
             type='button'
             onClick={onClose}
-            className='w-full bg-neutral-950 hover:bg-neutral-700 border border-white/5 text-stone-300 font-poppins text-xs font-semibold py-3 px-4 rounded-xl transition-all cursor-pointer'
+            className='w-full rounded-xl border border-border bg-background px-4 py-3 font-poppins text-xs font-semibold text-foreground transition-all cursor-pointer hover:bg-muted'
           >
             No, Stay
           </button>
@@ -40,7 +40,7 @@ export function LogoutConfirmationModal({ isOpen, onClose, onConfirm }) {
           <button
             type='button'
             onClick={onConfirm}
-            className='w-full bg-red-500 text-white font-poppins text-xs font-semibold py-3 px-4 rounded-xl hover:bg-red-600 active:scale-98 transition-all cursor-pointer shadow-lg shadow-red-500/10'
+            className='w-full rounded-xl bg-red-500 px-4 py-3 font-poppins text-xs font-semibold text-white shadow-lg shadow-red-500/10 transition-all cursor-pointer hover:bg-red-600 active:scale-98'
           >
             Yes, Log Out
           </button>

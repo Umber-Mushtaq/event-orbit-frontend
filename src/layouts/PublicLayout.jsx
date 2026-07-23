@@ -4,7 +4,7 @@ import LandingPageHeader from "../pages/landing/ui/LandingPageHeader";
 
 function PublicLayout() {
   return (
-    <div className='flex flex-col min-h-screen bg-neutral-800'>
+    <div className='flex min-h-screen flex-col bg-background text-foreground'>
       <LandingPageHeader />
       <main className='flex-grow'>
         <Outlet />

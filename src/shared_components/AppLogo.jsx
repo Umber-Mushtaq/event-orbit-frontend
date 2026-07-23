@@ -5,7 +5,7 @@ function AppLogo({ to = "/", className = "", imgClassName = "" }) {
   return (
     <Link
       to={to}
-      className={`group w-13 h-13 rounded-xl bg-neutral-900 border text-border-gold flex items-center justify-center ${className}`.trim()}
+      className={`group flex h-13 w-13 items-center justify-center rounded-xl border border-border bg-card text-primary shadow-sm ${className}`.trim()}
     >
       <div className='flex items-center justify-center transition-transform duration-300 group-hover:scale-105'>
         <img

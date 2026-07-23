@@ -11,6 +11,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { adminAuthApi, adminProfileApi } from "../../../../services/adminApi";
+import ThemeToggle from "../../../../shared_components/ThemeToggle";
 
 function Menu({ trigger, children, align = "right" }) {
   const [open, setOpen] = useState(false);
@@ -58,7 +59,7 @@ function Menu({ trigger, children, align = "right" }) {
       </div>
       {open ? (
         <div
-          className={`absolute top-[calc(100%+10px)] z-50 w-80 rounded-3xl border border-admin-border bg-admin-surface p-3 shadow-[0_20px_70px_rgba(0,0,0,0.5)] ${
+          className={`absolute top-[calc(100%+10px)] z-50 w-80 rounded-3xl border border-border bg-popover p-3 text-popover-foreground shadow-[0_20px_70px_rgba(0,0,0,0.18)] ${
             align === "right" ? "right-0" : "left-0"
           }`}
         >
@@ -127,42 +128,43 @@ function AdminTopbar({ toggleMobileOpen, globalSearch, setGlobalSearch }) {
   );
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/5 bg-[#0b0b0b]/85 px-4 py-4 backdrop-blur-xl md:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-border bg-background/85 px-4 py-4 backdrop-blur-xl md:px-6 lg:px-8">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={toggleMobileOpen}
-            className="inline-flex rounded-2xl border border-white/10 bg-white/5 p-3 text-white transition hover:border-border-gold/30 lg:hidden"
+            className="inline-flex rounded-2xl border border-border bg-card p-3 text-foreground transition hover:border-primary/30 lg:hidden"
             aria-label="Open sidebar"
           >
             <Sparkles className="h-4 w-4" />
           </button>
           <div className="relative w-full max-w-2xl">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={globalSearch}
               onChange={(event) => setGlobalSearch(event.target.value)}
               placeholder="Global search for events, vendors, users..."
-              className="w-full rounded-2xl border border-white/10 bg-white/5 py-3.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-stone-500 focus:border-border-gold/40"
+              className="w-full rounded-2xl border border-border bg-background py-3.5 pl-11 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary/40"
             />
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          <ThemeToggle />
           <Menu
             trigger={
-              <button className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white transition hover:border-border-gold/30">
-                <div className="h-9 w-9 overflow-hidden rounded-2xl border border-border-gold/20 bg-black/30">
-                  <UserCircle2 className="h-full w-full p-1.5 text-border-gold-hover" />
+              <button className="inline-flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-2.5 text-sm text-foreground transition hover:border-primary/30">
+                <div className="h-9 w-9 overflow-hidden rounded-2xl border border-primary/20 bg-muted/70">
+                  <UserCircle2 className="h-full w-full p-1.5 text-primary" />
                 </div>
                 <div className="text-left">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-foreground">
                     {profileName}
                   </p>
-                  <p className="text-[11px] text-stone-400">{profileRole}</p>
+                  <p className="text-[11px] text-muted-foreground">{profileRole}</p>
                 </div>
-                <ChevronDown className="h-4 w-4 text-stone-400" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </button>
             }
           >
@@ -186,11 +188,11 @@ function AdminTopbar({ toggleMobileOpen, globalSearch, setGlobalSearch }) {
                       }}
                       className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm transition ${
                         isActive
-                          ? "border-border-gold/30 bg-glass-gold text-white"
-                          : "border-white/8 bg-white/5 text-stone-200 hover:border-border-gold/30 hover:text-white"
+                          ? "border-primary/30 bg-primary/10 text-foreground"
+                          : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground"
                       }`}
                     >
-                      <Icon className="h-4 w-4 text-border-gold-hover" />
+                      <Icon className="h-4 w-4 text-primary" />
                       {item.label}
                     </button>
                   );
@@ -201,9 +203,9 @@ function AdminTopbar({ toggleMobileOpen, globalSearch, setGlobalSearch }) {
                     close();
                     await handleLogout();
                   }}
-                  className="flex w-full items-center gap-3 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-stone-200 transition hover:border-red-400/30 hover:text-white"
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-left text-sm font-semibold text-muted-foreground transition hover:border-red-400/30 hover:text-foreground"
                 >
-                  <LogOut className="h-4 w-4 text-border-gold-hover" />
+                  <LogOut className="h-4 w-4 text-primary" />
                   Logout
                 </button>
               </div>

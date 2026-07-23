@@ -93,9 +93,9 @@ export const filterOptions = ["All", "Draft", "Upcoming", "Live", "Completed", "
 export const viewOptions = ["List", "Grid", "Calendar"];
 
 export const statusStyles = {
-  Upcoming: "border-sky-500/25 bg-sky-500/10 text-sky-300",
-  Live: "border-emerald-500/25 bg-emerald-500/10 text-emerald-300",
-  Completed: "border-amber-500/25 bg-amber-500/10 text-amber-300",
-  Draft: "border-white/10 bg-white/5 text-stone-300",
-  Cancelled: "border-red-500/25 bg-red-500/10 text-red-300",
+  Upcoming: "border-sky-500/25 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+  Live: "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  Completed: "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+  Draft: "border-border bg-muted text-muted-foreground",
+  Cancelled: "border-red-500/25 bg-red-500/10 text-red-700 dark:text-red-300",
 };

@@ -1,9 +1,9 @@
 function CustomLoading({ msg }) {
   return (
-    <div className='min-h-screen bg-white/5 border border-white/30 rounded-lg  flex items-center justify-center text-amber-500 font-poppins'>
+    <div className='flex min-h-screen items-center justify-center rounded-lg border border-border bg-card font-poppins text-primary'>
       <div className='flex flex-col items-center gap-3'>
-        <div className='w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin' />
-        <div className='animate-pulse tracking-widest text-xs uppercase font-bold text-stone-400'>
+        <div className='h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+        <div className='animate-pulse text-xs font-bold uppercase tracking-widest text-muted-foreground'>
           {msg}
         </div>
       </div>
