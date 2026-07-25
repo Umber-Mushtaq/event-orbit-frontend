@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export const useManageServices = () => {
   const [services, setServices] = useState([]);
@@ -14,12 +15,9 @@ export const useManageServices = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "http://localhost:5000/api/vendor/services",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const response = await axios.get(apiUrl("/api/vendor/services"), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setServices(response.data.services || response.data);
     } catch (err) {
       setError(err.response?.data?.message || "Noting to show yet.");
@@ -50,12 +48,9 @@ export const useManageServices = () => {
       setDeleteLoading(true);
       const token = localStorage.getItem("token");
 
-      await axios.delete(
-        `http://localhost:5000/api/vendor/services/${selectedServiceId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      await axios.delete(apiUrl(`/api/vendor/services/${selectedServiceId}`), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setServices((prev) =>
         prev.filter((item) => item._id !== selectedServiceId),

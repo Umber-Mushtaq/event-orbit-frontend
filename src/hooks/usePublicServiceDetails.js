@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../config/api";
 
 export function usePublicServiceDetails(serviceId) {
   const [data, setData] = useState({
@@ -11,13 +12,18 @@ export function usePublicServiceDetails(serviceId) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!serviceId) return;
+    if (!serviceId) {
+      setLoading(false);
+      setError("Missing service identifier.");
+      return;
+    }
+
     const fetchServiceDetails = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/services/serviceDetail/${serviceId}`,
+          apiUrl(`/api/services/serviceDetail/${serviceId}`),
         );
         console.log("Hook API Response Payload:", response.data);
 

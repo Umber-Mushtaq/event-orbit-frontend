@@ -7,9 +7,9 @@ function CategoryDeleteModal({ open, category, onCancel, onConfirm }) {
     <ModalShell open={open} innerClassName='max-w-md'>
       <div className='rounded-[2rem] border border-border-gold/15 bg-[#111111] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6)] max-h-[calc(100vh-4rem)] overflow-y-auto'>
         <p className='text-xs font-semibold uppercase tracking-[0.24em] text-border-gold-hover/80'>
-          Delete Category
+          Delete Service
         </p>
-        <h3 className='mt-3 text-xl font-black text-white'>Remove this category?</h3>
+        <h3 className='mt-3 text-xl font-black text-white'>Remove this service?</h3>
         <p className='mt-3 text-sm leading-relaxed text-stone-400'>
           This will permanently delete <span className='text-white'>{category.name}</span>.
         </p>

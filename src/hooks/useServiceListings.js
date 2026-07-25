@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../config/api";
 
 export function useServiceListings(filters = {}) {
   const [services, setServices] = useState([]);
@@ -34,20 +35,20 @@ export function useServiceListings(filters = {}) {
 
         // 2. Fire the Axios request linked to the controller
         const response = await axios.get(
-          `http://localhost:5000/api/services/getAllServices?${params.toString()}`,
+          apiUrl(`/api/categories/getAllCategories?${params.toString()}`),
           { signal: abortController.signal },
         );
 
         if (response.data?.success) {
           setServices(response.data.data);
         } else {
-          setError("Failed to resolve dynamic services payload array syntax.");
+          setError("Failed to resolve dynamic categories payload array syntax.");
         }
       } catch (err) {
         // Don't update state if the request was intentionally cancelled by an active re-render
         if (axios.isCancel(err)) return;
 
-        console.error("Axios service compilation error:", err);
+        console.error("Axios category compilation error:", err);
         setError(err.response?.data?.message || "Marketplace request failure.");
       } finally {
         setLoading(false);

@@ -13,7 +13,7 @@ function ManageServices() {
       <div className='w-full max-w-full mx-auto flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-8 pb-6 border-b border-white/5 z-10 relative'>
         <div className='flex flex-col gap-1'>
           <h1 className='font-normal text-2xl text-white tracking-tight'>
-            Manage Services
+            Manage Categories
           </h1>
           <p className='font-poppins font-light text-xs sm:text-sm text-stone-400 mt-1'>
             Review live portfolio listings, filter status rows, and manage
@@ -26,7 +26,7 @@ function ManageServices() {
           className='bg-glass-gold text-white border border-border-gold shadow-gold-glow font-poppins text-xs font-semibold py-3 px-5 rounded-xl backdrop-blur-md hover:bg-glass-gold-hover hover:border-border-gold-hover hover:shadow-gold-glow-hover transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap'
         >
           <Plus className='w-4 h-4 text-border-gold-hover' />
-          Add New Service
+          Add New Category
         </Link>
       </div>
 
@@ -42,12 +42,12 @@ function ManageServices() {
         </div>
       ) : dashboard.services.length === 0 ? (
         <div className='w-full text-center font-poppins text-sm py-16 border border-dashed border-white/10 rounded-2xl text-stone-500 flex flex-col items-center gap-3'>
-          <span>You haven't listed any packages yet.</span>
+          <span>You haven't listed any categories yet.</span>
           <Link
             to='/vendor/dashboard/create'
             className='text-xs text-border-gold-hover underline hover:text-white'
           >
-            Create your first listing package
+            Create your first category listing
           </Link>
         </div>
       ) : (

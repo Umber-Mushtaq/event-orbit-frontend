@@ -12,11 +12,10 @@ function LandingPageCategoriesGrid() {
   const navigate = useNavigate();
 
   const handleCategoryClick = (categoryId, categoryName) => {
-    const params = new URLSearchParams({
-      name: categoryName,
-      category: categoryId,
-    }).toString();
-    navigate(`/services?${params}`);
+    if (!categoryId) return;
+    navigate(`/categories/${categoryId}`, {
+      state: { categoryName },
+    });
   };
 
   if (loading) return <CustomLoading msg='Loading Categories...' />;
@@ -44,9 +43,9 @@ function LandingPageCategoriesGrid() {
               <h3 className='text-white font-bold text-lg uppercase tracking-wide drop-shadow-md'>
                 {cat.name}
               </h3>
-              {cat.totalListings && (
+              {(cat.listings || cat.totalListings) && (
                 <p className='text-xs text-stone-300 mt-1'>
-                  {cat.totalListings} Listings
+                  {cat.listings || cat.totalListings} Listings
                 </p>
               )}
             </div>

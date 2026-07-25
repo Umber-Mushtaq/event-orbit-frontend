@@ -6,7 +6,7 @@ function LandingSteps() {
     {
       id: 1,
       stepNumber: "1",
-      title: "Browse Services",
+      title: "Browse Categories",
       desc: "Explore top-rated venues, catering, photography, and decor options tailored to your vision.",
       Icon: Search,
     },

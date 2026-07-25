@@ -13,7 +13,7 @@ function VendorCard({ vendor }) {
   console.log(vendor);
 
   const handleClick = () => {
-    navigate(`/vendor/${vendor._id}`);
+    navigate(`/vendors/${vendor._id}`);
   };
 
   return (

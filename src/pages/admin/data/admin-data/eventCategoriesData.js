@@ -24,7 +24,7 @@ const buildImage = (label, hue) => {
       <rect width="240" height="160" rx="24" fill="url(#g)" />
       <circle cx="196" cy="40" r="24" fill="rgba(255,255,255,0.08)" />
       <text x="24" y="62" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" font-weight="700">${safeLabel}</text>
-      <text x="24" y="98" fill="#d9c89b" font-family="Arial, sans-serif" font-size="14">Service category</text>
+      <text x="24" y="98" fill="#d9c89b" font-family="Arial, sans-serif" font-size="14">Service offering</text>
     </svg>
   `;
 

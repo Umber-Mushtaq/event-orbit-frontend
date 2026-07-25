@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router";
 import AvatarPlaceholder from "../../../assets/avatar3.jpg";
 import ThemeToggle from "../../../shared_components/ThemeToggle";
+import { apiUrl } from "../../../config/api";
 
 export function UserDashboardHeader() {
   const [avatarPreview, setAvatarPreview] = useState(AvatarPlaceholder);
@@ -18,10 +19,7 @@ export function UserDashboardHeader() {
           },
         };
 
-        const res = await axios.get(
-          "http://localhost:5000/api/userDashboard/profile",
-          config,
-        );
+        const res = await axios.get(apiUrl("/api/userDashboard/profile"), config);
 
         const user = res.data.profile || res.data;
 

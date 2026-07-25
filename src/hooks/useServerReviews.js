@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../config/api";
 
 export function useServiceReviews() {
   const [reviews, setReviews] = useState([]);
@@ -24,7 +25,7 @@ export function useServiceReviews() {
         const token = localStorage.getItem("token");
 
         const response = await axios.get(
-          `http://localhost:5000/api/reviews/vendor-dashboard?ratingFilter=${filter}`,
+          apiUrl(`/api/reviews/vendor-dashboard?ratingFilter=${filter}`),
           {
             headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal,

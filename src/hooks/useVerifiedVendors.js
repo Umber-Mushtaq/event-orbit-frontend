@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { apiUrl } from "../config/api";
 
 export function useVerifiedVendors() {
   const [vendors, setVendors] = useState([]);
@@ -9,9 +10,7 @@ export function useVerifiedVendors() {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/vendor/all",
-        );
+        const response = await axios.get(apiUrl("/api/vendor/all"));
         if (response.data?.success) {
           const approved = response.data.vendors.filter((v) => v.isApproved);
           setVendors(approved);

@@ -5,7 +5,7 @@ import { adminSectionCopy } from "../../data/admin-data/adminNavigationData";
 const titleMap = {
   "/admin/dashboard": "Dashboard",
   "/admin/events": "Events",
-  "/admin/event-categories": "Event Categories",
+  "/admin/categories": "Categories",
   "/admin/vendors": "Vendors",
   "/admin/users": "Users",
   "/admin/analytics": "Analytics",
@@ -23,7 +23,7 @@ function AdminBreadcrumbs() {
   const pathname = location.pathname;
   if (
     pathname === "/admin/events" ||
-    pathname === "/admin/event-categories" ||
+    pathname === "/admin/categories" ||
     pathname === "/admin/vendors" ||
     pathname === "/admin/users" ||
     pathname === "/admin/calendar" ||

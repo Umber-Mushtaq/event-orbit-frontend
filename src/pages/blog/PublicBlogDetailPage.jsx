@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import BlogQueryProvider from "./BlogQueryProvider";
 import { usePublicBlog } from "../../hooks/blog/usePublicBlogs";
 import { formatBlogDate, stripBlogHtml } from "../../hooks/admin-hook/blog/useAdminBlogs";
+import { sanitizeHtml } from "../../utils/sanitizeHtml";
 
 function PublicBlogDetailContent() {
   const { slug } = useParams();
@@ -122,7 +123,7 @@ function PublicBlogDetailContent() {
             <div
               className='space-y-4 text-stone-300 [&_a]:text-amber-400 [&_a]:underline [&_h2]:mb-4 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-white [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_p]:leading-relaxed [&_p]:text-stone-300 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_strong]:text-white'
               dangerouslySetInnerHTML={{
-                __html: blog.content || stripBlogHtml(blog.content),
+                __html: sanitizeHtml(blog.content || stripBlogHtml(blog.content)),
               }}
             />
           </div>

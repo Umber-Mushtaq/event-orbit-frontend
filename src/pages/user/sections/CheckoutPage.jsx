@@ -3,21 +3,19 @@ import { useParams, useNavigate } from "react-router";
 import AvailabilityCalendar from "./AvailabilityCalender";
 import CustomHeader from "../../../shared_components/CustomHeader";
 import StatusIndicator from "../../../shared_components/StatusIndecator";
+import { usePublicServiceDetails } from "../../../hooks/usePublicServiceDetails";
 
 export default function CheckoutPage() {
   const { serviceId, vendorId } = useParams();
   const navigate = useNavigate();
-
-  const dummyService = {
-    title: "Premium Wedding Catering",
-    vendorName: "Elite Catering Services",
-    basePrice: 50000,
-  };
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const { service, vendor, loading: serviceLoading, error: serviceError } =
+    usePublicServiceDetails(serviceId);
 
   const [bookedDates, setBookedDates] = useState({});
   const [eventDate, setEventDate] = useState("");
   const [guestsCount, setGuestsCount] = useState(100);
-  const [totalAmount, setTotalAmount] = useState(dummyService.basePrice);
+  const [totalAmount, setTotalAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,6 +23,12 @@ export default function CheckoutPage() {
   const [statusSuccess, setStatusSuccess] = useState("");
 
   // 1. Unified Authentication Gate & Calendar Data Initializer
+  useEffect(() => {
+    if (service?.price) {
+      setTotalAmount(Number(service.price));
+    }
+  }, [service?.price]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
@@ -44,7 +48,7 @@ export default function CheckoutPage() {
     const fetchDisabledDates = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/bookings/booked-dates?serviceId=${serviceId}`,
+          `${API_BASE_URL}/api/bookings/booked-dates?serviceId=${serviceId}`,
         );
         const data = await response.json();
         if (data.success) {
@@ -66,7 +70,8 @@ export default function CheckoutPage() {
   const handleGuestCountChange = (e) => {
     const value = parseInt(e.target.value) || 0;
     setGuestsCount(value);
-    setTotalAmount(dummyService.basePrice + value * 500);
+    const basePrice = Number(service?.price || 0);
+    setTotalAmount(basePrice + value * 500);
   };
 
   // 2. Process Form Submission
@@ -91,7 +96,7 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookings/service/${serviceId}/vendor/${vendorId}`,
+        `${API_BASE_URL}/api/bookings/service/${serviceId}/vendor/${vendorId}`,
         {
           method: "POST",
           headers: {
@@ -128,12 +133,20 @@ export default function CheckoutPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || serviceLoading) {
     return (
       <div className='flex items-center justify-center min-h-screen bg-neutral-950 text-amber-400'>
         <p className='text-xl font-semibold tracking-wider animate-pulse'>
           Verifying Credentials...
         </p>
+      </div>
+    );
+  }
+
+  if (serviceError) {
+    return (
+      <div className='flex items-center justify-center min-h-screen bg-neutral-950 text-red-400 px-6 text-center'>
+        <p className='max-w-xl text-sm'>{serviceError}</p>
       </div>
     );
   }
@@ -160,12 +173,14 @@ export default function CheckoutPage() {
           <h2 className='text-3xl font-bold mb-6 text-amber-400'>Checkout</h2>
 
           <div className='mb-6 border border-neutral-800 rounded-md p-4 bg-neutral-900'>
-            <h3 className='text-xl font-semibold'>{dummyService.title}</h3>
-            <p className='text-stone-400'>Vendor: {dummyService.vendorName}</p>
+            <h3 className='text-xl font-semibold'>{service?.title || "Service"}</h3>
+            <p className='text-stone-400'>
+              Vendor: {vendor?.fullName || vendor?.businessName || "Vendor"}
+            </p>
             <p className='text-stone-300 mt-2'>
               Base Price:{" "}
               <span className='text-amber-400'>
-                PKR {dummyService.basePrice.toLocaleString()}
+                PKR {(Number(service?.price) || 0).toLocaleString()}
               </span>
             </p>
           </div>

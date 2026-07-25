@@ -10,7 +10,7 @@ export function ServiceHeader({
     <div className='w-full flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-white/5 pb-8 z-20 relative'>
       <div>
         <div className='flex items-center gap-2 text-amber-500/80 font-poppins text-xs font-bold tracking-widest uppercase mb-2'>
-          <Sparkles className='w-3.5 h-3.5' /> Spotlight Services
+          <Sparkles className='w-3.5 h-3.5' /> Spotlight Categories
         </div>
         <h1 className='font-montserrat font-black text-3xl md:text-5xl text-white tracking-wide uppercase'>
           Explore Listings

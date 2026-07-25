@@ -1,5 +1,4 @@
-import { Lock, ArrowLeft, Loader2 } from "lucide-react";
-import { Link } from "react-router";
+import { Lock, Loader2 } from "lucide-react";
 
 function ResetPasswordForm({
   password,

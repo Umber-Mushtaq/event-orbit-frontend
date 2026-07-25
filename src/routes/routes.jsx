@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import PublicLayout from "../layouts/PublicLayout";
 import LandingPage from "../pages/landing/LandingPage";
-import PublicServiceListings from "../pages/services/PublicServiceListings";
-import PublicServiceDetails from "../pages/services/PublicServiceDetails";
+import PublicCategoryListings from "../pages/services/PublicServiceListings";
+import PublicCategoryDetails from "../pages/services/PublicServiceDetails";
 import VendorsPage from "../pages/public_vendor/VendorsPage";
 import VendorProfilePage from "../pages/public_vendor/VendorProfilePage";
 import Login from "../pages/auth/section/Login";
@@ -61,16 +61,24 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "/services",
-        element: <PublicServiceListings />,
+        path: "/categories",
+        element: <PublicCategoryListings />,
       },
       {
-        path: "/service/:serviceId/vendor/:vendorId",
-        element: <PublicServiceDetails />,
+        path: "/categories/:categoryId",
+        element: <PublicCategoryDetails />,
+      },
+      {
+        path: "/category/:categoryId/vendor/:vendorId",
+        element: <PublicCategoryDetails />,
       },
       {
         path: "/vendors",
         element: <VendorsPage />,
+      },
+      {
+        path: "/vendors/:vendorId",
+        element: <VendorProfilePage />,
       },
       {
         path: "/vendor/:id",
@@ -135,7 +143,7 @@ const router = createBrowserRouter([
         element: <DashboardLayout />,
         children: [
           { index: true, element: <DashboardOverview /> },
-          { path: "services", element: <ManageServices /> },
+          { path: "categories", element: <ManageServices /> },
           { path: "create", element: <CreateService /> },
           { path: "edit/:id", element: <EditService /> },
           { path: "service/details/:id", element: <ServiceDetails /> },
@@ -156,7 +164,9 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: "dashboard", element: <AdminDashboardOverview /> },
           { path: "events", element: <EventsManagementPage /> },
-          { path: "event-categories", element: <EventCategoriesPage /> },
+          { path: "categories", element: <EventCategoriesPage /> },
+          { path: "services", element: <Navigate to="/admin/categories" replace /> },
+          { path: "event-categories", element: <Navigate to="/admin/categories" replace /> },
           { path: "vendors", element: <VendorManagementPage /> },
           { path: "users", element: <UserManagementPage /> },
           {
@@ -193,12 +203,16 @@ const router = createBrowserRouter([
             element: <UserDashboardOverview />,
           },
           {
-            path: "services",
-            element: <PublicServiceListings />,
+            path: "categories",
+            element: <PublicCategoryListings />,
           },
           {
-            path: "service/:serviceId/vendor/:vendorId",
-            element: <PublicServiceDetails />,
+            path: "categories/:categoryId",
+            element: <PublicCategoryDetails />,
+          },
+          {
+            path: "category/:categoryId/vendor/:vendorId",
+            element: <PublicCategoryDetails />,
           },
           {
             path: "checkout/:serviceId/vendor/:vendorId",

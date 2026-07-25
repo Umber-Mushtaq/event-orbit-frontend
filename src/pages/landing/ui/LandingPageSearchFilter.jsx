@@ -18,7 +18,7 @@ function LandingPageSearchFilter() {
       date: date || "",
     }).toString();
 
-    navigate(`/services?${params}`);
+    navigate(`/categories?${params}`);
   };
 
   return (

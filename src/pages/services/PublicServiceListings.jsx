@@ -8,6 +8,7 @@ import CustomError from "../../shared_components/CustomError";
 import CustomLoading from "../../shared_components/CustomLoading";
 import CustomHeader from "../../shared_components/CustomHeader";
 import { useSearchParams } from "react-router";
+import { useWishlistState } from "../../hooks/useWishlistState";
 
 function PublicServiceListings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,6 +23,11 @@ function PublicServiceListings() {
   });
 
   const { services, loading, error } = useServiceListings(activeFilters);
+  const {
+    isWishlisted,
+    toggleWishlist,
+    updatingServiceId,
+  } = useWishlistState();
   const listingsRef = useRef(null);
 
   useEffect(() => {
@@ -53,18 +59,29 @@ function PublicServiceListings() {
       </aside>
 
       <main className='flex-1 flex flex-col p-6 bg-neutral-950'>
-        <CustomHeader badge='Spotlight Services' title='Explore Services' />
+        <CustomHeader badge='Spotlight Categories' title='Explore Categories' />
         <div ref={listingsRef} className='flex-1 mt-5'>
           {loading ? (
-            <CustomLoading msg='Loading services...' />
+            <CustomLoading msg='Loading categories...' />
           ) : error ? (
-            <CustomError msg='Failed to load services. Please try again.' />
+            <CustomError msg='Failed to load categories. Please try again.' />
           ) : services.length === 0 ? (
-            <NothingFound msg='No Service Found' />
+            <NothingFound msg='No Category Found' />
           ) : (
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto'>
               {services.map((serviceItem) => (
-                <ServiceCard key={serviceItem.id} service={serviceItem} />
+                <ServiceCard
+                  key={serviceItem.id || serviceItem._id}
+                  service={serviceItem}
+                  isWishlisted={isWishlisted(serviceItem.id || serviceItem._id)}
+                  isWishlistUpdating={
+                    String(updatingServiceId) ===
+                    String(serviceItem.id || serviceItem._id)
+                  }
+                  onToggleWishlist={() =>
+                    toggleWishlist(serviceItem.id || serviceItem._id)
+                  }
+                />
               ))}
             </div>
           )}

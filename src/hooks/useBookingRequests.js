@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../config/api";
 
 export function useBookingRequests() {
   const [bookings, setBookings] = useState([]);
@@ -16,13 +17,10 @@ export function useBookingRequests() {
         setError("");
         const token = localStorage.getItem("token");
 
-        const response = await axios.get(
-          "http://localhost:5000/api/bookings/requests",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            signal: controller.signal,
-          },
-        );
+        const response = await axios.get(apiUrl("/api/bookings/requests"), {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
 
         if (response.data.success) {
           setBookings(response.data.bookings);
@@ -48,7 +46,7 @@ export function useBookingRequests() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `http://localhost:5000/api/bookings/requests/${id}`,
+        apiUrl(`/api/bookings/requests/${id}`),
         { status: actionStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       );

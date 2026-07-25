@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export const useServiceDetails = () => {
   const { id } = useParams();
@@ -17,8 +18,8 @@ export const useServiceDetails = () => {
         setError("");
 
         const [serviceRes, reviewsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/services/${id}`),
-          axios.get(`http://localhost:5000/api/reviews/service/${id}`),
+          axios.get(apiUrl(`/api/services/serviceDetail/${id}`)),
+          axios.get(apiUrl(`/api/reviews/service/${id}`)),
         ]);
 
         setService(serviceRes.data.service);

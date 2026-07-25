@@ -5,12 +5,13 @@ import axios from "axios";
 export const useResetPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleResetSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +25,7 @@ export const useResetPassword = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `http://localhost:5000/api/auth/reset-password/${token}`,
+        `${API_BASE_URL}/api/auth/reset-password/${token}`,
         { password },
       );
 

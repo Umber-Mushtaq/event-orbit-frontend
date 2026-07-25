@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export const useEditService = () => {
   const { id } = useParams();
@@ -28,14 +29,13 @@ export const useEditService = () => {
         setFetchingData(true);
         const token = localStorage.getItem("token");
 
-        const catRes = await axios.get("http://localhost:5000/api/categories");
+        const catRes = await axios.get(apiUrl("/api/categories"));
         setCategories(catRes.data.categories || catRes.data);
 
         if (id) {
-          const serviceRes = await axios.get(
-            `http://localhost:5000/api/vendor/services/${id}`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          );
+          const serviceRes = await axios.get(apiUrl(`/api/vendor/services/${id}`), {
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
           const service = serviceRes.data.services || serviceRes.data;
 
@@ -97,19 +97,15 @@ export const useEditService = () => {
     try {
       const token = localStorage.getItem("token");
 
-      await axios.put(
-        `http://localhost:5000/api/vendor/services/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.put(apiUrl(`/api/vendor/services/${id}`), formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
 
       setSuccess("Service package updated successfully!");
-      setTimeout(() => navigate("/vendor/dashboard/services"), 1500);
+      setTimeout(() => navigate("/vendor/dashboard/categories"), 1500);
     } catch (err) {
       setError(
         err.response?.data?.message ||

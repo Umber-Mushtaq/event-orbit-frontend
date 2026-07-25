@@ -10,37 +10,35 @@ import {
   emptyCategoryForm,
 } from "../../data/admin-data/eventCategoriesData";
 import {
-  adminCategoriesApi,
+  adminServicesApi,
   getAdminErrorMessage,
 } from "../../../../services/adminApi";
 import { mapAdminCategory } from "../../../../utils/adminTransformers";
 
 function EventCategoriesPage() {
-  const [categories, setCategories] = useState([]);
+  const [services, setServices] = useState([]);
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState("revenue");
   const [formOpen, setFormOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [viewingCategory, setViewingCategory] = useState(null);
-  const [deletingCategory, setDeletingCategory] = useState(null);
+  const [editingService, setEditingService] = useState(null);
+  const [viewingService, setViewingService] = useState(null);
+  const [deletingService, setDeletingService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadCategories = useCallback(async () => {
+  const loadServices = useCallback(async () => {
     setLoading(true);
     setError("");
 
     try {
-      const response = await adminCategoriesApi.list({
+      const response = await adminServicesApi.list({
         search: query,
         sortBy: sortKey,
         limit: 100,
       });
-      setCategories((response.data?.data?.items || []).map(mapAdminCategory));
+      setServices((response.data?.data?.items || []).map(mapAdminCategory));
     } catch (requestError) {
-      setError(
-        getAdminErrorMessage(requestError, "Failed to load categories."),
-      );
+      setError(getAdminErrorMessage(requestError, "Failed to load services."));
     } finally {
       setLoading(false);
     }
@@ -51,35 +49,35 @@ function EventCategoriesPage() {
     // schedule the load on next microtask to avoid synchronous setState inside effect
     Promise.resolve().then(() => {
       if (mounted) {
-        loadCategories();
+        loadServices();
       }
     });
     return () => {
       mounted = false;
     };
-  }, [loadCategories]);
+  }, [loadServices]);
 
   const rows = useMemo(() => {
-    return categories;
-  }, [categories]);
+    return services;
+  }, [services]);
 
   const stats = useMemo(() => {
-    const totalVendors = categories.reduce(
+    const totalVendors = services.reduce(
       (sum, item) => sum + Number(item.vendors || 0),
       0,
     );
-    const totalBookings = categories.reduce(
+    const totalBookings = services.reduce(
       (sum, item) => sum + Number(item.bookings || 0),
       0,
     );
-    const revenueGenerated = categories.reduce(
+    const revenueGenerated = services.reduce(
       (sum, item) =>
         sum + Number(String(item.revenue || 0).replace(/[^0-9.-]/g, "")),
       0,
     );
 
     return [
-      { label: "Categories", value: String(categories.length), icon: "tags" },
+      { label: "Services", value: String(services.length), icon: "tags" },
       {
         label: "Total Vendors",
         value: String(totalVendors),
@@ -92,48 +90,46 @@ function EventCategoriesPage() {
         icon: "sparkles",
       },
     ];
-  }, [categories]);
+  }, [services]);
 
   const handleSave = async (payload) => {
     if (!payload.name.trim() || !payload.image || !payload.icon) return;
 
     try {
-      if (editingCategory) {
-        await adminCategoriesApi.update(editingCategory.id, payload);
+      if (editingService) {
+        await adminServicesApi.update(editingService.id, payload);
       } else {
-        await adminCategoriesApi.create(payload);
+        await adminServicesApi.create(payload);
       }
 
-      await loadCategories();
+      await loadServices();
       setFormOpen(false);
-      setEditingCategory(null);
+      setEditingService(null);
     } catch (requestError) {
-      setError(getAdminErrorMessage(requestError, "Failed to save category."));
+      setError(getAdminErrorMessage(requestError, "Failed to save service."));
     }
   };
 
   const handleDelete = async () => {
-    if (!deletingCategory) return;
+    if (!deletingService) return;
 
     try {
-      await adminCategoriesApi.remove(deletingCategory.id);
-      await loadCategories();
-      setDeletingCategory(null);
+      await adminServicesApi.remove(deletingService.id);
+      await loadServices();
+      setDeletingService(null);
     } catch (requestError) {
-      setError(
-        getAdminErrorMessage(requestError, "Failed to delete category."),
-      );
+      setError(getAdminErrorMessage(requestError, "Failed to delete service."));
     }
   };
 
   return (
     <AdminListShell
-      title="Service Categories"
-      description="Organize vendors into business categories and track their performance."
-      actionLabel="New Category"
+      title="Services"
+      description="Organize service offerings and track their performance."
+      actionLabel="New Service"
       actionIcon={Plus}
       onAction={() => {
-        setEditingCategory(null);
+        setEditingService(null);
         setFormOpen(true);
       }}
       stats={stats}
@@ -155,41 +151,41 @@ function EventCategoriesPage() {
         onQueryChange={setQuery}
         sortKey={sortKey}
         onSortChange={setSortKey}
-        onView={setViewingCategory}
-        onEdit={(category) => {
-          setEditingCategory(category);
+        onView={setViewingService}
+        onEdit={(service) => {
+          setEditingService(service);
           setFormOpen(true);
         }}
-        onDelete={setDeletingCategory}
+        onDelete={setDeletingService}
       />
 
       <CategoryFormModal
         open={formOpen}
-        mode={editingCategory ? "edit" : "create"}
+        mode={editingService ? "edit" : "create"}
         initialValue={
-          editingCategory || {
+          editingService || {
             ...emptyCategoryForm,
             icon: categoryIconOptions[0]?.value || "tags",
           }
         }
         onClose={() => {
           setFormOpen(false);
-          setEditingCategory(null);
+          setEditingService(null);
         }}
         onSave={handleSave}
         submitError={error}
       />
 
       <CategoryDetailModal
-        open={Boolean(viewingCategory)}
-        category={viewingCategory}
-        onClose={() => setViewingCategory(null)}
+        open={Boolean(viewingService)}
+        category={viewingService}
+        onClose={() => setViewingService(null)}
       />
 
       <CategoryDeleteModal
-        open={Boolean(deletingCategory)}
-        category={deletingCategory}
-        onCancel={() => setDeletingCategory(null)}
+        open={Boolean(deletingService)}
+        category={deletingService}
+        onCancel={() => setDeletingService(null)}
         onConfirm={handleDelete}
       />
     </AdminListShell>

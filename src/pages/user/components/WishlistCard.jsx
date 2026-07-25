@@ -90,7 +90,7 @@ function WishlistCard({ item, onWishlistChanged }) {
           </div>
 
           <Link
-            to={`/customer/dashboard/service/${item.serviceId}/vendor/${item.vendorId}`}
+            to={item.vendorId ? `/vendors/${item.vendorId}` : "/categories"}
             className='bg-neutral-950 border border-white/10 hover:border-amber-400 text-white font-poppins text-[10px] font-bold py-2 px-3 rounded-xl flex items-center gap-1.5 transition-all duration-200 cursor-pointer uppercase tracking-wider whitespace-nowrap'
           >
             View Info

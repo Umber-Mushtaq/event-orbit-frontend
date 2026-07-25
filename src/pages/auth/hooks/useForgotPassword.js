@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 export const useForgotPassword = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -15,7 +16,7 @@ export const useForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
+        `${API_BASE_URL}/api/auth/forgot-password`,
         {
           email,
         },

@@ -17,7 +17,7 @@ export function CategoryFilter({
         className={`${baseChipStyles} ${activeCategory === "all" ? activeStyles : inactiveStyles}`}
       >
         <span className='font-poppins text-xs font-bold tracking-wider uppercase'>
-          All Services
+          All Categories
         </span>
       </button>
 

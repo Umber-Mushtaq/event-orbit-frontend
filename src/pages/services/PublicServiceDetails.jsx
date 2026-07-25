@@ -1,158 +1,146 @@
 import React from "react";
-import { Link } from "react-router";
-import { ArrowLeft, Sparkles, MapPin } from "lucide-react";
+import { Link, useParams } from "react-router";
+import { ArrowLeft, BadgeCheck, Layers3, Store, Sparkles } from "lucide-react";
 
-import { useServiceDetailsUtils } from "../user/hooks/useServiceDetailsUtils";
-import { useToggleWishlist } from "../user/hooks/useToggleWishlist";
-
-import { ServiceDetailsHeader } from "./ui/ServiceDetailsHeader";
-import { ServiceTitleSection } from "./ui/ServiceTitleSection";
-import { ServiceBookingCard } from "./ui/ServiceBookingCard";
-
-import { ImageGallery } from "./ui/ImageGallery";
-import { MapLocation } from "./ui/MapLocation";
-import { VendorProfile } from "./ui/VendorProfile";
-import { Reviews } from "./ui/Reviews"; // <-- Your updated component
+import { usePublicCategoryDetails } from "../../hooks/usePublicCategoryDetails";
 import CustomLoading from "../../shared_components/CustomLoading";
 import CustomError from "../../shared_components/CustomError";
 
-export default function PublicServiceDetails() {
-  const {
-    loading,
-    error,
-    service,
-    reviews,
-    vendor,
-    isFavorite,
-    setIsFavorite,
-    fallbackExplorePath,
-    checkoutBookingPath,
-    refetchReviewData, // <-- Extract your hook's data refetcher if available
-  } = useServiceDetailsUtils();
-  console.log("service details ------", service, vendor);
+import { ImageGallery } from "./ui/ImageGallery";
+import { VendorProfile } from "./ui/VendorProfile";
+import VendorCard from "../public_vendor/ui/VendorCard";
 
-  const {
-    isWishlisted: remoteWishlistedState,
-    toggleWishlist,
-    isToggling,
-  } = useToggleWishlist(isFavorite);
+export default function PublicCategoryDetails() {
+  const { categoryId } = useParams();
+  const { category, vendors, loading, error } =
+    usePublicCategoryDetails(categoryId);
 
-  // Keep utility hook in sync whenever the standalone hook toggles the heart state
-  React.useEffect(() => {
-    setIsFavorite(remoteWishlistedState);
-  }, [remoteWishlistedState, setIsFavorite]);
+  if (loading) {
+    return <CustomLoading msg='Loading Data' />;
+  }
 
-  if (loading) return <CustomLoading msg='Loading Data' />;
-
-  if (error || !service) {
+  if (error || !category) {
     return (
       <div className='min-h-screen bg-white/5 border border-white/30 rounded-lg flex flex-col items-center justify-center text-stone-400 gap-4'>
-        <CustomError msg='No Data Found' />
+        <CustomError msg={error || "No Data Found"} />
         <Link
-          to={fallbackExplorePath}
+          to='/categories'
           className='text-xs text-stone-300 font-poppins hover:text-amber-400 transition-colors flex items-center gap-1 bg-white/5 border border-white/10 px-4 py-2 rounded-lg'
         >
-          <ArrowLeft className='w-3 h-3' /> Return to Listings
+          <ArrowLeft className='w-3 h-3' /> Return to Categories
         </Link>
       </div>
     );
   }
 
-  const handleToggleFavoriteClick = () => {
-    if (isToggling) return;
-    toggleWishlist(service._id || service.id);
-  };
-
-  // REFRESH DATA CALLBACK FUNCTION
-  const handleReviewRefreshPipeline = () => {
-    if (refetchReviewData) {
-      refetchReviewData(); // Refetches service reviews instantly from your server on success
-    } else {
-      // Fallback if your custom utility hook doesn't have a refetch handler built yet:
-      window.location.reload();
-    }
-  };
+  const featuredVendor = vendors[0] || null;
 
   return (
     <main className='min-h-screen w-full bg-neutral-950 text-white font-poppins antialiased pb-24 selection:bg-amber-500 selection:text-black'>
-      <ServiceDetailsHeader
-        explorePath={fallbackExplorePath}
-        isFavorite={remoteWishlistedState}
-        onToggleFavorite={handleToggleFavoriteClick}
-        isToggling={isToggling}
-      />
-
       <section className='max-w-7xl mx-auto px-3 mt-6'>
-        <ImageGallery images={service.images} title={service.title} />
+        <ImageGallery
+          images={category.image ? [category.image] : []}
+          title={category.name}
+        />
       </section>
 
-      {/* Split Body Framework Grid */}
       <section className='max-w-7xl mx-auto px-3 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 items-start'>
-        {/* Left Side: Editorial & Core Data Column */}
         <div className='lg:col-span-2 space-y-10'>
-          <ServiceTitleSection
-            service={service}
-            reviewsCount={reviews.length}
-          />
+          <div className='bg-neutral-900/50 p-6 rounded-2xl'>
+            <div className='inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-md text-[10px] uppercase tracking-widest font-bold text-amber-400 mb-4 shadow-sm backdrop-blur-md'>
+              <BadgeCheck className='w-3.5 h-3.5 animate-pulse' />
+              Category Spotlight
+            </div>
+            <h1 className='font-montserrat font-black text-3xl md:text-5xl tracking-wide uppercase leading-tight bg-gradient-to-r from-white via-white to-stone-400 bg-clip-text text-transparent'>
+              {category.name}
+            </h1>
 
-          {/* Description Block */}
+            <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-4 border-t border-white/10'>
+              <div className='rounded-2xl bg-neutral-950/60 border border-white/5 p-4'>
+                <div className='flex items-center gap-2 text-amber-400 text-xs uppercase tracking-widest font-bold'>
+                  <Store className='w-4 h-4' />
+                  Vendors
+                </div>
+                <div className='mt-2 text-2xl font-black text-white'>
+                  {vendors.length}
+                </div>
+              </div>
+              <div className='rounded-2xl bg-neutral-950/60 border border-white/5 p-4'>
+                <div className='flex items-center gap-2 text-amber-400 text-xs uppercase tracking-widest font-bold'>
+                  <Layers3 className='w-4 h-4' />
+                  Listings
+                </div>
+                <div className='mt-2 text-2xl font-black text-white'>
+                  {category.listings ?? 0}
+                </div>
+              </div>
+              <div className='rounded-2xl bg-neutral-950/60 border border-white/5 p-4'>
+                <div className='flex items-center gap-2 text-amber-400 text-xs uppercase tracking-widest font-bold'>
+                  <Sparkles className='w-4 h-4' />
+                  Status
+                </div>
+                <div className='mt-2 text-2xl font-black text-white'>
+                  {category.status || "Active"}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className='transition-all duration-300 p-8 relative group'>
             <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
             <div className='flex items-center gap-2 mb-4'>
               <Sparkles className='w-4 h-4 text-amber-500/70' />
               <h3 className='font-montserrat font-extrabold text-sm uppercase tracking-widest text-stone-200'>
-                Service Overview
+                Category Overview
               </h3>
             </div>
             <p className='text-stone-400 text-sm leading-relaxed whitespace-pre-line font-normal pl-6'>
-              {service.description ||
-                "No description provided for this luxury listing."}
+              {category.description ||
+                "No description provided for this category."}
             </p>
           </div>
 
-          {/* Map Section */}
           <div className='transition-all duration-300 rounded-2xl p-8 backdrop-blur-sm relative group'>
             <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
             <div className='flex flex-col mb-6'>
               <div className='flex items-center gap-2'>
-                <MapPin className='w-4 h-4 text-amber-500/70' />
+                <Store className='w-4 h-4 text-amber-500/70' />
                 <h3 className='font-montserrat font-extrabold text-sm uppercase tracking-widest text-stone-200'>
-                  Service Location Map
+                  Related Vendors
                 </h3>
               </div>
               <p className='text-sm text-stone-400 font-normal mt-1 pl-6'>
-                Exclusively showing localized coordinates inside operating
-                sectors.
+                Vendors listed below actively offer this category.
               </p>
             </div>
-            <div className='rounded-xl overflow-hidden p-1'>
-              <MapLocation
-                locationName={service?.location}
-                coordinates={service?.coordinates}
-              />
-            </div>
-          </div>
 
-          {/* Reviews Stream Block with tracking IDs passed to the component */}
-          <div className='p-2'>
-            <Reviews
-              reviews={reviews}
-              onReviewSubmitted={handleReviewRefreshPipeline}
-            />
+            {vendors.length > 0 ? (
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {vendors.map((vendor) => (
+                  <VendorCard key={vendor._id} vendor={vendor} />
+                ))}
+              </div>
+            ) : (
+              <div className='rounded-2xl border border-white/10 bg-white/5 px-4 py-10 text-center text-stone-400'>
+                No vendors are currently assigned to this category.
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right Side: Sticky Conversion Engine Sidebars */}
         <div className='space-y-8 lg:sticky lg:top-6'>
-          <ServiceBookingCard
-            price={service.price}
-            priceType={service.priceType}
-            targetCheckoutUrl={checkoutBookingPath}
-          />
-
-          <div className='transition-all duration-300 hover:scale-[1.01]'>
-            <VendorProfile vendor={vendor} />
-          </div>
+          {featuredVendor ? (
+            <VendorProfile vendor={featuredVendor} />
+          ) : (
+            <div className='bg-neutral-900/80 border border-amber-500/20 backdrop-blur-xl rounded-2xl p-6 shadow-2xl'>
+              <h3 className='font-montserrat font-black text-xl text-white mb-3 uppercase tracking-wide'>
+                Category Snapshot
+              </h3>
+              <p className='text-stone-400 text-sm leading-relaxed'>
+                We could not find a featured vendor for this category yet.
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </main>

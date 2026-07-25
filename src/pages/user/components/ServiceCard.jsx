@@ -39,7 +39,10 @@ export function ServiceCard({ item, isFavorite, onToggleFavorite, to }) {
       </div>
 
       <Link
-        to={`/services/${item.id}`}
+        to={
+          to ||
+          `/categories/${item.categoryId || item.category?.id || item.category?._id || item.id}`
+        }
         className='p-6 pt-8 relative flex flex-col flex-grow bg-gradient-to-b from-neutral-950 to-neutral-900/20 text-left cursor-pointer'
       >
         <div className='absolute top-0 left-6 -translate-y-1/2 w-12 h-12 rounded-full ring-2 ring-amber-500/60 shadow-xl overflow-hidden bg-neutral-900 z-10'>

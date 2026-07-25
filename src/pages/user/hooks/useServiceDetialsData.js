@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export function useServiceDetailsData(serviceId) {
   const [data, setData] = useState({
@@ -17,7 +18,7 @@ export function useServiceDetailsData(serviceId) {
       setError(null);
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/services/serviceDetail/${serviceId}`,
+          apiUrl(`/api/services/serviceDetail/${serviceId}`),
         );
         console.log("Hook API Response Payload:", response.data);
 

@@ -1,7 +1,7 @@
 export const adminNavigation = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "layout-dashboard" },
   { label: "Events", path: "/admin/events", icon: "calendar-days" },
-  { label: "Service Categories", path: "/admin/event-categories", icon: "tags" },
+  { label: "Categories", path: "/admin/categories", icon: "tags" },
   { label: "Vendors", path: "/admin/vendors", icon: "store" },
   { label: "Blog", path: "/admin/blog", icon: "file-text" },
   { label: "Users", path: "/admin/users", icon: "users" },
@@ -18,9 +18,9 @@ export const adminSectionCopy = {
     title: "Events",
     description: "Manage every event in the pipeline from planning to completion.",
   },
-  "event-categories": {
-    title: "Service Categories",
-    description: "Organize vendors into business categories and track their performance.",
+  services: {
+    title: "Categories",
+    description: "Organize and manage category offerings and track their performance.",
   },
   vendors: {
     title: "Vendors",

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export function useMyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -12,15 +13,13 @@ export function useMyBookings() {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
 
-  const API_BASE_URL = "http://localhost:5000/api/bookings";
-
   const fetchBookings = async () => {
     try {
       setLoading(true);
       setError(null);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(`${API_BASE_URL}/bookings`, {
+      const response = await axios.get(apiUrl("/api/bookings/bookings"), {
         headers: { Authorization: `Bearer ${token}` },
         params: { status: filter },
       });
@@ -61,7 +60,7 @@ export function useMyBookings() {
       const token = localStorage.getItem("token");
 
       const response = await axios.patch(
-        `${API_BASE_URL}/requests/${selectedBookingId}`,
+        apiUrl(`/api/bookings/requests/${selectedBookingId}`),
         { status: "cancelled" },
         { headers: { Authorization: `Bearer ${token}` } },
       );

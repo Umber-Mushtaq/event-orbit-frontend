@@ -52,10 +52,10 @@ function Wishlist() {
             favorites here.
           </p>
           <Link
-            to='/customer/dashboard/services'
+            to='/customer/dashboard/categories'
             className='mt-6 bg-amber-400 hover:bg-amber-500 text-black font-poppins text-xs font-semibold py-2.5 px-5 rounded-xl transition-all duration-200'
           >
-            Explore Services
+            Explore Categories
           </Link>
         </div>
       )}

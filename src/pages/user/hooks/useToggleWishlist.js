@@ -1,12 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export function useToggleWishlist(initialState = false) {
   const [isWishlisted, setIsWishlisted] = useState(initialState);
   const [isToggling, setIsToggling] = useState(false);
   const [toggleError, setToggleError] = useState(null);
-
-  const API_BASE_URL = "http://localhost:5000/api/wishlist";
 
   const toggleWishlist = async (serviceId) => {
     if (isToggling) return;
@@ -19,7 +18,7 @@ export function useToggleWishlist(initialState = false) {
       setIsWishlisted((prev) => !prev);
 
       const response = await axios.post(
-        `${API_BASE_URL}/toggle`,
+        apiUrl("/api/wishlist/toggle"),
         { serviceId },
         { headers: { Authorization: `Bearer ${token}` } },
       );

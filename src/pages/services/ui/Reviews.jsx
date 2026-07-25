@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Star, Send, AlertCircle, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 import { useParams } from "react-router";
+import { apiUrl } from "../../../config/api";
 
 // 1. Destructure the new props passed down from the parent component
 export function Reviews({ reviews = [], onReviewSubmitted }) {
@@ -46,7 +47,7 @@ export function Reviews({ reviews = [], onReviewSubmitted }) {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        "http://localhost:5000/api/reviews",
+        apiUrl("/api/reviews"),
         { vendorId, serviceId, rating, comment },
         { headers: { Authorization: `Bearer ${token}` } },
       );

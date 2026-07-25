@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import axios from "axios";
 
 export const useServiceDetails = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const { id } = useParams();
   const [service, setService] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -17,8 +18,8 @@ export const useServiceDetails = () => {
         setError("");
 
         const [serviceRes, reviewsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/services/${id}`),
-          axios.get(`http://localhost:5000/api/reviews/service/${id}`),
+          axios.get(`${API_BASE_URL}/api/services/serviceDetail/${id}`),
+          axios.get(`${API_BASE_URL}/api/reviews/service/${id}`),
         ]);
 
         setService(serviceRes.data.service);

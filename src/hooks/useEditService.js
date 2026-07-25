@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 
 export const useEditService = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -27,13 +28,13 @@ export const useEditService = () => {
       try {
         setFetchingData(true);
         const token = localStorage.getItem("token");
-        const catRes = await axios.get("http://localhost:5000/api/categories");
+        const catRes = await axios.get(`${API_BASE_URL}/api/categories`);
         console.log(catRes.data.categories);
         setCategories(catRes.data.data || []);
 
         if (id) {
           const serviceRes = await axios.get(
-            `http://localhost:5000/api/vendor/services/${id}`,
+            `${API_BASE_URL}/api/vendor/services/${id}`,
             { headers: { Authorization: `Bearer ${token}` } },
           );
 
@@ -98,7 +99,7 @@ export const useEditService = () => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:5000/api/vendor/services/${id}`,
+        `${API_BASE_URL}/api/vendor/services/${id}`,
         formData,
         {
           headers: {
@@ -109,7 +110,7 @@ export const useEditService = () => {
       );
 
       setSuccess("Service package updated successfully!");
-      setTimeout(() => navigate("/vendor/dashboard/services"), 1500);
+      setTimeout(() => navigate("/vendor/dashboard/categories"), 1500);
     } catch (err) {
       setError(
         err.response?.data?.message ||

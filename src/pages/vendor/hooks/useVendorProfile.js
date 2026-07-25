@@ -3,6 +3,7 @@ import axios from "axios";
 import AvatarPlaceholder from "../../../assets/avatar3.jpg"; // Adjust path if needed
 
 export const useVendorProfile = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   // 1. INPUT FORM STATES
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -45,7 +46,7 @@ export const useVendorProfile = () => {
         const config = getAuthConfig();
 
         const response = await axios.get(
-          "http://localhost:5000/api/vendor/profile",
+          `${API_BASE_URL}/api/vendor/profile`,
           config,
         );
 
@@ -142,7 +143,7 @@ export const useVendorProfile = () => {
       config.headers["Content-Type"] = "multipart/form-data";
 
       const response = await axios.put(
-        "http://localhost:5000/api/vendor/profile",
+        `${API_BASE_URL}/api/vendor/profile`,
         formData,
         config,
       );

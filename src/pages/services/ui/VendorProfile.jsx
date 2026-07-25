@@ -30,7 +30,7 @@ export function VendorProfile({ vendor }) {
   return (
     <div className='bg-neutral-900/40 border border-amber-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden backdrop-blur-md text-left'>
       {/* Brand Identity Block */}
-      <div className='flex items-start gap-4 mb-5'>
+      <Link to={`/vendors/${vendor?._id}`} className='flex items-start gap-4 mb-5 group'>
         <div className='w-14 h-14 rounded-full overflow-hidden ring-2 ring-amber-500/40 bg-neutral-950 shrink-0 flex items-center justify-center'>
           <img
             src={
@@ -49,14 +49,14 @@ export function VendorProfile({ vendor }) {
           <span className='text-[9px] uppercase tracking-widest text-amber-400 font-black flex items-center gap-1 mb-0.5'>
             <Award className='w-3 h-3 shrink-0' /> EventOrbit Verified Vendor
           </span>
-          <h4 className='font-montserrat font-black text-lg text-white tracking-wide uppercase line-clamp-1 leading-tight'>
+          <h4 className='font-montserrat font-black text-lg text-white tracking-wide uppercase line-clamp-1 leading-tight group-hover:text-amber-400 transition-colors'>
             {vendor?.businessName || "Exclusive Studio Pro"}
           </h4>
           <p className='text-xs text-stone-400 font-medium truncate'>
             Manager: {vendor?.fullName || "Verified Professional"}
           </p>
         </div>
-      </div>
+      </Link>
 
       {/* Vendor Bio Statement */}
       {(vendor?.vendorBio || vendor?.businessDescription) && (

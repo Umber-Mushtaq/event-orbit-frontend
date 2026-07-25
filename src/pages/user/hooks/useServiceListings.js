@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export function useServiceListings() {
   const [services, setServices] = useState([]);
@@ -15,8 +16,10 @@ export function useServiceListings() {
         setLoading(true);
         const url =
           activeCategory === "all"
-            ? "http://localhost:5000/api/services/getAllServices"
-            : `http://localhost:5000/api/services/getAllServices?category=${activeCategory}`;
+            ? apiUrl("/api/categories/getAllCategories")
+            : apiUrl(
+                `/api/categories/getAllCategories?category=${activeCategory}`,
+              );
 
         const response = await axios.get(url);
         let fetchedData = response.data.data || [];

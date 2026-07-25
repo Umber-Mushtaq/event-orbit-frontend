@@ -4,6 +4,7 @@ import axios from "axios";
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +20,7 @@ export const useLogin = () => {
     // hooks/useLogin.js
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${API_BASE_URL}/api/auth/login`,
         {
           email,
           password,
@@ -27,7 +28,6 @@ export const useLogin = () => {
       );
 
       const { token, user } = response.data;
-      console.log(user);
       if (user.role === "vendor" && !user.isApproved) {
         setError("Your vendor account is pending admin approval.");
         setLoading(false);
@@ -49,7 +49,6 @@ export const useLogin = () => {
         }
       }, 1500);
     } catch (err) {
-      console.log(err.response.data);
       const backendMessage =
         err.response?.data?.message || "Invalid email or password.";
       setError(backendMessage);

@@ -29,7 +29,7 @@ function CategoryDetailModal({ open, category, onClose }) {
           </div>
           <div className='absolute bottom-0 left-0 right-0 p-6'>
             <p className='text-xs font-semibold uppercase tracking-[0.24em] text-border-gold-hover/80'>
-              Category Details
+              Service Details
             </p>
             <h3 className='mt-2 text-3xl font-black text-white'>{category.name}</h3>
           </div>

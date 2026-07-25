@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../config/api";
 
 export const useVendorDashboard = () => {
   const [metrics, setMetrics] = useState(null);
@@ -16,15 +17,9 @@ export const useVendorDashboard = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         const [metricsRes, bookingsRes, reviewsRes] = await Promise.all([
-          axios.get(
-            "http://localhost:5000/api/vendor/dashboard-overview",
-            config,
-          ),
-          axios.get(
-            "http://localhost:5000/api/vendor/upcoming-bookings",
-            config,
-          ),
-          axios.get("http://localhost:5000/api/vendor/recent-reviews", config),
+          axios.get(apiUrl("/api/vendor/dashboard-overview"), config),
+          axios.get(apiUrl("/api/vendor/upcoming-bookings"), config),
+          axios.get(apiUrl("/api/vendor/recent-reviews"), config),
         ]);
 
         setMetrics(metricsRes.data.metrics);

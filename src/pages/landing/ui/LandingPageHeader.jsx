@@ -64,8 +64,8 @@ function LandingPageHeader() {
         <NavLink to='/' className={linkClasses}>
           Home
         </NavLink>
-        <NavLink to='/services' className={linkClasses}>
-          Services
+        <NavLink to='/categories' className={linkClasses}>
+          Categories
         </NavLink>
         <NavLink to='/vendors' className={linkClasses}>
           Vendors
@@ -135,8 +135,8 @@ function LandingPageHeader() {
             <NavLink to='/' className={linkClasses}>
               Home
             </NavLink>
-            <NavLink to='/services' className={linkClasses}>
-              Services
+            <NavLink to='/categories' className={linkClasses}>
+              Categories
             </NavLink>
             <NavLink to='/vendors' className={linkClasses}>
               Vendors

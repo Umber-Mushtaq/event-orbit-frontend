@@ -4,13 +4,12 @@ import { usePublicServiceDetails } from "../../../hooks/usePublicServiceDetails"
 
 export function useServiceDetailsUtils() {
   const location = useLocation();
-  const { serviceId, vendorId } = useParams();
+  const { serviceId, id, vendorId: routeVendorId } = useParams();
+  const resolvedServiceId = serviceId || id || null;
 
   // 1. Destructure the refetch or refetchReviewData function if your base hook provides one!
   const { service, reviews, loading, error, refetch } =
-    usePublicServiceDetails(serviceId);
-  console.log("service details utils ------", serviceId, vendorId);
-
+    usePublicServiceDetails(resolvedServiceId);
   const [isFavorite, setIsFavorite] = useState(false);
   const token = localStorage.getItem("token");
 
@@ -19,12 +18,15 @@ export function useServiceDetailsUtils() {
     ? "/customer/dashboard/services"
     : "/services";
 
+  const vendorId =
+    service?.vendor?._id || service?.vendor?.id || routeVendorId || null;
+
   // Build the unified safe redirect target path string
   const checkoutBookingPath = !token
     ? "/auth/register"
     : isDashboardView
-      ? `/customer/dashboard/checkout/${serviceId}/vendor/${vendorId}`
-      : `/checkout/${serviceId}/vendor/${vendorId}`;
+      ? `/customer/dashboard/checkout/${resolvedServiceId}/vendor/${vendorId}`
+      : `/checkout/${resolvedServiceId}/vendor/${vendorId}`;
 
   return {
     loading,

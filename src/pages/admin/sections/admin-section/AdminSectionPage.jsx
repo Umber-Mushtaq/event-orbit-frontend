@@ -114,7 +114,7 @@ function AdminSectionPage({ sectionKey }) {
     switch (sectionKey) {
       case "events":
         return <EventsManagementPage />;
-      case "event-categories":
+      case "services":
         return <EventCategoriesPage />;
       case "vendors":
         return <VendorManagementPage />;

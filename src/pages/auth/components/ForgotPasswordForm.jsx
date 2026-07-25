@@ -1,4 +1,4 @@
-import { Mail, ArrowLeft, Loader2 } from "lucide-react";
+import { Mail, Loader2 } from "lucide-react";
 
 function ForgotPasswordForm({ email, setEmail, loading, onSubmit }) {
   return (

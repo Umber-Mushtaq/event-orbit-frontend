@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export function useWishlist() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const API_BASE_URL = "http://localhost:5000/api";
 
   const fetchWishlist = async () => {
     try {
@@ -14,7 +13,7 @@ export function useWishlist() {
       setError(null);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(`${API_BASE_URL}/wishlist`, {
+      const response = await axios.get(apiUrl("/api/wishlist"), {
         headers: { Authorization: `Bearer ${token}` },
       });
 

@@ -14,12 +14,16 @@ export function useServiceCardUtils(service) {
     }
   };
 
-  const serviceId = service?.id || service?._id;
-  const vendorId = service?.vendor?.id || service?.vendor?._id;
+  const serviceId =
+    service?.categoryId ||
+    service?.category?.id ||
+    service?.category?._id ||
+    service?.id ||
+    service?._id;
 
   const navigationTarget = isDashboardView
-    ? `/customer/dashboard/service/${serviceId}/vendor/${vendorId}`
-    : `/service/${serviceId}/vendor/${vendorId}`;
+    ? `/customer/dashboard/categories/${serviceId}`
+    : `/categories/${serviceId}`;
 
   const fallbackAvatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
     service?.vendor?.businessName || "Vendor",

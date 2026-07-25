@@ -22,9 +22,9 @@ const SIDEBAR_ITEMS = [
   },
   {
     id: "services",
-    label: "Service Listings",
+    label: "Category Listings",
     Icon: FolderKanban,
-    to: "/customer/dashboard/services",
+    to: "/customer/dashboard/categories",
   },
   {
     id: "bookings",

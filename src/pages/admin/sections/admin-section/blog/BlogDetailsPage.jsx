@@ -7,6 +7,7 @@ import {
   useAdminBlogs,
 } from "../../../../../hooks/admin-hook/blog/useAdminBlogs";
 import { getAdminErrorMessage } from "../../../../../services/adminApi";
+import { sanitizeHtml } from "../../../../../utils/sanitizeHtml";
 
 function BlogDetailsPage() {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ function BlogDetailsPage() {
             <p className='text-sm leading-relaxed text-stone-300'>{blog.excerpt}</p>
             <div
               className='prose prose-invert mt-6 max-w-none text-sm leading-7 text-stone-200 prose-headings:text-white prose-strong:text-white'
-              dangerouslySetInnerHTML={{ __html: blog.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(blog.content) }}
             />
           </div>
         </div>

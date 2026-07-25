@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export const useCreateService = () => {
   const [title, setTitle] = useState("");
@@ -20,9 +21,7 @@ export const useCreateService = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/categories",
-        );
+        const response = await axios.get(apiUrl("/api/categories"));
         setCategories(response.data.categories || response.data);
       } catch (err) {
         console.error("Failed to load categories:", err);
@@ -58,7 +57,7 @@ export const useCreateService = () => {
         formData.append("images", file);
       });
 
-      await axios.post("http://localhost:5000/api/vendor/services", formData, {
+      await axios.post(apiUrl("/api/vendor/services"), formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

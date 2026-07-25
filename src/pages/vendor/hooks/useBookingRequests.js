@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export function useBookingRequests() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,7 +18,7 @@ export function useBookingRequests() {
         const token = localStorage.getItem("token");
 
         const response = await axios.get(
-          "http://localhost:5000/api/bookings/requests",
+          `${API_BASE_URL}/api/bookings/requests`,
           {
             headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal,
@@ -48,7 +49,7 @@ export function useBookingRequests() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `http://localhost:5000/api/bookings/requests/${id}`,
+        `${API_BASE_URL}/api/bookings/requests/${id}`,
         { status: actionStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       );

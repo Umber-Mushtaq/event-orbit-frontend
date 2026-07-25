@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import AvatarPlaceholder from "../../../assets/avatar3.jpg"; // Adjust path if needed
+import { apiUrl } from "../config/api";
 
 export const useVendorProfile = () => {
   // 1. INPUT FORM STATES
@@ -44,10 +45,7 @@ export const useVendorProfile = () => {
         setLoading(true);
         const config = getAuthConfig();
 
-        const response = await axios.get(
-          "http://localhost:5000/api/vendor/profile",
-          config,
-        );
+        const response = await axios.get(apiUrl("/api/vendor/profile"), config);
 
         // Match the backend payload: looks for response.data.profile first
         const vendor =
@@ -141,11 +139,7 @@ export const useVendorProfile = () => {
       const config = getAuthConfig();
       config.headers["Content-Type"] = "multipart/form-data";
 
-      const response = await axios.put(
-        "http://localhost:5000/api/vendor/profile",
-        formData,
-        config,
-      );
+      const response = await axios.put(apiUrl("/api/vendor/profile"), formData, config);
 
       if (response.data.success || response.status === 200) {
         setSuccess(

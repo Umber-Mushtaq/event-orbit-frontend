@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { apiUrl } from "../config/api";
 
 export function usePublicVendorProfile(vendorId) {
   const [profile, setProfile] = useState(null);
@@ -10,9 +11,7 @@ export function usePublicVendorProfile(vendorId) {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/vendor/Profile/${vendorId}`,
-        );
+        const res = await axios.get(apiUrl(`/api/vendor/Profile/${vendorId}`));
         if (res.data?.success) {
           setProfile(res.data.profile);
           setReviews(res.data.reviews || []);

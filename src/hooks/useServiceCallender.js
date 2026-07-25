@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export const useServiceCalendar = (serviceId) => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   // Initialize calendar view context (e.g., June 2026 baseline context)
   const [currentDate, setCurrentDate] = useState(new Date(2026, 5, 1));
   const [selectedDate, setSelectedDate] = useState(null);
@@ -20,8 +21,8 @@ export const useServiceCalendar = (serviceId) => {
 
         // Build the dynamic URL query parameters dynamically
         const url = serviceId
-          ? `http://localhost:5000/api/bookings/booked-dates?serviceId=${serviceId}`
-          : `http://localhost:5000/api/bookings/booked-dates`; // Triggers your smart token fallback on backend
+          ? `${API_BASE_URL}/api/bookings/booked-dates?serviceId=${serviceId}`
+          : `${API_BASE_URL}/api/bookings/booked-dates`; // Triggers your smart token fallback on backend
 
         const response = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },

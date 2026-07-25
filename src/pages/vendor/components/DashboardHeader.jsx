@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router";
 import AvatarPlaceholder from "../../../assets/avatar3.jpg";
 import ThemeToggle from "../../../shared_components/ThemeToggle";
+import { apiUrl } from "../../../config/api";
 
 export function DashboardHeader() {
   const [avatarPreview, setAvatarPreview] = useState(AvatarPlaceholder);
@@ -18,10 +19,7 @@ export function DashboardHeader() {
           },
         };
 
-        const response = await axios.get(
-          "http://localhost:5000/api/vendor/profile",
-          config,
-        );
+        const response = await axios.get(apiUrl("/api/vendor/profile"), config);
 
         const vendor =
           response.data.profile || response.data.vendor || response.data;

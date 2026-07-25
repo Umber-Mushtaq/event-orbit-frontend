@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+import { API_BASE_URL } from "../config/api";
 
 export const adminApi = axios.create({
   baseURL: API_BASE_URL,
@@ -62,6 +61,14 @@ export const adminEventsApi = {
   create: (payload) => adminApi.post("/api/admin/events", payload),
   update: (id, payload) => adminApi.patch(`/api/admin/events/${id}`, payload),
   remove: (id) => adminApi.delete(`/api/admin/events/${id}`),
+};
+
+export const adminServicesApi = {
+  list: (params) => adminApi.get("/api/admin/services", { params: buildParams(params) }),
+  getById: (id) => adminApi.get(`/api/admin/services/${id}`),
+  create: (payload) => adminApi.post("/api/admin/services", payload),
+  update: (id, payload) => adminApi.patch(`/api/admin/services/${id}`, payload),
+  remove: (id) => adminApi.delete(`/api/admin/services/${id}`),
 };
 
 export const adminCategoriesApi = {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 export const useRegister = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -56,7 +57,7 @@ export const useRegister = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        `${API_BASE_URL}/api/auth/register`,
         dataToSend,
         {
           headers: {

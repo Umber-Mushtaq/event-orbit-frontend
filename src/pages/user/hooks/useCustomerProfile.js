@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 
 export function useCustomerProfile() {
   const [firstName, setFirstName] = useState("");
@@ -24,12 +25,9 @@ export function useCustomerProfile() {
     const fetchProfileData = async () => {
       try {
         setStatus((prev) => ({ ...prev, loading: true }));
-        const res = await axios.get(
-          "http://localhost:5000/api/userDashboard/profile",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const res = await axios.get(apiUrl("/api/userDashboard/profile"), {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         console.log("Raw API Response:", res.data);
 
@@ -76,16 +74,12 @@ export function useCustomerProfile() {
         formData.append("avatar", imageFile); // Matches your backend upload.single("avatar") key!
       }
 
-      const res = await axios.put(
-        "http://localhost:5000/api/userDashboard/profile",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+      const res = await axios.put(apiUrl("/api/userDashboard/profile"), formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
 
       const updatedData = res.data.profile || res.data;
 
