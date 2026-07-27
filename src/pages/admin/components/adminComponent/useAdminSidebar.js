@@ -4,6 +4,7 @@ import {
   adminProfileApi,
   getAdminErrorMessage,
 } from "../../../../services/adminApi";
+import { showToast } from "../../../../shared_components/toastStore";
 
 const MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -22,7 +23,6 @@ function useAdminSidebar(navigate) {
   const [avatarPreview, setAvatarPreview] = useState("");
   const [avatarFileName, setAvatarFileName] = useState("");
   const [avatarDragging, setAvatarDragging] = useState(false);
-  const [toast, setToast] = useState(null);
   const [profile, setProfile] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("user") || "null");
@@ -79,12 +79,6 @@ function useAdminSidebar(navigate) {
     [],
   );
 
-  useEffect(() => {
-    if (!toast) return undefined;
-    const timer = window.setTimeout(() => setToast(null), 2800);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
-
   const profileAvatar = profile?.avatarUrl || profile?.avatar || profile?.profileImage || "";
   const avatarDisplay = avatarPreview || profileAvatar;
   const profileName = `${profile?.firstName || profile?.name?.split(" ")?.[0] || "Admin"} ${
@@ -97,7 +91,7 @@ function useAdminSidebar(navigate) {
     return `${first?.[0] || "A"}${last?.[0] || ""}`.toUpperCase();
   }, [profile]);
 
-  const setUploadToast = (type, message) => setToast({ type, message });
+  const setUploadToast = (type, message) => showToast({ type, message });
   const openAvatarPicker = () => fileInputRef.current?.click();
   const resetAvatarState = () => {
     setProfileError("");
@@ -232,7 +226,6 @@ function useAdminSidebar(navigate) {
     preferencesError,
     avatarFileName,
     avatarDragging,
-    toast,
     setAvatarDragging,
     profile,
     setProfile,

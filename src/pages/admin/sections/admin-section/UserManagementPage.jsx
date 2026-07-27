@@ -4,6 +4,7 @@ import SharedHeader from "../../components/adminComponent/shared/SharedHeader";
 import SharedTable from "../../components/adminComponent/shared/SharedTable";
 import { userStatusStyles } from "../../data/admin-data/userManagementData";
 import { adminUsersApi, getAdminErrorMessage } from "../../../../services/adminApi";
+import CustomLoading from "../../../../shared_components/CustomLoading";
 
 function UserManagementPage() {
   const [users, setUsers] = useState([]);
@@ -118,6 +119,10 @@ function UserManagementPage() {
     },
   ];
 
+  if (loading) {
+    return <CustomLoading msg='Loading users...' />;
+  }
+
   return (
     <div className="space-y-6">
       <SharedHeader
@@ -150,7 +155,7 @@ function UserManagementPage() {
           showFilters={false}
           showSort={false}
           showActions={false}
-          emptyMessage={loading ? "Loading users..." : "No users found."}
+          emptyMessage='No users found.'
         />
       </section>
     </div>

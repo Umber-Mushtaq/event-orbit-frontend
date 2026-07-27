@@ -11,6 +11,7 @@ import RecentActivities from "../../components/adminComponent/RecentActivities";
 import ChartCard from "../../components/adminComponent/ChartCard";
 import Badge from "../../components/adminComponent/Badge";
 import { adminDashboardApi, getAdminErrorMessage } from "../../../../services/adminApi";
+import CustomLoading from "../../../../shared_components/CustomLoading";
 
 function MiniCard({ label, value, tone = "default" }) {
   return (
@@ -60,15 +61,21 @@ function AdminSectionPage({ sectionKey }) {
     activities: [],
     notifications: [],
   });
+  const [loading, setLoading] = useState(["analytics", "notifications"].includes(sectionKey));
   const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
 
     const loadSectionData = async () => {
-      if (!["analytics", "notifications"].includes(sectionKey)) return;
+      if (!["analytics", "notifications"].includes(sectionKey)) {
+        setLoading(false);
+        return;
+      }
 
       try {
+        setLoading(true);
+        setError("");
         const [
           revenueRes,
           statusRes,
@@ -100,6 +107,8 @@ function AdminSectionPage({ sectionKey }) {
             "Failed to load admin section data.",
           ),
         );
+      } finally {
+        if (active) setLoading(false);
       }
     };
 
@@ -108,7 +117,7 @@ function AdminSectionPage({ sectionKey }) {
     return () => {
       active = false;
     };
-  }, [sectionKey]);
+  }, [analytics, sectionKey]);
 
   const content = useMemo(() => {
     switch (sectionKey) {
@@ -192,7 +201,7 @@ function AdminSectionPage({ sectionKey }) {
           {error}
         </div>
       ) : null}
-      {content}
+      {loading ? <CustomLoading msg='Loading admin data...' /> : content}
     </div>
   );
 }

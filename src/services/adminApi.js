@@ -110,8 +110,22 @@ export const adminCalendarApi = {
 export const adminBlogsApi = {
   list: (params) => adminApi.get("/api/admin/blogs", { params: buildParams(params) }),
   getById: (id) => adminApi.get(`/api/admin/blogs/${id}`),
-  create: (payload) => adminApi.post("/api/admin/blogs", payload),
-  update: (id, payload) => adminApi.patch(`/api/admin/blogs/${id}`, payload),
+  create: (payload) =>
+    adminApi.post(
+      "/api/admin/blogs",
+      payload,
+      payload instanceof FormData
+        ? { headers: { "Content-Type": "multipart/form-data" } }
+        : undefined,
+    ),
+  update: (id, payload) =>
+    adminApi.patch(
+      `/api/admin/blogs/${id}`,
+      payload,
+      payload instanceof FormData
+        ? { headers: { "Content-Type": "multipart/form-data" } }
+        : undefined,
+    ),
   remove: (id) => adminApi.delete(`/api/admin/blogs/${id}`),
 };
 

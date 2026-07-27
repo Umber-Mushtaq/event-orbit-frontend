@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import BlogActionMenu from "../../../components/adminComponent/blog/BlogActionMenu";
 import BlogDeleteModal from "../../../components/adminComponent/blog/BlogDeleteModal";
@@ -8,25 +8,21 @@ import {
 } from "../../../../../hooks/admin-hook/blog/useAdminBlogs";
 import { getAdminErrorMessage } from "../../../../../services/adminApi";
 import { sanitizeHtml } from "../../../../../utils/sanitizeHtml";
+import CustomLoading from "../../../../../shared_components/CustomLoading";
 
 function BlogDetailsPage() {
   const navigate = useNavigate();
   const { blogId } = useParams();
   const { getBlogById, deleteBlog, loading } = useAdminBlogs();
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [blog, setBlog] = useState(null);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    setBlog(blogId ? getBlogById(blogId) || null : null);
-  }, [blogId, getBlogById]);
+  const blog = useMemo(
+    () => (blogId ? getBlogById(blogId) || null : null),
+    [blogId, getBlogById],
+  );
 
   if (loading) {
-    return (
-      <section className='rounded-[2rem] border border-border-gold/15 bg-[#141414]/90 p-6 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
-        <p className='text-sm text-stone-300'>Loading blog post...</p>
-      </section>
-    );
+    return <CustomLoading msg='Loading blog post...' />;
   }
 
   if (!blog) {
@@ -97,7 +93,7 @@ function BlogDetailsPage() {
           <div className='min-w-0'>
             <p className='text-sm leading-relaxed text-stone-300'>{blog.excerpt}</p>
             <div
-              className='prose prose-invert mt-6 max-w-none text-sm leading-7 text-stone-200 prose-headings:text-white prose-strong:text-white'
+              className='prose prose-invert mt-6 max-w-none overflow-x-auto text-sm leading-7 text-stone-200 prose-headings:text-white prose-strong:text-white [&_a]:text-border-gold-hover [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-border-gold/40 [&_blockquote]:pl-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p]:leading-relaxed [&_table]:my-5 [&_table]:w-full [&_table]:min-w-[560px] [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-2xl [&_table]:border [&_table]:border-white/10 [&_tbody_tr:nth-child(even)]:bg-white/[0.03] [&_td]:border [&_td]:border-white/10 [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_th]:border [&_th]:border-white/10 [&_th]:bg-glass-gold [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-bold [&_th]:text-border-gold-hover [&_ul]:list-disc [&_ul]:pl-6'
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(blog.content) }}
             />
           </div>

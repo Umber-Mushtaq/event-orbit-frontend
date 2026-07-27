@@ -1,19 +1,26 @@
-import React, { useState } from "react";
-import { Star, Send, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { Star, Send } from "lucide-react";
 import axios from "axios";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { apiUrl } from "../../../config/api";
+import { showToast } from "../../../shared_components/toastStore";
 
 // 1. Destructure the new props passed down from the parent component
-export function Reviews({ reviews = [], onReviewSubmitted }) {
+export function Reviews({
+  reviews = [],
+  serviceId: serviceIdProp,
+  vendorId: vendorIdProp,
+  onReviewSubmitted,
+}) {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const { serviceId, vendorId } = useParams();
-  console.log("reviews--------", vendorId, serviceId);
+  const navigate = useNavigate();
+  const params = useParams();
+  const serviceId = serviceIdProp || params.serviceId || params.id;
+  const vendorId = vendorIdProp || params.vendorId;
+
   const formatDate = (dateString) => {
     if (!dateString) return "Recent Review";
     try {
@@ -21,7 +28,7 @@ export function Reviews({ reviews = [], onReviewSubmitted }) {
         month: "short",
         year: "numeric",
       });
-    } catch (e) {
+    } catch {
       return "Recent Review";
     }
   };
@@ -29,22 +36,43 @@ export function Reviews({ reviews = [], onReviewSubmitted }) {
   // 2. Submit handler interacting with the backend API
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-    setSuccessMessage("");
 
     // Form validation check blocks
     if (rating === 0) {
-      setErrorMessage("Please select a rating between 1 and 5 stars.");
+      showToast({
+        type: "error",
+        message: "Please select a rating between 1 and 5 stars.",
+      });
       return;
     }
     if (!comment.trim()) {
-      setErrorMessage("Review commentary text body cannot be empty.");
+      showToast({
+        type: "error",
+        message: "Review commentary text body cannot be empty.",
+      });
       return;
     }
 
     try {
       setIsSubmitting(true);
       const token = localStorage.getItem("token");
+
+      if (!token) {
+        showToast({
+          type: "error",
+          message: "Please sign in to rate this service.",
+        });
+        navigate("/auth/login");
+        return;
+      }
+
+      if (!serviceId || !vendorId) {
+        showToast({
+          type: "error",
+          message: "Unable to identify this service or vendor.",
+        });
+        return;
+      }
 
       const response = await axios.post(
         apiUrl("/api/reviews"),
@@ -53,7 +81,10 @@ export function Reviews({ reviews = [], onReviewSubmitted }) {
       );
 
       if (response.data.success) {
-        setSuccessMessage("Your experience review was posted successfully!");
+        showToast({
+          type: "success",
+          message: "Your experience review was posted successfully!",
+        });
         setComment("");
         setRating(0);
 
@@ -63,9 +94,10 @@ export function Reviews({ reviews = [], onReviewSubmitted }) {
         }
       }
     } catch (err) {
-      setErrorMessage(
-        err.response?.data?.message || "Failed to submit your review.",
-      );
+      showToast({
+        type: "error",
+        message: err.response?.data?.message || "Failed to submit your review.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -119,22 +151,6 @@ export function Reviews({ reviews = [], onReviewSubmitted }) {
               className='w-full bg-neutral-950 border border-white/10 text-stone-200 placeholder-stone-600 rounded-xl p-4 font-poppins text-xs leading-relaxed focus:outline-none focus:border-amber-400/50 transition-colors resize-none'
             />
           </div>
-
-          {/* Error Notice Display Element */}
-          {errorMessage && (
-            <div className='flex items-center gap-2 text-red-400 font-poppins text-xs bg-red-500/10 p-3 rounded-xl border border-red-500/20'>
-              <AlertCircle className='w-4 h-4 shrink-0' />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-
-          {/* Success Notice Display Element */}
-          {successMessage && (
-            <div className='flex items-center gap-2 text-emerald-400 font-poppins text-xs bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20'>
-              <CheckCircle2 className='w-4 h-4 shrink-0' />
-              <span>{successMessage}</span>
-            </div>
-          )}
 
           {/* Action Trigger Button */}
           <button

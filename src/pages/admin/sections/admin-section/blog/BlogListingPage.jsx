@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { Link } from "react-router";
 import BlogCard from "../../../components/adminComponent/blog/BlogCard";
 import { useAdminBlogs } from "../../../../../hooks/admin-hook/blog/useAdminBlogs";
+import CustomLoading from "../../../../../shared_components/CustomLoading";
 
 function BlogListingPage() {
   const { blogs, loading, error } = useAdminBlogs();
@@ -37,9 +38,7 @@ function BlogListingPage() {
           {error}
         </div>
       ) : loading ? (
-        <div className='rounded-[2rem] border border-white/8 bg-[#141414]/90 p-8 text-center text-stone-400 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
-          Loading blog posts...
-        </div>
+        <CustomLoading msg='Loading blog posts...' />
       ) : blogs.length ? (
         <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-3'>
           {blogs.map((blog) => (

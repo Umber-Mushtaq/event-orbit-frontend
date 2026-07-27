@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapPin, Plus, Star } from "lucide-react";
 import SharedHeader from "../../components/adminComponent/shared/SharedHeader";
 import SharedCards from "../../components/adminComponent/shared/SharedCards";
@@ -18,6 +18,8 @@ import {
   getAdminErrorMessage,
 } from "../../../../services/adminApi";
 import { mapAdminVendor } from "../../../../utils/adminTransformers";
+import { showToast } from "../../../../shared_components/toastStore";
+import CustomLoading from "../../../../shared_components/CustomLoading";
 
 const getVendorInitials = (name = "") =>
   name
@@ -63,8 +65,6 @@ function VendorManagementPage() {
   const [error, setError] = useState("");
   const [statusEditorId, setStatusEditorId] = useState(null);
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
-  const [statusFeedback, setStatusFeedback] = useState(null);
-  const feedbackTimerRef = useRef(null);
 
   const loadVendors = useCallback(async () => {
     setLoading(true);
@@ -96,24 +96,8 @@ function VendorManagementPage() {
     };
   }, [loadVendors]);
 
-  useEffect(
-    () => () => {
-      if (feedbackTimerRef.current) {
-        window.clearTimeout(feedbackTimerRef.current);
-      }
-    },
-    [],
-  );
-
   const pushStatusFeedback = useCallback((type, message) => {
-    if (feedbackTimerRef.current) {
-      window.clearTimeout(feedbackTimerRef.current);
-    }
-
-    setStatusFeedback({ type, message });
-    feedbackTimerRef.current = window.setTimeout(() => {
-      setStatusFeedback(null);
-    }, 2400);
+    showToast({ type, message });
   }, []);
 
   const rows = useMemo(() => vendors, [vendors]);
@@ -222,6 +206,10 @@ function VendorManagementPage() {
     },
   ];
 
+  if (loading) {
+    return <CustomLoading msg='Loading vendors...' />;
+  }
+
   const handleSave = async (payload) => {
     if (
       !payload.name.trim() ||
@@ -321,23 +309,6 @@ function VendorManagementPage() {
           {error}
         </div>
       ) : null}
-      {statusFeedback ? (
-        <div
-          className={`fixed right-4 top-4 z-[90] rounded-2xl border px-4 py-3 text-sm shadow-[0_20px_60px_rgba(0,0,0,0.45)] sm:right-6 sm:top-6 ${
-            statusFeedback.type === "success"
-              ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200"
-              : "border-red-500/20 bg-red-500/10 text-red-200"
-          }`}
-        >
-          {statusFeedback.message}
-        </div>
-      ) : null}
-      {loading ? (
-        <div className="rounded-2xl border border-admin-border bg-admin-input px-4 py-3 text-sm text-admin-foreground">
-          Loading vendors...
-        </div>
-      ) : null}
-
       <SharedTable
         rows={rows}
         query={query}

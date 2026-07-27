@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import AvailabilityCalendar from "./AvailabilityCalender";
 import CustomHeader from "../../../shared_components/CustomHeader";
 import StatusIndicator from "../../../shared_components/StatusIndecator";
+import CustomLoading from "../../../shared_components/CustomLoading";
 import { usePublicServiceDetails } from "../../../hooks/usePublicServiceDetails";
 
 export default function CheckoutPage() {
@@ -134,13 +135,7 @@ export default function CheckoutPage() {
   };
 
   if (isLoading || serviceLoading) {
-    return (
-      <div className='flex items-center justify-center min-h-screen bg-neutral-950 text-amber-400'>
-        <p className='text-xl font-semibold tracking-wider animate-pulse'>
-          Verifying Credentials...
-        </p>
-      </div>
-    );
+    return <CustomLoading msg='Loading checkout...' />;
   }
 
   if (serviceError) {

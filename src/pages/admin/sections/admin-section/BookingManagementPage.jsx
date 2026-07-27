@@ -13,6 +13,7 @@ import {
   formatAdminCurrency,
   mapAdminBooking,
 } from "../../../../utils/adminTransformers";
+import CustomLoading from "../../../../shared_components/CustomLoading";
 
 function BookingManagementPage() {
   const [bookings, setBookings] = useState([]);
@@ -61,6 +62,10 @@ function BookingManagementPage() {
     ];
   }, [bookings]);
 
+  if (loading) {
+    return <CustomLoading msg='Loading bookings...' />;
+  }
+
   const handleSave = async (payload) => {
     if (!payload.event.trim() || !payload.amount.trim()) return;
 
@@ -94,12 +99,6 @@ function BookingManagementPage() {
           {error}
         </div>
       ) : null}
-      {loading ? (
-        <div className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm text-stone-300">
-          Loading bookings...
-        </div>
-      ) : null}
-
       <SharedTable
         rows={rows}
         columns={[
@@ -149,7 +148,7 @@ function BookingManagementPage() {
         showFilters={false}
         showSort={false}
         showActions={false}
-        emptyMessage={loading ? "Loading bookings..." : "No bookings found."}
+        emptyMessage='No bookings found.'
       />
 
       <BookingFormModal

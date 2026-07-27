@@ -3,9 +3,14 @@ import { Heart } from "lucide-react";
 import { useWishlist } from "../hooks/useWishlist";
 import WishlistCard from "../components/WishlistCard";
 import StatusIndecator from "../../../shared_components/StatusIndecator";
+import CustomLoading from "../../../shared_components/CustomLoading";
 
 function Wishlist() {
   const { wishlist, loading, error, fetchWishlist } = useWishlist();
+
+  if (loading) {
+    return <CustomLoading msg='Loading wishlist...' />;
+  }
 
   return (
     <section className='w-full flex flex-col items-center px-4'>
@@ -19,14 +24,8 @@ function Wishlist() {
         </div>
       )}
 
-      {loading && (
-        <div className='text-center py-20 text-sm text-stone-400 font-poppins'>
-          Retrieving your premium bookmarked collections...
-        </div>
-      )}
-
       {/* Dynamic Data Content Presenter */}
-      {!loading && wishlist.length > 0 && (
+      {wishlist.length > 0 && (
         <div className='w-full max-w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 z-10 relative px-1'>
           {wishlist.map((item) => (
             <WishlistCard
@@ -39,7 +38,7 @@ function Wishlist() {
       )}
 
       {/* FALLBACK EMPTY STATE VIEW */}
-      {!loading && wishlist.length === 0 && (
+      {wishlist.length === 0 && (
         <div className='w-full max-w-md mx-auto flex flex-col items-center justify-center py-20 text-center border border-white/5 rounded-3xl bg-neutral-900 z-10 relative'>
           <div className='w-14 h-14 rounded-full bg-neutral-950 border border-white/5 text-amber-400 flex items-center justify-center mb-4'>
             <Heart className='w-6 h-6 text-amber-400 opacity-40 animate-pulse' />

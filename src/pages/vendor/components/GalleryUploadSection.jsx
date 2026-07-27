@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Upload } from "lucide-react";
 import CreateServiceFormHeaders from "./CreateServiceFormHeaders";
 import GalleryPreviewItem from "../components/GalleryPreviewItem";
+import { showToast } from "../../../shared_components/toastStore";
 
 function GalleryUploadSection({ form }) {
   const fileInputRef = useRef(null);
@@ -20,7 +21,10 @@ function GalleryUploadSection({ form }) {
     const freshFiles = Array.from(e.target.files);
 
     if (currentImagesArray.length + freshFiles.length > 6) {
-      alert("You can only upload up to 6 portfolio pictures.");
+      showToast({
+        type: "error",
+        message: "You can only upload up to 6 portfolio pictures.",
+      });
       return;
     }
 

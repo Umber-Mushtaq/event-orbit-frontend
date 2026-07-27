@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiUrl } from "../config/api";
+import { showToast } from "../shared_components/toastStore";
 
 export const useManageServices = () => {
   const [services, setServices] = useState([]);
@@ -61,9 +62,11 @@ export const useManageServices = () => {
       setIsModalOpen(false);
       setSelectedServiceId(null);
     } catch (err) {
-      alert(
-        err.response?.data?.message || "Could not complete deletion request.",
-      );
+      showToast({
+        type: "error",
+        message:
+          err.response?.data?.message || "Could not complete deletion request.",
+      });
     } finally {
       setDeleteLoading(false);
     }

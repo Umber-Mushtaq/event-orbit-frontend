@@ -1,16 +1,13 @@
-import { Star, SlidersHorizontal, Loader2, AlertCircle } from "lucide-react";
+import { Star, SlidersHorizontal, AlertCircle } from "lucide-react";
 import { useServiceReviews } from "../hooks/useServerReviews";
+import CustomLoading from "../../../shared_components/CustomLoading";
 
 function ServiceReviews() {
   const { reviews, stats, filter, setFilter, loading, error } =
     useServiceReviews();
 
   if (loading && reviews.length === 0) {
-    return (
-      <div className='w-full min-h-screen flex items-center justify-center bg-neutral-950'>
-        <Loader2 className='w-10 h-10 animate-spin text-border-gold' />
-      </div>
-    );
+    return <CustomLoading msg='Loading service reviews...' />;
   }
 
   return (

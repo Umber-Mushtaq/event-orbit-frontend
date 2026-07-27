@@ -111,18 +111,6 @@ function AdminSidebar({ isCollapsed, isMobileOpen, closeMobileOpen, toggleCollap
         preferencesForm={sidebar.preferencesForm}
         setPreferencesForm={sidebar.setPreferencesForm}
       />
-
-      {sidebar.toast ? (
-        <div
-          className={`fixed right-4 top-4 z-[90] max-w-sm rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur-xl ${
-            sidebar.toast.type === "success"
-              ? "border-emerald-400/25 bg-emerald-500/10 text-emerald-200"
-              : "border-red-400/25 bg-red-500/10 text-red-200"
-          }`}
-        >
-          <p className='text-sm font-semibold'>{sidebar.toast.message}</p>
-        </div>
-      ) : null}
     </>
   );
 }

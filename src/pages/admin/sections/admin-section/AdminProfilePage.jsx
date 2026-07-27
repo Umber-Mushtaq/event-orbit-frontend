@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { UploadCloud, Loader2, UserCircle2 } from "lucide-react";
+import { UploadCloud, Loader2 } from "lucide-react";
 import { adminProfileApi, getAdminErrorMessage } from "../../../../services/adminApi";
+import StatusIndicator from "../../../../shared_components/StatusIndecator";
+import CustomLoading from "../../../../shared_components/CustomLoading";
 
 const MAX_AVATAR_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -140,7 +142,7 @@ function AdminProfilePage() {
   };
 
   if (loading) {
-    return <p className="text-xs text-stone-500">Loading profile...</p>;
+    return <CustomLoading msg='Loading profile...' />;
   }
 
   return (
@@ -152,16 +154,7 @@ function AdminProfilePage() {
         </p>
       </div>
 
-      {error ? (
-        <p className="mt-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-          {error}
-        </p>
-      ) : null}
-      {success ? (
-        <p className="mt-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-          {success}
-        </p>
-      ) : null}
+      <StatusIndicator error={error} success={success} />
 
       <form onSubmit={handleSave} className="mt-6 grid gap-4 md:grid-cols-2">
         {[

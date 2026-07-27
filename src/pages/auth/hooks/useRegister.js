@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 
 export const useRegister = () => {
+  const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const [formData, setFormData] = useState({
     firstName: "",
@@ -66,13 +68,7 @@ export const useRegister = () => {
         },
       );
 
-      setSuccess(
-        response.data.message || "Registration completed successfully!",
-      );
-
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-      }
+      setSuccess(response.data.message || "Registration completed successfully!");
 
       setFormData({
         firstName: "",
@@ -84,6 +80,10 @@ export const useRegister = () => {
         profileImage: "",
       });
       setIsVendor(false);
+
+      setTimeout(() => {
+        navigate("/auth/login");
+      }, 1000);
     } catch (err) {
       setError(
         err.response?.data?.message ||

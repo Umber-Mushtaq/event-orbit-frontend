@@ -5,6 +5,7 @@ import { useMyBookings } from "../hooks/useMyBookings";
 // Component Structural Imports
 import ConfirmationModal from "../../../shared_components/ConfirmationModal";
 import StatusIndecator from "../../../shared_components/StatusIndecator";
+import CustomLoading from "../../../shared_components/CustomLoading";
 
 export default function MyBookings() {
   const {
@@ -16,6 +17,10 @@ export default function MyBookings() {
     modalProps,
     openCancelModal,
   } = useMyBookings();
+
+  if (loading) {
+    return <CustomLoading msg='Loading bookings...' />;
+  }
 
   return (
     <div className='w-full max-w-full mx-auto flex flex-col z-10 relative text-white font-poppins px-5'>
@@ -47,22 +52,15 @@ export default function MyBookings() {
         </div>
       )}
 
-      {/* 2. Loading Lifecycle Status Screens */}
-      {loading && (
-        <div className='text-center py-12 text-sm text-stone-400'>
-          Loading secure system configurations...
-        </div>
-      )}
-
       {/* Empty Fallback Block */}
-      {!loading && !error && bookings.length === 0 && (
+      {!error && bookings.length === 0 && (
         <div className='text-center py-16 text-xs uppercase tracking-widest text-stone-500 bg-white/5 border border-white/5 rounded-2xl'>
           No dashboard entries found matching your selected criteria.
         </div>
       )}
 
       {/* 3. Core Operational Interface Grid */}
-      {!loading && !error && bookings.length > 0 && (
+      {!error && bookings.length > 0 && (
         <div className='w-full max-w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 z-10 relative'>
           {bookings.map((booking) => (
             <BookingCard

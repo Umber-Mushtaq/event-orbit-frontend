@@ -10,7 +10,7 @@ function LandingPageVerifiedVendors() {
 
   console.log("vendors-----", vendors);
 
-  if (loading) return <CustomLoading msg='Loading Categories...' />;
+  if (loading) return <CustomLoading msg='Loading vendors...' />;
   if (error) return <CustomError msg={error} />;
 
   return (

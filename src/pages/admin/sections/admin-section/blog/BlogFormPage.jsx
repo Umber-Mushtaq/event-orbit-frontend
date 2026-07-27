@@ -8,15 +8,235 @@ import {
   slugifyBlogTitle,
 } from "../../../../../hooks/admin-hook/blog/useAdminBlogs";
 import { getAdminErrorMessage } from "../../../../../services/adminApi";
+import CustomLoading from "../../../../../shared_components/CustomLoading";
+import { sanitizeHtml } from "../../../../../utils/sanitizeHtml";
 
 const emptyForm = {
   title: "",
   slug: "",
   category: "Planning",
-  status: "Draft",
+  status: "Published",
   excerpt: "",
   content: "",
   featureImage: "",
+};
+
+const escapeHtml = (value) =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+const plainTextToHtml = (text = "") => {
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  const blocks = [];
+  let paragraph = [];
+  let listItems = [];
+  let listType = "";
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    blocks.push(`<p>${paragraph.map(escapeHtml).join("<br>")}</p>`);
+    paragraph = [];
+  };
+
+  const flushList = () => {
+    if (!listItems.length) return;
+    const tag = listType || "ul";
+    blocks.push(`<${tag}>${listItems.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</${tag}>`);
+    listItems = [];
+    listType = "";
+  };
+
+  lines.forEach((rawLine) => {
+    const line = rawLine.trim();
+    const bulletMatch = line.match(/^(?:[-*•‣▪◦])\s+(.+)$/);
+    const orderedMatch = line.match(/^\d+[.)]\s+(.+)$/);
+
+    if (!line) {
+      flushParagraph();
+      flushList();
+      return;
+    }
+
+    if (bulletMatch || orderedMatch) {
+      flushParagraph();
+      const nextType = orderedMatch ? "ol" : "ul";
+      if (listType && listType !== nextType) flushList();
+      listType = nextType;
+      listItems.push(bulletMatch?.[1] || orderedMatch?.[1] || line);
+      return;
+    }
+
+    flushList();
+    paragraph.push(line);
+  });
+
+  flushParagraph();
+  flushList();
+
+  return blocks.join("");
+};
+
+const getCssNumber = (styleValue = "", property) => {
+  const match = styleValue.match(new RegExp(`${property}\\s*:\\s*([\\d.]+)`, "i"));
+  return match ? Number(match[1]) : 0;
+};
+
+const getNodeStyleDetails = (node) => {
+  const styledNodes = [
+    node,
+    ...Array.from(node.querySelectorAll("span, b, strong, font")),
+  ];
+
+  return styledNodes.reduce(
+    (details, currentNode) => {
+      const style = currentNode.getAttribute("style") || "";
+      const className = currentNode.getAttribute("class") || "";
+      const fontSize = getCssNumber(style, "font-size");
+      const fontWeight = getCssNumber(style, "font-weight");
+      const fontWeightName = /font-weight\s*:\s*(bold|bolder)/i.test(style);
+
+      return {
+        className: `${details.className} ${className}`,
+        fontSize: Math.max(details.fontSize, fontSize),
+        isBold:
+          details.isBold ||
+          fontWeight >= 600 ||
+          fontWeightName ||
+          ["B", "STRONG"].includes(currentNode.tagName),
+      };
+    },
+    { className: "", fontSize: 0, isBold: false },
+  );
+};
+
+const isHeadingLikeNode = (node) => {
+  const text = node.textContent?.trim() || "";
+  if (!text || text.length > 140) return "";
+
+  const { className, fontSize, isBold } = getNodeStyleDetails(node);
+  const classLooksLikeHeading = /mso(title|subtitle|heading)|title|heading|subtitle/i.test(
+    className,
+  );
+
+  if (fontSize >= 28) return "h2";
+  if (fontSize >= 20 || classLooksLikeHeading) return "h3";
+  if (isBold && text.split(/\s+/).length <= 14) return "h4";
+  return "";
+};
+
+const normalizePastedStructure = (root) => {
+  root.querySelectorAll("p, div").forEach((node) => {
+    const text = node.textContent?.trim() || "";
+    const style = node.getAttribute("style") || "";
+    const bulletMatch = text.match(/^(?:[-*•‣▪◦])\s+(.+)$/);
+    const orderedMatch = text.match(/^\d+[.)]\s+(.+)$/);
+    const isOfficeList = /mso-list/i.test(style);
+
+    if (bulletMatch || orderedMatch || isOfficeList) {
+      const li = document.createElement("li");
+      li.innerHTML = node.innerHTML.replace(/^(?:\s|&nbsp;|[-*•‣▪◦]|\d+[.)])+/, "");
+      node.replaceWith(li);
+      return;
+    }
+
+    const headingTag = isHeadingLikeNode(node);
+    if (headingTag) {
+      const heading = document.createElement(headingTag);
+      heading.innerHTML = node.innerHTML;
+      node.replaceWith(heading);
+    }
+  });
+
+  const children = Array.from(root.childNodes);
+  let list = null;
+  let listType = "";
+
+  children.forEach((node) => {
+    if (node.nodeType !== Node.ELEMENT_NODE || node.tagName !== "LI") {
+      list = null;
+      listType = "";
+      return;
+    }
+
+    const text = node.textContent?.trim() || "";
+    const nextType = /^\d+[.)]\s+/.test(text) ? "ol" : "ul";
+    if (!list || listType !== nextType) {
+      list = document.createElement(nextType);
+      listType = nextType;
+      node.before(list);
+    }
+
+    list.appendChild(node);
+  });
+};
+
+const cleanPastedHtml = (html = "") => {
+  const template = document.createElement("template");
+  template.innerHTML = sanitizeHtml(html);
+  normalizePastedStructure(template.content);
+
+  const allowedTags = new Set([
+    "A",
+    "B",
+    "BLOCKQUOTE",
+    "BR",
+    "CODE",
+    "DIV",
+    "EM",
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "I",
+    "LI",
+    "OL",
+    "P",
+    "PRE",
+    "SPAN",
+    "STRONG",
+    "TABLE",
+    "TBODY",
+    "TD",
+    "TH",
+    "THEAD",
+    "TR",
+    "U",
+    "UL",
+  ]);
+  const allowedAttributes = {
+    A: ["href", "target", "rel"],
+    TD: ["colspan", "rowspan"],
+    TH: ["colspan", "rowspan"],
+  };
+
+  template.content.querySelectorAll("*").forEach((node) => {
+    if (!allowedTags.has(node.tagName)) {
+      node.replaceWith(...node.childNodes);
+      return;
+    }
+
+    [...node.attributes].forEach((attribute) => {
+      const allowed = allowedAttributes[node.tagName]?.includes(attribute.name);
+      if (!allowed) node.removeAttribute(attribute.name);
+    });
+
+    if (node.tagName === "A") {
+      const href = node.getAttribute("href") || "";
+      if (!/^https?:\/\//i.test(href) && !href.startsWith("/")) {
+        node.removeAttribute("href");
+      }
+      node.setAttribute("target", "_blank");
+      node.setAttribute("rel", "noreferrer");
+    }
+  });
+
+  return template.innerHTML;
 };
 
 function BlogFormPage({ mode = "create" }) {
@@ -27,27 +247,38 @@ function BlogFormPage({ mode = "create" }) {
   const savedSelectionRef = useRef(null);
   const fileInputRef = useRef(null);
   const [form, setForm] = useState(emptyForm);
+  const [featureImageFile, setFeatureImageFile] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (mode === "edit" && blogId) {
-      const blog = getBlogById(blogId);
-      if (blog) {
-        setForm({
-          title: blog.title,
-          slug: blog.slug,
-          category: blog.category,
-          status: blog.status,
-          excerpt: blog.excerpt,
-          content: blog.content,
-          featureImage: blog.featureImage,
-        });
-        if (editorRef.current) editorRef.current.innerHTML = blog.content;
+    let active = true;
+
+    Promise.resolve().then(() => {
+      if (!active) return;
+
+      if (mode === "edit" && blogId) {
+        const blog = getBlogById(blogId);
+        if (blog) {
+          setForm({
+            title: blog.title,
+            slug: blog.slug,
+            category: blog.category,
+            status: blog.status,
+            excerpt: blog.excerpt,
+            content: blog.content,
+            featureImage: blog.featureImage,
+          });
+          if (editorRef.current) editorRef.current.innerHTML = blog.content;
+        }
       }
-    }
-    setLoaded(true);
+      setLoaded(true);
+    });
+
+    return () => {
+      active = false;
+    };
   }, [blogId, getBlogById, mode]);
 
   useEffect(() => {
@@ -96,14 +327,6 @@ function BlogFormPage({ mode = "create" }) {
     return true;
   };
 
-  const escapeHtml = (value) =>
-    String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
   const insertCodeBlock = () => {
     if (!editorRef.current) return;
 
@@ -128,6 +351,51 @@ function BlogFormPage({ mode = "create" }) {
     }));
   };
 
+  const insertHtmlAtSelection = (html) => {
+    restoreEditorSelection();
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      editorRef.current.insertAdjacentHTML("beforeend", html);
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    const fragment = template.content;
+    const lastNode = fragment.lastChild;
+
+    range.insertNode(fragment);
+
+    if (lastNode) {
+      range.setStartAfter(lastNode);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  };
+
+  const handleEditorPaste = (event) => {
+    event.preventDefault();
+
+    const clipboard = event.clipboardData;
+    const html = clipboard?.getData("text/html");
+    const text = clipboard?.getData("text/plain");
+    const content = html ? cleanPastedHtml(html) : plainTextToHtml(text);
+
+    if (!content) return;
+
+    insertHtmlAtSelection(content);
+    saveEditorSelection();
+    setForm((current) => ({
+      ...current,
+      content: editorRef.current?.innerHTML || current.content,
+    }));
+  };
+
   const runEditorCommand = (command, value) => {
     if (!editorRef.current) return;
 
@@ -137,7 +405,7 @@ function BlogFormPage({ mode = "create" }) {
       return;
     }
     const nextValue =
-      command === "formatBlock" && typeof value === "string" ? value.toUpperCase() : value;
+      command === "formatBlock" && typeof value === "string" ? `<${value}>` : value;
     document.execCommand(command, false, nextValue);
     saveEditorSelection();
     setForm((current) => ({
@@ -154,26 +422,33 @@ function BlogFormPage({ mode = "create" }) {
     reader.onload = () => {
       setForm((current) => ({ ...current, featureImage: String(reader.result || "") }));
     };
+    setFeatureImageFile(file);
     reader.readAsDataURL(file);
   };
 
   const resetForm = () => {
     setForm(emptyForm);
+    setFeatureImageFile(null);
     if (editorRef.current) editorRef.current.innerHTML = "";
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const payload = {
-      title: form.title.trim(),
-      slug: form.slug.trim() || slugifyBlogTitle(form.title),
-      category: form.category.trim() || "Planning",
-      status: form.status,
-      excerpt: form.excerpt.trim(),
-      content: form.content.trim(),
-      featureImage: form.featureImage,
-    };
+    const latestContent = editorRef.current?.innerHTML || form.content;
+    const payload = new FormData();
+    payload.append("title", form.title.trim());
+    payload.append("slug", form.slug.trim() || slugifyBlogTitle(form.title));
+    payload.append("category", form.category.trim() || "Planning");
+    payload.append("status", form.status);
+    payload.append("excerpt", form.excerpt.trim());
+    payload.append("content", latestContent.trim());
+
+    if (featureImageFile) {
+      payload.append("featureImage", featureImageFile);
+    } else if (/^https?:\/\//i.test(form.featureImage)) {
+      payload.append("featureImage", form.featureImage);
+    }
 
     const submit = async () => {
       setSubmitting(true);
@@ -197,6 +472,10 @@ function BlogFormPage({ mode = "create" }) {
 
     submit();
   };
+
+  if (mode === "edit" && loading) {
+    return <CustomLoading msg='Loading blog editor...' />;
+  }
 
   if (mode === "edit" && !loading && loaded && blogId && !getBlogById(blogId)) {
     return (
@@ -341,10 +620,11 @@ function BlogFormPage({ mode = "create" }) {
             contentEditable
             suppressContentEditableWarning
             onInput={handleEditorInput}
+            onPaste={handleEditorPaste}
             onFocus={saveEditorSelection}
             onKeyUp={saveEditorSelection}
             onMouseUp={saveEditorSelection}
-            className='min-h-[240px] rounded-2xl border border-white/10 bg-[#0f0f0f] px-4 py-4 text-sm leading-7 text-stone-200 outline-none [&_h1]:mt-5 [&_h1]:text-3xl [&_h1]:font-black [&_h1]:leading-tight [&_h2]:mt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:leading-tight [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_h4]:mt-3 [&_h4]:text-lg [&_h4]:font-bold [&_h5]:mt-3 [&_h5]:text-base [&_h5]:font-bold [&_h6]:mt-3 [&_h6]:text-sm [&_h6]:font-bold [&_blockquote]:mt-4 [&_blockquote]:border-l-2 [&_blockquote]:border-border-gold/40 [&_blockquote]:pl-4 [&_pre]:mt-4 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-white/10 [&_pre]:bg-black/40 [&_pre]:px-4 [&_pre]:py-3 [&_pre]:font-mono [&_pre]:text-[13px] [&_pre_code]:whitespace-pre-wrap [&_pre_code]:break-words [&_pre_code]:text-stone-100 [&_code]:rounded-lg [&_code]:bg-black/30 [&_code]:px-1.5 [&_code]:py-0.5 [&_ul]:ml-5 [&_ul]:list-disc [&_ol]:ml-5 [&_ol]:list-decimal [&_li]:marker:text-border-gold-hover'
+            className='min-h-[240px] overflow-x-auto rounded-2xl border border-white/10 bg-[#0f0f0f] px-4 py-4 text-sm leading-7 text-stone-200 outline-none [&_a]:text-border-gold-hover [&_a]:underline [&_blockquote]:mt-4 [&_blockquote]:border-l-2 [&_blockquote]:border-border-gold/40 [&_blockquote]:pl-4 [&_code]:rounded-lg [&_code]:bg-black/30 [&_code]:px-1.5 [&_code]:py-0.5 [&_h1]:mt-5 [&_h1]:text-3xl [&_h1]:font-black [&_h1]:leading-tight [&_h2]:mt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:leading-tight [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_h4]:mt-3 [&_h4]:text-lg [&_h4]:font-bold [&_h5]:mt-3 [&_h5]:text-base [&_h5]:font-bold [&_h6]:mt-3 [&_h6]:text-sm [&_h6]:font-bold [&_li]:marker:text-border-gold-hover [&_ol]:ml-5 [&_ol]:list-decimal [&_p]:my-3 [&_pre]:mt-4 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:border [&_pre]:border-white/10 [&_pre]:bg-black/40 [&_pre]:px-4 [&_pre]:py-3 [&_pre]:font-mono [&_pre]:text-[13px] [&_pre_code]:whitespace-pre-wrap [&_pre_code]:break-words [&_pre_code]:text-stone-100 [&_table]:my-5 [&_table]:w-full [&_table]:min-w-[560px] [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-2xl [&_table]:border [&_table]:border-white/10 [&_tbody_tr:nth-child(even)]:bg-white/[0.03] [&_td]:border [&_td]:border-white/10 [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_th]:border [&_th]:border-white/10 [&_th]:bg-glass-gold [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-bold [&_th]:text-border-gold-hover [&_ul]:ml-5 [&_ul]:list-disc'
           />
         </div>
 

@@ -1,28 +1,16 @@
-function StatusIndicator({ error, success, className }) {
-  if (!error && !success) return null;
+import { useEffect } from "react";
+import { showToast } from "./toastStore";
 
-  const layoutClass =
-    className ||
-    "w-full mb-4 text-center text-xs font-poppins rounded-xl py-2.5";
+function StatusIndicator({ error, success }) {
+  useEffect(() => {
+    if (error) showToast({ type: "error", message: error });
+  }, [error]);
 
-  return (
-    <>
-      {error && (
-        <div
-          className={`${layoutClass} text-red-400 bg-red-500/10 border border-red-500/20`}
-        >
-          {error}
-        </div>
-      )}
-      {success && (
-        <div
-          className={`${layoutClass} text-emerald-400 bg-emerald-500/10 border border-emerald-500/20`}
-        >
-          {success}
-        </div>
-      )}
-    </>
-  );
+  useEffect(() => {
+    if (success) showToast({ type: "success", message: success });
+  }, [success]);
+
+  return null;
 }
 
 export default StatusIndicator;

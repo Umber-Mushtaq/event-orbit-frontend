@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, LockKeyhole } from "lucide-react";
 import { adminProfileApi, getAdminErrorMessage } from "../../../../services/adminApi";
+import StatusIndicator from "../../../../shared_components/StatusIndecator";
 
 function AdminChangePasswordPage() {
   const [form, setForm] = useState({
@@ -64,16 +65,7 @@ function AdminChangePasswordPage() {
         </div>
       </div>
 
-      {error ? (
-        <p className="mt-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-          {error}
-        </p>
-      ) : null}
-      {success ? (
-        <p className="mt-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-          {success}
-        </p>
-      ) : null}
+      <StatusIndicator error={error} success={success} />
 
       <form onSubmit={handleSave} className="mt-6 grid gap-4">
         {[

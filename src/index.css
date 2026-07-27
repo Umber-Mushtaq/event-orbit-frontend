@@ -418,3 +418,7 @@
     border-color: hsl(var(--primary-hover)) !important;
   }
 }
+
+.blog-swiper .swiper-wrapper {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -4,6 +4,7 @@ import BasicServiceInfo from "../components/BasicServiceInfo";
 import PricingAndMetrics from "../components/PricingAndMatrix";
 import GalleryUploadSection from "../components/GalleryUploadSection";
 import { Loader2 } from "lucide-react";
+import StatusIndicator from "../../../shared_components/StatusIndecator";
 
 function CreateService() {
   const serviceForm = useCreateService();
@@ -12,17 +13,7 @@ function CreateService() {
     <section className='min-h-screen w-full bg-white/5 border border-white/30 rounded-lg text-white py-12 px-6 md:px-10 relative overflow-hidden'>
       <CreateServiceHeader />
 
-      {/* Inline Feedback Alerts */}
-      {serviceForm.error && (
-        <div className='max-w-6xl mx-auto mb-6 text-center text-xs font-poppins text-red-400 bg-red-500/10 border border-red-500/20 py-2.5 rounded-xl'>
-          {serviceForm.error}
-        </div>
-      )}
-      {serviceForm.success && (
-        <div className='max-w-6xl mx-auto mb-6 text-center text-xs font-poppins text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 py-2.5 rounded-xl'>
-          {serviceForm.success}
-        </div>
-      )}
+      <StatusIndicator error={serviceForm.error} success={serviceForm.success} />
 
       <form
         onSubmit={serviceForm.handleServiceSubmit}

@@ -160,20 +160,22 @@ function BlogSectionContent() {
         ) : (
           <div className='relative'>
             <Swiper
-              modules={[Autoplay, Keyboard, Pagination,Navigation]}
+              modules={[Autoplay, Keyboard, Pagination, Navigation]}
               loop={canLoop}
               grabCursor
               watchOverflow
               slidesPerView={1}
               spaceBetween={24}
-              Navigation={true}
+              speed={900}
+              navigation={false}
               keyboard={{ enabled: true, onlyInViewport: true }}
               autoplay={
                 canLoop
                   ? {
-                      delay: 300,
+                      delay: 3200,
                       disableOnInteraction: false,
                       pauseOnMouseEnter: true,
+                      waitForTransition: true,
                     }
                   : false
               }

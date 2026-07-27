@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { showToast } from "../../../shared_components/toastStore";
 
 export function useBookingRequests() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -61,10 +62,12 @@ export function useBookingRequests() {
         );
       }
     } catch (err) {
-      alert(
-        err.response?.data?.message ||
+      showToast({
+        type: "error",
+        message:
+          err.response?.data?.message ||
           "Could not complete status transaction update.",
-      );
+      });
     }
   };
 

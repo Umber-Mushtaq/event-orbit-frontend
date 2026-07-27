@@ -9,6 +9,7 @@ import RecentEventsTable from "../../components/adminComponent/RecentEventsTable
 import RecentActivities from "../../components/adminComponent/RecentActivities";
 import { adminDashboardApi, getAdminErrorMessage } from "../../../../services/adminApi";
 import { mapAdminEvents, mapAdminSummaryCards } from "../../../../utils/adminTransformers";
+import CustomLoading from "../../../../shared_components/CustomLoading";
 
 function AdminDashboardOverview() {
   const { globalSearch } = useOutletContext() || {};
@@ -74,6 +75,10 @@ function AdminDashboardOverview() {
 
   const stats = useMemo(() => mapAdminSummaryCards(summary), [summary]);
 
+  if (loading) {
+    return <CustomLoading msg='Loading dashboard data...' />;
+  }
+
   return (
     <div className='space-y-6'>
       {error ? (
@@ -81,12 +86,6 @@ function AdminDashboardOverview() {
           {error}
         </div>
       ) : null}
-      {loading ? (
-        <div className='rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm text-stone-300'>
-          Loading dashboard data...
-        </div>
-      ) : null}
-
       <section className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
         {stats.map((item) => (
           <StatCard key={item.label} item={item} />

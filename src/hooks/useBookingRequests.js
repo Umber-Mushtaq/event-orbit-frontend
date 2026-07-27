@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiUrl } from "../config/api";
+import { showToast } from "../shared_components/toastStore";
 
 export function useBookingRequests() {
   const [bookings, setBookings] = useState([]);
@@ -58,10 +59,12 @@ export function useBookingRequests() {
         );
       }
     } catch (err) {
-      alert(
-        err.response?.data?.message ||
+      showToast({
+        type: "error",
+        message:
+          err.response?.data?.message ||
           "Could not complete status transaction update.",
-      );
+      });
     }
   };
 

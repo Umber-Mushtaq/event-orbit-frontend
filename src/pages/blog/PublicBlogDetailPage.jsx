@@ -121,7 +121,7 @@ function PublicBlogDetailContent() {
             </div>
 
             <div
-              className='space-y-4 text-stone-300 [&_a]:text-amber-400 [&_a]:underline [&_h2]:mb-4 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-white [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_p]:leading-relaxed [&_p]:text-stone-300 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_strong]:text-white'
+              className='space-y-4 overflow-x-auto text-stone-300 [&_a]:text-amber-400 [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-amber-400/40 [&_blockquote]:pl-4 [&_h1]:mt-8 [&_h1]:text-3xl [&_h1]:font-black [&_h1]:text-white [&_h2]:mb-4 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-white [&_h4]:mt-5 [&_h4]:text-lg [&_h4]:font-bold [&_h4]:text-white [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_p]:leading-relaxed [&_p]:text-stone-300 [&_table]:my-5 [&_table]:w-full [&_table]:min-w-[560px] [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-2xl [&_table]:border [&_table]:border-white/10 [&_tbody_tr:nth-child(even)]:bg-white/[0.03] [&_td]:border [&_td]:border-white/10 [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_th]:border [&_th]:border-white/10 [&_th]:bg-amber-400/10 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-bold [&_th]:text-amber-300 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_strong]:text-white'
               dangerouslySetInnerHTML={{
                 __html: sanitizeHtml(blog.content || stripBlogHtml(blog.content)),
               }}

@@ -7,7 +7,7 @@ import NothingFound from "../../shared_components/NotingFound";
 function VendorsPage() {
   const { vendors, loading, error } = useVerifiedVendors();
 
-  if (loading) return <CustomLoading msg='Loading Categories...' />;
+  if (loading) return <CustomLoading msg='Loading vendors...' />;
   if (error) return <CustomError msg={error} />;
 
   return (

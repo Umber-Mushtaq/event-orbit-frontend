@@ -23,7 +23,7 @@ import CustomError from "../../../shared_components/CustomError";
 
 export default function PublicServiceDetails() {
   const { id } = useParams();
-  const { service, vendor, reviews, loading, error } =
+  const { service, vendor, reviews, loading, error, refetch } =
     usePublicServiceDetails(id);
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -113,7 +113,12 @@ export default function PublicServiceDetails() {
 
           {/* Reviews Section Wrapper */}
           <div className=' p-2 '>
-            <Reviews reviews={reviews} />
+            <Reviews
+              reviews={reviews}
+              serviceId={service.id}
+              vendorId={vendor?._id}
+              onReviewSubmitted={refetch}
+            />
           </div>
         </div>
 

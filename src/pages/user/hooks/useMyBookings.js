@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
+import { showToast } from "../../../shared_components/toastStore";
 
 export function useMyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -70,10 +71,11 @@ export function useMyBookings() {
         closeCancelModal();
       }
     } catch (err) {
-      alert(
-        err.response?.data?.message ||
-          "Could not execute cancellation request.",
-      );
+      showToast({
+        type: "error",
+        message:
+          err.response?.data?.message || "Could not execute cancellation request.",
+      });
       setIsActionLoading(false);
     }
   };

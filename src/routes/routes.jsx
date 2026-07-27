@@ -69,6 +69,10 @@ const router = createBrowserRouter([
         element: <PublicCategoryDetails />,
       },
       {
+        path: "/services/:id",
+        element: <ServiceDetails />,
+      },
+      {
         path: "/category/:categoryId/vendor/:vendorId",
         element: <PublicCategoryDetails />,
       },
@@ -209,6 +213,10 @@ const router = createBrowserRouter([
           {
             path: "categories/:categoryId",
             element: <PublicCategoryDetails />,
+          },
+          {
+            path: "services/:id",
+            element: <ServiceDetails />,
           },
           {
             path: "category/:categoryId/vendor/:vendorId",

@@ -29,7 +29,7 @@ function AuthLayout() {
         <div className='relative z-10 my-auto max-w-lg pt-12 text-center lg:pt-0'>
           <h1 className='mb-4 text-balance font-montserrat text-4xl font-black leading-tight tracking-tight text-foreground md:text-5xl'>
             Begin Planning Your <br />
-            <span className='text-primary'>Dream Wedding</span>
+            <span className='text-primary'>Dream Event</span>
           </h1>
           <p className='text-pretty font-poppins text-sm leading-relaxed text-muted-foreground'>
             Join thousands of couples discovering trusted wedding professionals
