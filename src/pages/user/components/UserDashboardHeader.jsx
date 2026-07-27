@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router";
-import AvatarPlaceholder from "../../../assets/avatar3.jpg";
 import ThemeToggle from "../../../shared_components/ThemeToggle";
 import { apiUrl } from "../../../config/api";
 
+const getInitials = (name) =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "C";
+
 export function UserDashboardHeader() {
-  const [avatarPreview, setAvatarPreview] = useState(AvatarPlaceholder);
-  const [customerName, setcustomerName] = useState("Customer");
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [customerName, setCustomerName] = useState("Customer");
 
   useEffect(() => {
     const fetchHeaderData = async () => {
@@ -25,7 +32,9 @@ export function UserDashboardHeader() {
 
         if (user) {
           if (user.firstName || user.lastName) {
-            setcustomerName(user.firstName + " " + user.lastName);
+            setCustomerName(
+              [user.firstName, user.lastName].filter(Boolean).join(" "),
+            );
           }
 
           if (user.profileImage || user.avatar) {
@@ -61,11 +70,20 @@ export function UserDashboardHeader() {
           className='group flex items-center gap-2.5 rounded-full border border-border bg-card py-1 pl-2 pr-4 shadow-md backdrop-blur-md transition-all duration-200 hover:border-primary/40 hover:bg-muted md:py-1.5 md:pl-2.5 md:pr-5'
         >
           <div className='w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden border border-primary/30 shrink-0 transition-transform duration-200 group-hover:scale-105'>
-            <img
-              src={avatarPreview}
-              alt='user profile view'
-              className='w-full h-full object-cover'
-            />
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt='user profile view'
+                className='w-full h-full object-cover'
+              />
+            ) : (
+              <div
+                aria-label='User profile avatar'
+                className='flex h-full w-full items-center justify-center bg-linear-to-br from-amber-500/30 to-stone-700 text-[10px] font-bold uppercase tracking-wide text-amber-100'
+              >
+                {getInitials(customerName)}
+              </div>
+            )}
           </div>
           <span className='font-poppins text-[11px] md:text-xs font-semibold text-foreground tracking-wide whitespace-nowrap transition-colors duration-200 group-hover:text-primary'>
             {customerName} Profile

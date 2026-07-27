@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { apiUrl } from "../../../config/api";
 import { showToast } from "../../../shared_components/toastStore";
 
 export function useBookingRequests() {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -18,13 +18,10 @@ export function useBookingRequests() {
         setError("");
         const token = localStorage.getItem("token");
 
-        const response = await axios.get(
-          `${API_BASE_URL}/api/bookings/requests`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            signal: controller.signal,
-          },
-        );
+        const response = await axios.get(apiUrl("/api/bookings/requests"), {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
 
         if (response.data.success) {
           setBookings(response.data.bookings);
@@ -50,7 +47,7 @@ export function useBookingRequests() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `${API_BASE_URL}/api/bookings/requests/${id}`,
+        apiUrl(`/api/bookings/requests/${id}`),
         { status: actionStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -58,8 +55,16 @@ export function useBookingRequests() {
       if (response.data.success) {
         // Optimistically update states natively without page refresh
         setBookings((prev) =>
-          prev.map((b) => (b._id === id ? { ...b, status: actionStatus } : b)),
+          prev.map((b) =>
+            b._id === id
+              ? response.data.formattedBooking || { ...b, status: actionStatus }
+              : b,
+          ),
         );
+        showToast({
+          type: "success",
+          message: response.data.message || "Booking updated successfully.",
+        });
       }
     } catch (err) {
       showToast({
@@ -71,10 +76,46 @@ export function useBookingRequests() {
     }
   };
 
+  const handleBookingUpdate = async (id, updates) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.patch(
+        apiUrl(`/api/bookings/requests/${id}`),
+        updates,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      if (response.data.success) {
+        setBookings((prev) =>
+          prev.map((booking) =>
+            booking._id === id
+              ? response.data.formattedBooking || { ...booking, ...updates }
+              : booking,
+          ),
+        );
+        showToast({
+          type: "success",
+          message: response.data.message || "Booking updated successfully.",
+        });
+        return response.data.formattedBooking;
+      }
+
+      return null;
+    } catch (err) {
+      showToast({
+        type: "error",
+        message:
+          err.response?.data?.message || "Could not save booking changes.",
+      });
+      throw err;
+    }
+  };
+
   return {
     bookings,
     loading,
     error,
     handleStatusAction,
+    handleBookingUpdate,
   };
 }
