@@ -1,6 +1,6 @@
 import LandingPageSearchFilter from "./ui/LandingPageSearchFilter";
 import LandingPageTypography from "./ui/LandingPageTypography";
-import HeroBg from "../../assets/hero_bg.jpg";
+import HeroBg from "../../assets/hero_bg3.jpg";
 import LandingPageCategoriesGrid from "./ui/LandingPageCategoryGrid";
 import LandingPageStatistics from "./ui/LandingPageStatistics";
 import LandingSteps from "./ui/LandingPageSteps";

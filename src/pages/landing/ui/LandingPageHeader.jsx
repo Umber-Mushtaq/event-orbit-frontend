@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import AppLogo from "../../../shared_components/AppLogo";
 import { NavLink } from "react-router";
 import ThemeToggle from "../../../shared_components/ThemeToggle";

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <url>
+        <loc>http://localhost:5173/</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/categories</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/vendors</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/blog</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/about</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/contact</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/help</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/help/signup</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/help/password-reset</loc>
+    </url>
+
+    <url>
+        <loc>http://localhost:5173/help/billing</loc>
+    </url>
+
+</urlset>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import BlogActionMenu from "../../../components/adminComponent/blog/BlogActionMenu";
 import BlogDeleteModal from "../../../components/adminComponent/blog/BlogDeleteModal";
@@ -13,13 +13,19 @@ import CustomLoading from "../../../../../shared_components/CustomLoading";
 function BlogDetailsPage() {
   const navigate = useNavigate();
   const { blogId } = useParams();
-  const { getBlogById, deleteBlog, loading } = useAdminBlogs();
+  const { getBlogBySlugOrId, deleteBlog, loading } = useAdminBlogs();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState("");
   const blog = useMemo(
-    () => (blogId ? getBlogById(blogId) || null : null),
-    [blogId, getBlogById],
+    () => (blogId ? getBlogBySlugOrId(blogId) || null : null),
+    [blogId, getBlogBySlugOrId],
   );
+
+  useEffect(() => {
+    if (!loading && blog?.slug && blogId !== blog.slug) {
+      navigate(`/admin/blog/${blog.slug}`, { replace: true });
+    }
+  }, [blog, blogId, loading, navigate]);
 
   if (loading) {
     return <CustomLoading msg='Loading blog post...' />;
@@ -66,7 +72,7 @@ function BlogDetailsPage() {
           {/* Blog actions stay in the top-right of the details hero. */}
           <div className='absolute right-5 top-5'>
             <BlogActionMenu
-              onEdit={() => navigate(`/admin/blog/${blog.id}/edit`)}
+              onEdit={() => navigate(`/admin/blog/${blog.slug || blog.id}/edit`)}
               onDelete={() => setConfirmDelete(true)}
             />
           </div>

@@ -1,16 +1,9 @@
-import { useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams } from "react-router";
 import {
   Star,
   MapPin,
-  Calendar,
-  MessageSquare,
   ShieldCheck,
-  ArrowLeft,
-  Share2,
-  Heart,
   Award,
-  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 import { ImageGallery } from "../../services/ui/ImageGallery";
@@ -20,12 +13,12 @@ import { Reviews } from "../../services/ui/Reviews";
 import { usePublicServiceDetails } from "../../../hooks/usePublicServiceDetails";
 import CustomLoading from "../../../shared_components/CustomLoading";
 import CustomError from "../../../shared_components/CustomError";
+import VendorCard from "../../public_vendor/ui/VendorCard";
 
 export default function PublicServiceDetails() {
   const { id } = useParams();
-  const { service, vendor, reviews, loading, error, refetch } =
+  const { service, vendor, reviews, relatedVendors, loading, error, refetch } =
     usePublicServiceDetails(id);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   if (loading) {
     return <CustomLoading msg='Loading Data' />;
@@ -109,6 +102,33 @@ export default function PublicServiceDetails() {
                 coordinates={service.coordinates}
               />
             </div>
+          </div>
+
+          <div className='transition-all duration-300 rounded-2xl p-8 backdrop-blur-sm relative group'>
+            <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
+            <div className='flex flex-col mb-6'>
+              <div className='flex items-center gap-2'>
+                <ShieldCheck className='w-4 h-4 text-amber-500/70' />
+                <h3 className='font-montserrat font-extrabold text-sm uppercase tracking-widest text-stone-200'>
+                  Related Vendors
+                </h3>
+              </div>
+              <p className='text-sm text-stone-400 font-normal mt-1 pl-6'>
+                Verified vendors offering services in this category.
+              </p>
+            </div>
+
+            {relatedVendors?.length > 0 ? (
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {relatedVendors.map((relatedVendor) => (
+                  <VendorCard key={relatedVendor._id} vendor={relatedVendor} />
+                ))}
+              </div>
+            ) : (
+              <div className='rounded-2xl border border-white/10 bg-white/5 px-4 py-10 text-center text-stone-400'>
+                No related vendors are available for this service yet.
+              </div>
+            )}
           </div>
 
           {/* Reviews Section Wrapper */}

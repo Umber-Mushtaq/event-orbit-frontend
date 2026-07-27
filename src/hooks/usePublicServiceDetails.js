@@ -7,6 +7,7 @@ export function usePublicServiceDetails(serviceId) {
     service: null,
     vendor: null,
     reviews: [],
+    relatedVendors: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,6 +72,9 @@ export function usePublicServiceDetails(serviceId) {
                 year: "numeric",
               }),
             })) || [],
+          relatedVendors: Array.isArray(payload.relatedVendors)
+            ? payload.relatedVendors
+            : [],
         });
       } else {
         setError("Failed to resolve application response payload syntax.");
@@ -84,13 +88,14 @@ export function usePublicServiceDetails(serviceId) {
   }, [serviceId]);
 
   useEffect(() => {
-    fetchServiceDetails();
+    Promise.resolve().then(fetchServiceDetails);
   }, [fetchServiceDetails]);
 
   return {
     service: data.service,
     vendor: data.vendor,
     reviews: data.reviews,
+    relatedVendors: data.relatedVendors,
     loading,
     error,
     refetch: fetchServiceDetails,

@@ -242,7 +242,7 @@ const cleanPastedHtml = (html = "") => {
 function BlogFormPage({ mode = "create" }) {
   const navigate = useNavigate();
   const { blogId } = useParams();
-  const { getBlogById, createBlog, updateBlog, loading } = useAdminBlogs();
+  const { getBlogBySlugOrId, createBlog, updateBlog, loading } = useAdminBlogs();
   const editorRef = useRef(null);
   const savedSelectionRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -259,7 +259,7 @@ function BlogFormPage({ mode = "create" }) {
       if (!active) return;
 
       if (mode === "edit" && blogId) {
-        const blog = getBlogById(blogId);
+        const blog = getBlogBySlugOrId(blogId);
         if (blog) {
           setForm({
             title: blog.title,
@@ -279,7 +279,7 @@ function BlogFormPage({ mode = "create" }) {
     return () => {
       active = false;
     };
-  }, [blogId, getBlogById, mode]);
+  }, [blogId, getBlogBySlugOrId, mode]);
 
   useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== form.content) {
@@ -456,13 +456,14 @@ function BlogFormPage({ mode = "create" }) {
 
       try {
         if (mode === "edit" && blogId) {
-          const updated = await updateBlog(blogId, payload);
-          navigate(`/admin/blog/${updated.id || blogId}`);
+          const currentBlog = getBlogBySlugOrId(blogId);
+          const updated = await updateBlog(currentBlog?.id || blogId, payload);
+          navigate(`/admin/blog/${updated.slug || updated.id || blogId}`);
           return;
         }
 
         const created = await createBlog(payload);
-        navigate(`/admin/blog/${created.id}`);
+        navigate(`/admin/blog/${created.slug || created.id}`);
       } catch (requestError) {
         setError(getAdminErrorMessage(requestError, "Failed to save blog post."));
       } finally {
@@ -477,7 +478,7 @@ function BlogFormPage({ mode = "create" }) {
     return <CustomLoading msg='Loading blog editor...' />;
   }
 
-  if (mode === "edit" && !loading && loaded && blogId && !getBlogById(blogId)) {
+  if (mode === "edit" && !loading && loaded && blogId && !getBlogBySlugOrId(blogId)) {
     return (
       <section className='rounded-[2rem] border border-border-gold/15 bg-[#141414]/90 p-6 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
         <p className='text-sm text-stone-300'>Blog post not found.</p>

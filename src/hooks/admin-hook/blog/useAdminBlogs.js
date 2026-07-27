@@ -57,7 +57,7 @@ export function useAdminBlogs() {
   }, []);
 
   useEffect(() => {
-    refreshBlogs();
+    Promise.resolve().then(refreshBlogs);
   }, [refreshBlogs]);
 
   const stats = useMemo(() => {
@@ -75,6 +75,16 @@ export function useAdminBlogs() {
 
   const getBlogById = useCallback(
     (blogId) => blogs.find((blog) => String(blog.id) === String(blogId)),
+    [blogs],
+  );
+
+  const getBlogBySlugOrId = useCallback(
+    (blogKey) =>
+      blogs.find(
+        (blog) =>
+          String(blog.id) === String(blogKey) ||
+          String(blog.slug) === String(blogKey),
+      ),
     [blogs],
   );
 
@@ -117,6 +127,7 @@ export function useAdminBlogs() {
     error,
     refreshBlogs,
     getBlogById,
+    getBlogBySlugOrId,
     createBlog,
     updateBlog,
     deleteBlog,

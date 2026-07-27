@@ -8,10 +8,11 @@ import {
 
 function BlogCard({ blog }) {
   const summary = blog.excerpt || stripBlogHtml(blog.content);
+  const blogPath = blog.slug || blog.id;
 
   return (
     <Link
-      to={`/admin/blog/${blog.id}`}
+      to={`/admin/blog/${blogPath}`}
       className='group overflow-hidden rounded-[2rem] border border-border-gold/15 bg-[#141414]/90 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-border-gold/30'
     >
       <div className='relative aspect-[16/10] overflow-hidden'>
