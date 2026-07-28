@@ -34,15 +34,17 @@ export function useServiceListings(filters = {}) {
         }
 
         // 2. Fire the Axios request linked to the controller
+
         const response = await axios.get(
-          apiUrl(`/api/categories/getAllCategories?${params.toString()}`),
+          apiUrl(`/api/categories?${params.toString()}`),
           { signal: abortController.signal },
         );
-
         if (response.data?.success) {
           setServices(response.data.data);
         } else {
-          setError("Failed to resolve dynamic categories payload array syntax.");
+          setError(
+            "Failed to resolve dynamic categories payload array syntax.",
+          );
         }
       } catch (err) {
         // Don't update state if the request was intentionally cancelled by an active re-render
