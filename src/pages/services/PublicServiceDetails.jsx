@@ -7,6 +7,8 @@ import CustomError from "../../shared_components/CustomError";
 
 import { ImageGallery } from "./ui/ImageGallery";
 import VendorCard from "../public_vendor/ui/VendorCard";
+import SEO from "../../seo/SEO";
+import { breadcrumbSchema } from "../../seo/schema";
 
 export default function PublicCategoryDetails() {
   const { categoryId } = useParams();
@@ -33,6 +35,24 @@ export default function PublicCategoryDetails() {
 
   return (
     <main className='min-h-screen w-full bg-neutral-950 text-white font-poppins antialiased pb-24 selection:bg-amber-500 selection:text-black'>
+      <SEO
+        title={`${category.name} Services`}
+        description={
+          category.description ||
+          `Explore trusted ${category.name} vendors and services on Event Orbit.`
+        }
+        keywords={[category.name, "event vendors", "event services", "Event Orbit"]}
+        canonical={`/category/${categoryId}`}
+        image={category.image}
+        type='website'
+        schema={[
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Categories", url: "/categories" },
+            { name: category.name, url: `/category/${categoryId}` },
+          ]),
+        ]}
+      />
       <section className='max-w-7xl mx-auto px-3 mt-6'>
         <ImageGallery
           images={category.image ? [category.image] : []}

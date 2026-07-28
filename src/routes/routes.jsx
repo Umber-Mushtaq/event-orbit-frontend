@@ -32,6 +32,7 @@ import CustomerProfile from "../pages/user/sections/CustomerProfile";
 import BlogListingPage from "../pages/blog/BlogListingPage";
 import PublicBlogDetailPage from "../pages/blog/PublicBlogDetailPage";
 import HelpCenter from "../pages/landing/HelpCenter";
+import NotFoundPage from "../pages/NotFoundPage";
 import {
   BillingArticlePage,
   PasswordResetArticlePage,
@@ -132,6 +133,10 @@ const router = createBrowserRouter([
       {
         path: "/help/billing",
         element: <BillingArticlePage />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },

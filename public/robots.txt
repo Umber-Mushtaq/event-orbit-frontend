@@ -1,2 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /auth
+Disallow: /vendor/dashboard
+Disallow: /customer/dashboard
+Disallow: /checkout
+
+Sitemap: https://eventorbit.com/sitemap.xml

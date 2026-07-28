@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import Badge from "../../shared_components/Badge";
 import HeroBg from "../../assets/hero_bg.jpg";
+import SEO from "../../seo/SEO";
+import { breadcrumbSchema, organizationSchema } from "../../seo/schema";
 
 const trustHighlights = [
   {
@@ -212,6 +214,26 @@ function IconCard({ icon: Icon, title, description }) {
 function AboutPage() {
   return (
     <div className='bg-background text-foreground'>
+      <SEO
+        title='About Us'
+        description='Learn about Event Orbit, a marketplace connecting customers with trusted event vendors, categories, and services.'
+        keywords={[
+          "about Event Orbit",
+          "event marketplace",
+          "trusted vendors",
+          "wedding planning platform",
+        ]}
+        canonical='/about'
+        image={HeroBg}
+        type='website'
+        schema={[
+          organizationSchema(),
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "About", url: "/about" },
+          ]),
+        ]}
+      />
       <section
         className='relative isolate overflow-hidden bg-cover bg-center px-5 py-24 md:px-10 md:py-32'
         style={{ backgroundImage: `url(${HeroBg})` }}

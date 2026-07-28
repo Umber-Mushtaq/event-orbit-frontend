@@ -1,47 +1,92 @@
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import CustomHeader from "../../shared_components/CustomHeader";
-import emailjs from "emailjs-com";
 import { useState } from "react";
+import SEO from "../../seo/SEO";
+import { breadcrumbSchema, localBusinessSchema } from "../../seo/schema";
+import { apiUrl } from "../../config/api";
 
 function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get("name") || "").trim(),
+      email: String(formData.get("email") || "").trim(),
+      message: String(formData.get("message") || "").trim(),
+    };
+
+    if (!payload.name || !payload.email || !payload.message) {
+      setStatus("Please fill in all fields.");
+      return;
+    }
+
     setLoading(true);
     setStatus("");
 
-    emailjs
-      .sendForm(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        e.target,
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-      )
-      .then(
-        () => {
-          setStatus("Message sent successfully!");
-          setLoading(false);
-          e.target.reset();
+    try {
+      const response = await fetch(apiUrl("/api/contact"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        (error) => {
-          console.error(error);
-          setStatus("Failed to send message. Please try again.");
-          setLoading(false);
-        },
-      );
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to send message.");
+      }
+
+      setStatus("Message sent successfully!");
+      form.reset();
+    } catch (error) {
+      console.error(error);
+      setStatus(error.message || "Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <section className='w-full bg-neutral-950 text-white py-16 px-6 md:px-12 lg:px-20'>
+      <SEO
+        title='Contact Us'
+        description='Contact Event Orbit for marketplace support, vendor inquiries, collaborations, and event planning questions.'
+        keywords={[
+          "contact Event Orbit",
+          "event planning support",
+          "vendor support",
+          "marketplace support",
+        ]}
+        canonical='/contact'
+        type='website'
+        schema={[
+          localBusinessSchema({
+            name: "Event Orbit",
+            description:
+              "Event Orbit helps customers discover trusted event vendors and services.",
+            url: "/contact",
+            telephone: "+92 300 1234567",
+            address: "123 Luxury Avenue, Lahore, Pakistan",
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Contact", url: "/contact" },
+          ]),
+        ]}
+      />
       <div className='grid grid-cols-1 md:grid-cols-2 gap-12 items-start'>
         {/* Left Column */}
         <div className='space-y-6'>
           <CustomHeader badge='Contact Section' title='Contact Us' />
           <p className='text-stone-400 text-sm leading-relaxed max-w-md'>
             Our team is here to help with inquiries, collaborations, or event
-            planning. Reach out and we’ll respond promptly.
+            planning. Reach out and we'll respond promptly.
           </p>
 
           <div className='space-y-4 text-stone-300 text-sm'>
@@ -71,7 +116,7 @@ function ContactPage() {
             </label>
             <input
               type='text'
-              name='user_name'
+              name='name'
               placeholder='Enter your full name'
               className='w-full bg-neutral-900/50 border border-stone-400 rounded-lg py-3 px-4 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-border-gold transition'
               required
@@ -84,7 +129,7 @@ function ContactPage() {
             </label>
             <input
               type='email'
-              name='user_email'
+              name='email'
               placeholder='Enter your email'
               className='w-full bg-neutral-900/50 border border-stone-400 rounded-lg py-3 px-4 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-border-gold transition'
               required
@@ -114,7 +159,16 @@ function ContactPage() {
           </button>
 
           {status && (
-            <p className='text-sm mt-2 text-center text-amber-400'>{status}</p>
+            <p
+              className={`text-sm mt-2 text-center ${
+                status.toLowerCase().includes("success")
+                  ? "text-emerald-400"
+                  : "text-amber-400"
+              }`}
+              aria-live='polite'
+            >
+              {status}
+            </p>
           )}
         </form>
       </div>

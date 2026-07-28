@@ -2,10 +2,13 @@ import { Link, Outlet } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import HeroImg from "../assets/hero_bg.jpg";
 import ThemeToggle from "../shared_components/ThemeToggle";
+import SEO from "../seo/SEO";
+import { privateSeo } from "../seo/routeSeo";
 
 function AuthLayout() {
   return (
     <div className='relative flex min-h-screen w-full overflow-hidden bg-background text-foreground lg:flex-row'>
+      <SEO {...privateSeo} title='Authentication' canonical='/auth' />
       <div className='relative flex min-h-[60vh] w-full flex-col justify-between overflow-hidden p-8 md:p-12 lg:min-h-screen lg:w-1/2 lg:p-16'>
         <div className='absolute right-4 top-4 z-20'>
           <ThemeToggle />

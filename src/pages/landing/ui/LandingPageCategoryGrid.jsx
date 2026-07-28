@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCategories } from "../../../hooks/useGetAllCategories";
 import CustomLoading from "../../../shared_components/CustomLoading";
 import CustomError from "../../../shared_components/CustomError";
@@ -26,8 +26,8 @@ function LandingPageCategoriesGrid() {
     <div className='py-20 flex flex-col max-w-7xl mx-auto px-5'>
       <CustomHeader badge='Categories' title='Explore Categories' />
 
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8  mt-10 w-full'>
-        {categories.map((cat) => (
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mt-10 mb-12 w-full'>
+        {categories.slice(0, 3).map((cat) => (
           <div
             key={cat.id}
             onClick={() => handleCategoryClick(cat)}
@@ -57,6 +57,13 @@ function LandingPageCategoriesGrid() {
           </div>
         ))}
       </div>
+
+      <Link
+        to='/categories'
+        className='bg-amber-400 px-5 py-2.5 rounded-md font-semibold w-fit mx-auto transition hover:bg-amber-300 shadow-gold-glow text-neutral-950'
+      >
+        Explore Categories
+      </Link>
     </div>
   );
 }

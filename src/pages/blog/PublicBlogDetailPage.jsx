@@ -4,6 +4,8 @@ import BlogQueryProvider from "./BlogQueryProvider";
 import { usePublicBlog } from "../../hooks/blog/usePublicBlogs";
 import { formatBlogDate, stripBlogHtml } from "../../hooks/admin-hook/blog/useAdminBlogs";
 import { sanitizeHtml } from "../../utils/sanitizeHtml";
+import SEO from "../../seo/SEO";
+import { articleSchema, breadcrumbSchema } from "../../seo/schema";
 
 function PublicBlogDetailContent() {
   const { slug } = useParams();
@@ -65,6 +67,31 @@ function PublicBlogDetailContent() {
 
   return (
     <section className='bg-neutral-950 px-5 py-12 text-white'>
+      <SEO
+        title={blog.title}
+        description={blog.excerpt || stripBlogHtml(blog.content).slice(0, 160)}
+        keywords={[blog.category, ...(blog.tags || []), "Event Orbit blog"]}
+        canonical={`/blog/${blog.slug}`}
+        image={blog.featureImage}
+        type='article'
+        author={blog.authorName}
+        schema={[
+          articleSchema({
+            title: blog.title,
+            description: blog.excerpt || stripBlogHtml(blog.content).slice(0, 160),
+            image: blog.featureImage,
+            url: `/blog/${blog.slug}`,
+            author: blog.authorName,
+            publishedAt: blog.publishedAt,
+            updatedAt: blog.updatedAt,
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Blog", url: "/blog" },
+            { name: blog.title, url: `/blog/${blog.slug}` },
+          ]),
+        ]}
+      />
       <div className='mx-auto flex max-w-4xl flex-col gap-8'>
         <Link
           to='/'

@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import {
   Star,
   MapPin,
@@ -13,9 +13,12 @@ import { usePublicServiceDetails } from "../../../hooks/usePublicServiceDetails"
 import CustomLoading from "../../../shared_components/CustomLoading";
 import CustomError from "../../../shared_components/CustomError";
 import VendorCard from "../../public_vendor/ui/VendorCard";
+import SEO from "../../../seo/SEO";
+import { breadcrumbSchema, localBusinessSchema } from "../../../seo/schema";
 
 export default function PublicServiceDetails() {
   const { id } = useParams();
+  const location = useLocation();
   const { service, vendor, reviews, relatedVendors, loading, error, refetch } =
     usePublicServiceDetails(id);
 
@@ -29,6 +32,33 @@ export default function PublicServiceDetails() {
 
   return (
     <main className='min-h-screen w-full bg-neutral-950 text-white font-poppins antialiased pb-24 selection:bg-amber-500 selection:text-black'>
+      <SEO
+        title={`${service.title} Services`}
+        description={
+          service.description ||
+          `View ${service.title} service details, vendors, reviews, and location on Event Orbit.`
+        }
+        keywords={[service.title, service.location, "event service", "vendor booking"]}
+        canonical={location.pathname.startsWith("/vendor/") ? location.pathname : `/services/${id}`}
+        image={service.images?.[0]}
+        type='product'
+        robots={location.pathname.startsWith("/vendor/") ? "noindex,nofollow" : "index,follow"}
+        schema={[
+          localBusinessSchema({
+            name: service.title,
+            description: service.description,
+            image: service.images?.[0],
+            url: `/services/${id}`,
+            address: service.location,
+            telephone: vendor?.phoneNumber,
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Services", url: "/services" },
+            { name: service.title, url: `/services/${id}` },
+          ]),
+        ]}
+      />
       <section className='max-w-7xl mx-auto mt-6'>
         <ImageGallery images={service.images} title={service.title} />
       </section>
