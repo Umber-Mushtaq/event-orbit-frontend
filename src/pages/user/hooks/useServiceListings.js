@@ -16,9 +16,9 @@ export function useServiceListings() {
         setLoading(true);
         const url =
           activeCategory === "all"
-            ? apiUrl("/api/categories/getAllCategories")
+            ? apiUrl("/api/services/getAllServices")
             : apiUrl(
-                `/api/categories/getAllCategories?category=${activeCategory}`,
+                `/api/services/getAllServices?category=${activeCategory}`,
               );
 
         const response = await axios.get(url);

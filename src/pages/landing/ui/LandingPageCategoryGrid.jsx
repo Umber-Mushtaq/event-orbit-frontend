@@ -5,16 +5,17 @@ import CustomError from "../../../shared_components/CustomError";
 import bg_img from "../../../assets/service1.jpg";
 import CustomHeader from "../../../shared_components/CustomHeader";
 import { ArrowUpRight } from "lucide-react";
+import { getCategorySlug } from "../../../utils/slug";
 
 function LandingPageCategoriesGrid() {
   const { categories, loading, error } = useCategories();
-  console.log(categories);
   const navigate = useNavigate();
 
-  const handleCategoryClick = (categoryId, categoryName) => {
-    if (!categoryId) return;
-    navigate(`/categories/${categoryId}`, {
-      state: { categoryName },
+  const handleCategoryClick = (category) => {
+    const slug = getCategorySlug(category);
+    if (!slug) return;
+    navigate(`/category/${slug}`, {
+      state: { categoryName: category.name },
     });
   };
 
@@ -29,7 +30,7 @@ function LandingPageCategoriesGrid() {
         {categories.map((cat) => (
           <div
             key={cat.id}
-            onClick={() => handleCategoryClick(cat.id, cat.name)}
+            onClick={() => handleCategoryClick(cat)}
             className='group relative rounded-xl overflow-hidden shadow-gold-glow hover:shadow-gold-glow-hover transition-all duration-500 border border-border-gold h-64 w-full cursor-pointer'
           >
             <div

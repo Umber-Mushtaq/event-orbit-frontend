@@ -21,6 +21,8 @@ export function usePublicCategoryDetails(categoryId) {
       try {
         setLoading(true);
         setError("");
+        setCategory(null);
+        setVendors([]);
 
         const response = await axios.get(
           apiUrl(`/api/categories/categoryDetail/${categoryId}`),
@@ -53,7 +55,9 @@ export function usePublicCategoryDetails(categoryId) {
             "Failed to load category details.",
         );
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 

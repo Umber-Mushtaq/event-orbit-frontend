@@ -1,7 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import PublicLayout from "../layouts/PublicLayout";
 import LandingPage from "../pages/landing/LandingPage";
-import PublicCategoryListings from "../pages/services/PublicServiceListings";
+import PublicCategoryListings from "../pages/categories/PublicCategoryListings";
+import PublicServiceListings from "../pages/services/PublicServiceListings";
 import PublicCategoryDetails from "../pages/services/PublicServiceDetails";
 import VendorsPage from "../pages/public_vendor/VendorsPage";
 import VendorProfilePage from "../pages/public_vendor/VendorProfilePage";
@@ -65,7 +66,15 @@ const router = createBrowserRouter([
         element: <PublicCategoryListings />,
       },
       {
+        path: "/services",
+        element: <PublicServiceListings />,
+      },
+      {
         path: "/categories/:categoryId",
+        element: <PublicCategoryDetails />,
+      },
+      {
+        path: "/category/:categoryId",
         element: <PublicCategoryDetails />,
       },
       {
@@ -211,7 +220,15 @@ const router = createBrowserRouter([
             element: <PublicCategoryListings />,
           },
           {
+            path: "services",
+            element: <PublicServiceListings />,
+          },
+          {
             path: "categories/:categoryId",
+            element: <PublicCategoryDetails />,
+          },
+          {
+            path: "category/:categoryId",
             element: <PublicCategoryDetails />,
           },
           {

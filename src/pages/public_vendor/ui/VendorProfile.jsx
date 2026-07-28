@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router";
 import {
   ArrowLeft,
@@ -28,6 +28,7 @@ import {
   LinkedinSvg,
 } from "../../../shared_components/SocialIcons";
 import { useWishlistState } from "../../../hooks/useWishlistState";
+import { getVendorSlug } from "../../../utils/slug";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80";
@@ -448,7 +449,7 @@ function VendorProfile({
               {similarVendors.map((vendor) => (
                 <Link
                   key={vendor.id}
-                  to={`/vendors/${vendor.id}`}
+                  to={`/vendor/${getVendorSlug(vendor) || vendor.id}`}
                   className='cursor-pointer bg-neutral-900/70 border border-border-gold rounded-xl shadow-gold-glow hover:shadow-gold-glow-hover transition-all duration-300 overflow-hidden p-5 flex flex-col gap-4'
                 >
                   <div className='h-40 rounded-lg overflow-hidden bg-neutral-950'>

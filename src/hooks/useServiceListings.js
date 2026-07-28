@@ -13,6 +13,7 @@ export function useServiceListings(filters = {}) {
     const fetchServices = async () => {
       setLoading(true);
       setError(null);
+      setServices([]);
       try {
         const params = new URLSearchParams();
 
@@ -33,25 +34,26 @@ export function useServiceListings(filters = {}) {
           params.append("search", filters.search.trim());
         }
 
-        // 2. Fire the Axios request linked to the controller
         const response = await axios.get(
-          apiUrl(`/api/categories/getAllCategories?${params.toString()}`),
+          apiUrl(`/api/services/getAllServices?${params.toString()}`),
           { signal: abortController.signal },
         );
 
         if (response.data?.success) {
           setServices(response.data.data);
         } else {
-          setError("Failed to resolve dynamic categories payload array syntax.");
+          setError("Failed to resolve service listings payload.");
         }
       } catch (err) {
         // Don't update state if the request was intentionally cancelled by an active re-render
         if (axios.isCancel(err)) return;
 
-        console.error("Axios category compilation error:", err);
+        console.error("Axios service listing error:", err);
         setError(err.response?.data?.message || "Marketplace request failure.");
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 

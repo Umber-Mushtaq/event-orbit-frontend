@@ -1,4 +1,3 @@
-import React from "react";
 import { Star, MapPin, ArrowUpRight, Heart } from "lucide-react";
 import { Link } from "react-router";
 import { useServiceCardUtils } from "../../user/hooks/useServiceCardUtils";
@@ -14,6 +13,7 @@ export function ServiceCard({
     formattedPriceType,
     fallbackAvatar,
     heroImage,
+    defaultHeroImage,
     displayRating,
     totalReviewsCount,
   } = useServiceCardUtils(service);
@@ -26,6 +26,11 @@ export function ServiceCard({
           alt={service.title}
           className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
           loading='lazy'
+          onError={(event) => {
+            if (event.currentTarget.src !== defaultHeroImage) {
+              event.currentTarget.src = defaultHeroImage;
+            }
+          }}
         />
         <div className='absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/60 to-transparent' />
         <Link
