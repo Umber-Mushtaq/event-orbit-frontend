@@ -1,4 +1,6 @@
 import { Navigate, Outlet } from "react-router";
+import SEO from "../seo/SEO";
+import { privateSeo } from "../seo/routeSeo";
 
 function ProtectedRoute({ allowedRoles }) {
   const userString = localStorage.getItem("user");
@@ -28,6 +30,11 @@ function ProtectedRoute({ allowedRoles }) {
     return <Navigate to='/auth/login' replace />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <SEO {...privateSeo} />
+      <Outlet />
+    </>
+  );
 }
 export default ProtectedRoute;

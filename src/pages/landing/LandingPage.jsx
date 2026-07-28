@@ -8,9 +8,27 @@ import LandingPageBlogSection from "./ui/LandingPageBlogSection";
 import LandingPageVerifiedVendors from "./ui/LandingPageVerifiedVendors";
 import ContactSection from "./ui/ContactSection";
 import FAQSection from "./ui/FAQSection";
+import SEO from "../../seo/SEO";
+import { organizationSchema, websiteSchema } from "../../seo/schema";
+
 function LandingPage() {
   return (
     <>
+      <SEO
+        title='Event Orbit | Official Website'
+        description='Discover trusted event vendors, categories, services, and planning resources with Event Orbit.'
+        keywords={[
+          "Event Orbit",
+          "event vendors",
+          "wedding services",
+          "event planning",
+          "trusted vendors",
+        ]}
+        canonical='/'
+        image={HeroBg}
+        type='website'
+        schema={[organizationSchema(), websiteSchema()]}
+      />
       <section
         className='relative flex flex-col items-center justify-center text-center py-32 px-6 bg-cover bg-no-repeat bg-center'
         style={{

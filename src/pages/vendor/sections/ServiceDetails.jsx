@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import {
   Star,
   MapPin,
@@ -8,15 +8,17 @@ import {
 } from "lucide-react";
 import { ImageGallery } from "../../services/ui/ImageGallery";
 import { MapLocation } from "../../services/ui/MapLocation";
-import { VendorProfile } from "../../services/ui/VendorProfile";
 import { Reviews } from "../../services/ui/Reviews";
 import { usePublicServiceDetails } from "../../../hooks/usePublicServiceDetails";
 import CustomLoading from "../../../shared_components/CustomLoading";
 import CustomError from "../../../shared_components/CustomError";
 import VendorCard from "../../public_vendor/ui/VendorCard";
+import SEO from "../../../seo/SEO";
+import { breadcrumbSchema, localBusinessSchema } from "../../../seo/schema";
 
 export default function PublicServiceDetails() {
   const { id } = useParams();
+  const location = useLocation();
   const { service, vendor, reviews, relatedVendors, loading, error, refetch } =
     usePublicServiceDetails(id);
 
@@ -30,12 +32,39 @@ export default function PublicServiceDetails() {
 
   return (
     <main className='min-h-screen w-full bg-neutral-950 text-white font-poppins antialiased pb-24 selection:bg-amber-500 selection:text-black'>
+      <SEO
+        title={`${service.title} Services`}
+        description={
+          service.description ||
+          `View ${service.title} service details, vendors, reviews, and location on Event Orbit.`
+        }
+        keywords={[service.title, service.location, "event service", "vendor booking"]}
+        canonical={location.pathname.startsWith("/vendor/") ? location.pathname : `/services/${id}`}
+        image={service.images?.[0]}
+        type='product'
+        robots={location.pathname.startsWith("/vendor/") ? "noindex,nofollow" : "index,follow"}
+        schema={[
+          localBusinessSchema({
+            name: service.title,
+            description: service.description,
+            image: service.images?.[0],
+            url: `/services/${id}`,
+            address: service.location,
+            telephone: vendor?.phoneNumber,
+          }),
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Services", url: "/services" },
+            { name: service.title, url: `/services/${id}` },
+          ]),
+        ]}
+      />
       <section className='max-w-7xl mx-auto mt-6'>
         <ImageGallery images={service.images} title={service.title} />
       </section>
 
-      <section className='max-w-7xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 items-start'>
-        <div className='lg:col-span-2 space-y-10'>
+      <section className='max-w-7xl mx-auto mt-12'>
+        <div className='space-y-10'>
           <div className='bg-neutral-900/50  p-6 rounded-2xl '>
             <div className='inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-md text-[10px] uppercase tracking-widest font-bold text-amber-400 mb-4 shadow-sm backdrop-blur-md'>
               <Award className='w-3.5 h-3.5 animate-pulse' /> Verified Premium
@@ -86,28 +115,6 @@ export default function PublicServiceDetails() {
             <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
             <div className='flex flex-col mb-6'>
               <div className='flex items-center gap-2'>
-                <MapPin className='w-4 h-4 text-amber-500/70' />
-                <h3 className='font-montserrat font-extrabold text-sm uppercase tracking-widest text-stone-200'>
-                  Service Location Map
-                </h3>
-              </div>
-              <p className='text-sm text-stone-400 font-normal mt-1 pl-6'>
-                Exclusively showing localized coordinates inside operating
-                sectors.
-              </p>
-            </div>
-            <div className='rounded-xl overflow-hidden  p-1 '>
-              <MapLocation
-                locationName={service.location}
-                coordinates={service.coordinates}
-              />
-            </div>
-          </div>
-
-          <div className='transition-all duration-300 rounded-2xl p-8 backdrop-blur-sm relative group'>
-            <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
-            <div className='flex flex-col mb-6'>
-              <div className='flex items-center gap-2'>
                 <ShieldCheck className='w-4 h-4 text-amber-500/70' />
                 <h3 className='font-montserrat font-extrabold text-sm uppercase tracking-widest text-stone-200'>
                   Related Vendors
@@ -131,6 +138,28 @@ export default function PublicServiceDetails() {
             )}
           </div>
 
+          <div className='transition-all duration-300 rounded-2xl p-8 backdrop-blur-sm relative group'>
+            <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
+            <div className='flex flex-col mb-6'>
+              <div className='flex items-center gap-2'>
+                <MapPin className='w-4 h-4 text-amber-500/70' />
+                <h3 className='font-montserrat font-extrabold text-sm uppercase tracking-widest text-stone-200'>
+                  Service Location Map
+                </h3>
+              </div>
+              <p className='text-sm text-stone-400 font-normal mt-1 pl-6'>
+                Exclusively showing localized coordinates inside operating
+                sectors.
+              </p>
+            </div>
+            <div className='rounded-xl overflow-hidden  p-1 '>
+              <MapLocation
+                locationName={service.location}
+                coordinates={service.coordinates}
+              />
+            </div>
+          </div>
+
           {/* Reviews Section Wrapper */}
           <div className=' p-2 '>
             <Reviews
@@ -142,42 +171,6 @@ export default function PublicServiceDetails() {
           </div>
         </div>
 
-        {/* Right Side: Sticky Checkout / Booking Panel Container */}
-        <div className='space-y-8 lg:sticky lg:top-6'>
-          <div className='bg-neutral-900/80 border border-amber-500/20 backdrop-blur-xl rounded-2xl p-6 shadow-2xl relative overflow-hidden group'>
-            <div className='absolute top-0 right-0 w-32 h-32 bg-amber-500/[0.03] rounded-full blur-3xl pointer-events-none' />
-            <div className='absolute -top-[1px] left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent' />
-
-            <span className='text-[10px] text-amber-500/70 uppercase tracking-widest font-black block mb-2 font-mono'>
-              STARTING CONFIGURATION BASE
-            </span>
-            <div className='flex items-baseline gap-2 mb-6 border-b border-white/5 pb-4'>
-              <span className='text-4xl font-montserrat font-black text-white tracking-tight'>
-                Rs. {service.price?.toLocaleString()}
-              </span>
-              <span className='text-xs text-stone-400 font-medium capitalize font-mono'>
-                /{service.priceType || "fixed"}
-              </span>
-            </div>
-
-            <button className='w-full bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-neutral-950 font-montserrat font-black text-xs uppercase tracking-widest py-4 rounded-xl shadow-[0_4px_30px_rgba(245,158,11,0.15)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer active:scale-[0.99]'>
-              Secure Direct Booking
-            </button>
-
-            <div className='flex items-start gap-2 mt-5 text-[11px] text-stone-400/90 leading-relaxed bg-neutral-950/40 p-3 rounded-lg border border-white/5'>
-              <ShieldCheck className='w-4 h-4 text-amber-500 shrink-0 mt-0.5' />
-              <span>
-                Protected transactions and verified delivery guaranteed under
-                EventOrbit booking policies.
-              </span>
-            </div>
-          </div>
-
-          {/* Sticky Vendor Profile Component Placement */}
-          <div className='transition-all duration-300 hover:scale-[1.01]'>
-            <VendorProfile vendor={vendor} />
-          </div>
-        </div>
       </section>
     </main>
   );

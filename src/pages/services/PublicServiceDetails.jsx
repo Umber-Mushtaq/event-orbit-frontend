@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft, BadgeCheck, Layers3, Store, Sparkles } from "lucide-react";
 
@@ -7,8 +6,9 @@ import CustomLoading from "../../shared_components/CustomLoading";
 import CustomError from "../../shared_components/CustomError";
 
 import { ImageGallery } from "./ui/ImageGallery";
-import { VendorProfile } from "./ui/VendorProfile";
 import VendorCard from "../public_vendor/ui/VendorCard";
+import SEO from "../../seo/SEO";
+import { breadcrumbSchema } from "../../seo/schema";
 
 export default function PublicCategoryDetails() {
   const { categoryId } = useParams();
@@ -33,10 +33,26 @@ export default function PublicCategoryDetails() {
     );
   }
 
-  const featuredVendor = vendors[0] || null;
-
   return (
     <main className='min-h-screen w-full bg-neutral-950 text-white font-poppins antialiased pb-24 selection:bg-amber-500 selection:text-black'>
+      <SEO
+        title={`${category.name} Services`}
+        description={
+          category.description ||
+          `Explore trusted ${category.name} vendors and services on Event Orbit.`
+        }
+        keywords={[category.name, "event vendors", "event services", "Event Orbit"]}
+        canonical={`/category/${categoryId}`}
+        image={category.image}
+        type='website'
+        schema={[
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Categories", url: "/categories" },
+            { name: category.name, url: `/category/${categoryId}` },
+          ]),
+        ]}
+      />
       <section className='max-w-7xl mx-auto px-3 mt-6'>
         <ImageGallery
           images={category.image ? [category.image] : []}
@@ -44,8 +60,8 @@ export default function PublicCategoryDetails() {
         />
       </section>
 
-      <section className='max-w-7xl mx-auto px-3 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 items-start'>
-        <div className='lg:col-span-2 space-y-10'>
+      <section className='max-w-7xl mx-auto px-3 mt-12'>
+        <div className='space-y-10'>
           <div className='bg-neutral-900/50 p-6 rounded-2xl'>
             <div className='inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-md text-[10px] uppercase tracking-widest font-bold text-amber-400 mb-4 shadow-sm backdrop-blur-md'>
               <BadgeCheck className='w-3.5 h-3.5 animate-pulse' />
@@ -128,20 +144,6 @@ export default function PublicCategoryDetails() {
           </div>
         </div>
 
-        <div className='space-y-8 lg:sticky lg:top-6'>
-          {featuredVendor ? (
-            <VendorProfile vendor={featuredVendor} />
-          ) : (
-            <div className='bg-neutral-900/80 border border-amber-500/20 backdrop-blur-xl rounded-2xl p-6 shadow-2xl'>
-              <h3 className='font-montserrat font-black text-xl text-white mb-3 uppercase tracking-wide'>
-                Category Snapshot
-              </h3>
-              <p className='text-stone-400 text-sm leading-relaxed'>
-                We could not find a featured vendor for this category yet.
-              </p>
-            </div>
-          )}
-        </div>
       </section>
     </main>
   );

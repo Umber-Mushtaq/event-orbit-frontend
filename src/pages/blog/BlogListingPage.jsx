@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import BlogQueryProvider from "./BlogQueryProvider";
 import { useLatestBlogs } from "../../hooks/blog/usePublicBlogs";
 import BlogHeroSection from "./sections/BlogHeroSection";
@@ -10,63 +10,8 @@ import {
   blogSearchText,
   buildBlogPostingSchema,
 } from "./blogListingUtils";
-
-function updateSeo({ title, description, canonicalUrl, structuredData }) {
-  const setMeta = (selector, attribute, value) => {
-    let tag = document.head.querySelector(selector);
-    if (!tag) {
-      tag = document.createElement("meta");
-    }
-    if (attribute === "name") {
-      const name = selector.match(/name="([^"]+)"/)?.[1];
-      if (name) tag.setAttribute("name", name);
-    } else if (attribute === "property") {
-      const property = selector.match(/property="([^"]+)"/)?.[1];
-      if (property) tag.setAttribute("property", property);
-    }
-    tag.setAttribute("content", value);
-    tag.setAttribute("data-blog-archive-seo", "true");
-    if (!tag.parentNode) document.head.appendChild(tag);
-    return tag;
-  };
-
-  document.title = title;
-
-  setMeta('meta[name="description"]', "name", description);
-  setMeta('meta[property="og:title"]', "property", title);
-  setMeta('meta[property="og:description"]', "property", description);
-  setMeta('meta[property="og:type"]', "property", "website");
-  setMeta('meta[property="og:url"]', "property", canonicalUrl);
-  setMeta('meta[name="twitter:card"]', "name", "summary_large_image");
-  setMeta('meta[name="twitter:title"]', "name", title);
-  setMeta('meta[name="twitter:description"]', "name", description);
-
-  let canonical = document.head.querySelector('link[rel="canonical"]');
-  if (!canonical) {
-    canonical = document.createElement("link");
-    canonical.setAttribute("rel", "canonical");
-    canonical.setAttribute("data-blog-archive-seo", "true");
-    document.head.appendChild(canonical);
-  }
-  canonical.setAttribute("href", canonicalUrl);
-
-  let script = document.head.querySelector(
-    'script[data-blog-archive-seo="true"]',
-  );
-  if (!script) {
-    script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.setAttribute("data-blog-archive-seo", "true");
-    document.head.appendChild(script);
-  }
-  script.textContent = JSON.stringify(structuredData);
-
-  return () => {
-    document.head
-      .querySelectorAll('[data-blog-archive-seo="true"]')
-      .forEach((node) => node.remove());
-  };
-}
+import SEO from "../../seo/SEO";
+import { breadcrumbSchema, buildAbsoluteUrl } from "../../seo/schema";
 
 function BlogListingPageContent() {
   const { blogs, isLoading, error } = useLatestBlogs(100);
@@ -74,6 +19,8 @@ function BlogListingPageContent() {
   const [category, setCategory] = useState("All");
   const [page, setPage] = useState(1);
   const [email, setEmail] = useState("");
+  const description =
+    "Explore the latest event planning, venue, photography, and bridal inspiration from the Event Orbit editorial team.";
 
   const filteredBlogs = useMemo(() => {
     const query = normalizeText(search);
@@ -104,14 +51,10 @@ function BlogListingPageContent() {
     setPage(1);
   };
 
-  useEffect(() => {
-    if (typeof document === "undefined") return undefined;
-
-    const description =
-      "Explore the latest event planning, venue, photography, and bridal inspiration from the Event Orbit editorial team.";
-
-    const baseUrl = window.location.origin;
-    const structuredData = {
+  const blogSchema = useMemo(() => {
+    const baseUrl =
+      typeof window !== "undefined" ? window.location.origin : buildAbsoluteUrl("/");
+    return {
       "@context": "https://schema.org",
       "@graph": [
         {
@@ -142,17 +85,24 @@ function BlogListingPageContent() {
         },
       ],
     };
-
-    return updateSeo({
-      title: "Our Blog | Event Orbit",
-      description,
-      canonicalUrl: `${baseUrl}/blog`,
-      structuredData,
-    });
   }, [filteredBlogs]);
 
   return (
     <main className='bg-neutral-950 text-white'>
+      <SEO
+        title='Our Blog'
+        description={description}
+        keywords={["event planning blog", "wedding inspiration", "vendor tips"]}
+        canonical='/blog'
+        type='website'
+        schema={[
+          blogSchema,
+          breadcrumbSchema([
+            { name: "Home", url: "/" },
+            { name: "Blog", url: "/blog" },
+          ]),
+        ]}
+      />
       <BlogHeroSection />
 
       <section className='px-5 py-16'>

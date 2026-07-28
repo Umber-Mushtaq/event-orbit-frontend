@@ -1,5 +1,5 @@
 import SearchFilters from "./ui/SearchFilters";
-import React, { useState, useRef, useEffect } from "react";
+import  { useMemo, useState, useRef } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { useServiceListings } from "../../hooks/useServiceListings";
 import { ServiceCard } from "./ui/ServiceCard";
@@ -12,15 +12,19 @@ import { useWishlistState } from "../../hooks/useWishlistState";
 
 function PublicServiceListings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParamsKey = searchParams.toString();
 
-  // Initialize filters from query params
-  const [activeFilters, setActiveFilters] = useState({
-    category: searchParams.get("category") || "all",
-    location: searchParams.get("location") || "",
-    date: searchParams.get("date") || "",
-    maxPrice: searchParams.get("maxPrice") || "",
-  });
+  const activeFilters = useMemo(
+    () => ({
+      category: searchParams.get("category") || "all",
+      search: searchParams.get("search") || "",
+      location: searchParams.get("location") || "",
+      date: searchParams.get("date") || "",
+      maxPrice: searchParams.get("maxPrice") || "",
+    }),
+    [searchParams],
+  );
 
   const { services, loading, error } = useServiceListings(activeFilters);
   const {
@@ -30,9 +34,28 @@ function PublicServiceListings() {
   } = useWishlistState();
   const listingsRef = useRef(null);
 
-  useEffect(() => {
+  const applyFilters = (filters) => {
+    const nextParams = new URLSearchParams();
+
+    if (filters.category && filters.category !== "all") {
+      nextParams.set("category", filters.category);
+    }
+    if (filters.search?.trim()) {
+      nextParams.set("search", filters.search.trim());
+    }
+    if (filters.location?.trim()) {
+      nextParams.set("location", filters.location.trim());
+    }
+    if (filters.date) {
+      nextParams.set("date", filters.date);
+    }
+    if (filters.maxPrice) {
+      nextParams.set("maxPrice", filters.maxPrice);
+    }
+
+    setSearchParams(nextParams);
     setSidebarOpen(false);
-  }, [activeFilters]);
+  };
 
   return (
     <div className='min-h-screen flex'>
@@ -52,21 +75,22 @@ function PublicServiceListings() {
       >
         <div className='h-screen md:sticky md:top-6 overflow-y-auto'>
           <SearchFilters
-            onApplyFilters={setActiveFilters}
+            key={searchParamsKey}
+            onApplyFilters={applyFilters}
             initialFilters={activeFilters}
           />
         </div>
       </aside>
 
       <main className='flex-1 flex flex-col p-6 bg-neutral-950'>
-        <CustomHeader badge='Spotlight Categories' title='Explore Categories' />
+        <CustomHeader badge='Services' title='Explore Services' />
         <div ref={listingsRef} className='flex-1 mt-5'>
           {loading ? (
-            <CustomLoading msg='Loading categories...' />
+            <CustomLoading msg='Loading services...' />
           ) : error ? (
-            <CustomError msg='Failed to load categories. Please try again.' />
+            <CustomError msg='Failed to load services. Please try again.' />
           ) : services.length === 0 ? (
-            <NothingFound msg='No Category Found' />
+            <NothingFound msg='No Service Found' />
           ) : (
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto'>
               {services.map((serviceItem) => (

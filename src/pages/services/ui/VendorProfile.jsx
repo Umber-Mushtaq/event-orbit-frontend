@@ -1,16 +1,14 @@
-import React from "react";
 import {
   MessageSquare,
-  Calendar,
   Phone,
   Mail,
   Globe,
   Award,
 } from "lucide-react";
 import { Link } from "react-router";
+import { getVendorSlug } from "../../../utils/slug";
 
 export function VendorProfile({ vendor }) {
-  const token = localStorage.getItem("token");
   const fallbackAvatar =
     "https://api.dicebear.com/7.x/initials/svg?seed=" +
     encodeURIComponent(vendor?.businessName || "Vendor") +
@@ -30,7 +28,10 @@ export function VendorProfile({ vendor }) {
   return (
     <div className='bg-neutral-900/40 border border-amber-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden backdrop-blur-md text-left'>
       {/* Brand Identity Block */}
-      <Link to={`/vendors/${vendor?._id}`} className='flex items-start gap-4 mb-5 group'>
+      <Link
+        to={`/vendor/${getVendorSlug(vendor) || vendor?._id}`}
+        className='flex items-start gap-4 mb-5 group'
+      >
         <div className='w-14 h-14 rounded-full overflow-hidden ring-2 ring-amber-500/40 bg-neutral-950 shrink-0 flex items-center justify-center'>
           <img
             src={

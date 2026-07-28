@@ -7,13 +7,14 @@ import {
   EmailSvg,
 } from "../../../shared_components/SocialIcons";
 import { useNavigate } from "react-router";
+import { getVendorSlug } from "../../../utils/slug";
 
 function VendorCard({ vendor }) {
   const navigate = useNavigate();
-  console.log(vendor);
 
   const handleClick = () => {
-    navigate(`/vendors/${vendor._id}`);
+    const slug = getVendorSlug(vendor);
+    navigate(slug ? `/vendor/${slug}` : `/vendor/${vendor._id}`);
   };
 
   return (

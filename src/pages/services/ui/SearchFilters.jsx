@@ -6,6 +6,8 @@ function SearchFilters({ onApplyFilters, initialFilters }) {
   const {
     category,
     setCategory,
+    search,
+    setSearch,
     location,
     setLocation,
     date,
@@ -34,6 +36,18 @@ function SearchFilters({ onApplyFilters, initialFilters }) {
             </option>
           ))}
       </select>
+
+      {/* Search */}
+      <input
+        type='text'
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleSubmit();
+        }}
+        placeholder='Search services'
+        className='w-full px-3 py-2 rounded-md bg-neutral-900 text-stone-300 border border-border-gold'
+      />
 
       {/* Location */}
       <input

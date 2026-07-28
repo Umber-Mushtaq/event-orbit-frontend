@@ -1,4 +1,7 @@
 import { useLocation } from "react-router";
+import hallImage from "../../../assets/hall.jpeg";
+import photographyImage from "../../../assets/photography.jpg";
+import floralImage from "../../../assets/service1.jpg";
 
 export function useServiceCardUtils(service) {
   const location = useLocation();
@@ -27,11 +30,57 @@ export function useServiceCardUtils(service) {
   const defaultHeroImage =
     "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=600";
 
+  const titleText = `${service?.title || ""} ${service?.category || ""}`.toLowerCase();
+  const serviceTitle = String(service?.title || "").toLowerCase();
+  const isHallService =
+    titleText.includes("walima") ||
+    titleText.includes("wallima") ||
+    titleText.includes("hall") ||
+    titleText.includes("venue") ||
+    titleText.includes("banquet");
+
+  const preferredHeroImage =
+    serviceTitle.includes("cinematic wedding") ||
+    serviceTitle.includes("wedding film")
+      ? photographyImage
+      : serviceTitle.includes("fresh floral") ||
+          serviceTitle.includes("fresh floor") ||
+          serviceTitle.includes("floral styling")
+        ? floralImage
+        : "";
+
+  const fallbackHeroImage =
+    preferredHeroImage || (isHallService ? hallImage : defaultHeroImage);
+
+  const resolveImageUrl = (image) => {
+    if (!image) return "";
+
+    if (typeof image === "string") {
+      return image.trim();
+    }
+
+    return (
+      image.secure_url ||
+      image.url ||
+      image.src ||
+      image.path ||
+      ""
+    ).trim();
+  };
+
+  const heroImage =
+    preferredHeroImage ||
+    resolveImageUrl(service?.images?.[0]) ||
+    resolveImageUrl(service?.image) ||
+    resolveImageUrl(service?.thumbnail) ||
+    fallbackHeroImage;
+
   return {
     navigationTarget,
     formattedPriceType: formatPriceType(service?.priceType),
     fallbackAvatar,
-    heroImage: service?.images?.[0] || defaultHeroImage,
+    defaultHeroImage: fallbackHeroImage,
+    heroImage,
     displayRating: Number(service?.averageRating || 0).toFixed(1),
     totalReviewsCount: service?.totalReviews || 0,
   };
