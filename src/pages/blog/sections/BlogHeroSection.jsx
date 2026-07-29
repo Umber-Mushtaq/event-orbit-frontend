@@ -1,14 +1,16 @@
 import { Link } from "react-router";
 import { Sparkles } from "lucide-react";
-import HeroBg from "../../../assets/hero_bg.jpg";
+import HeroBg from "../../../assets/photography.jpg";
 
-function BlogHeroSection() {
+function BlogHeroSection({ image }) {
+  const heroImage = image || HeroBg;
+
   return (
     <section
       className='relative overflow-hidden bg-cover bg-center bg-no-repeat px-5 py-20 text-white'
-      style={{ backgroundImage: `url(${HeroBg})` }}
+      style={{ backgroundImage: `url(${heroImage})` }}
     >
-      <div className='absolute inset-0 bg-gradient-to-br from-black/80 via-black/65 to-neutral-950/95' />
+      <div className='absolute inset-0 bg-gradient-to-br from-black/85 via-black/68 to-neutral-950/95' />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(245,158,11,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.05),transparent_28%)]' />
       <div className='relative mx-auto flex w-full max-w-7xl flex-col gap-6'>
         <nav aria-label='Breadcrumb' className='text-sm text-stone-300/90'>

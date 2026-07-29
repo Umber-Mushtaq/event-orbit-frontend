@@ -6,7 +6,6 @@ export const adminNavigation = [
   { label: "Blog", path: "/admin/blog", icon: "file-text" },
   { label: "Users", path: "/admin/users", icon: "users" },
   { label: "Analytics", path: "/admin/analytics", icon: "bar-chart-3" },
-  { label: "Calendar", path: "/admin/calendar", icon: "calendar-range" },
 ];
 
 export const adminSectionCopy = {
@@ -33,10 +32,6 @@ export const adminSectionCopy = {
   analytics: {
     title: "Analytics",
     description: "Understand growth, conversion, and revenue trends.",
-  },
-  calendar: {
-    title: "Calendar",
-    description: "Coordinate meetings, appointments, and event dates.",
   },
   blog: {
     title: "Blogs",

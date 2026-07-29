@@ -13,7 +13,13 @@ import { getVendorSlug } from "../../utils/slug";
 function VendorProfilePage() {
   const params = useParams();
   const vendorId = params.vendorId || params.id;
-  const { profile, reviews, loading, error } = usePublicVendorProfile(vendorId);
+  const {
+    profile,
+    reviews,
+    services: profileServices,
+    loading,
+    error,
+  } = usePublicVendorProfile(vendorId);
   const resolvedVendorId = profile?._id || vendorId;
   const {
     services,
@@ -21,14 +27,23 @@ function VendorProfilePage() {
     error: servicesError,
   } = useServiceListings({});
 
-  const vendorServices = useMemo(
-    () =>
-      services.filter((service) => {
-        const serviceVendorId = service?.vendor?.id || service?.vendor?._id;
-        return String(serviceVendorId) === String(resolvedVendorId);
-      }),
-    [services, resolvedVendorId],
-  );
+  const vendorServices = useMemo(() => {
+    if (profileServices.length > 0) return profileServices;
+
+    return services.filter((service) => {
+      const serviceVendorIds = [
+        service?.vendor?.id,
+        service?.vendor?._id,
+        service?.vendorId,
+        ...(Array.isArray(service?.vendorIds) ? service.vendorIds : []),
+      ].filter(Boolean);
+
+      return serviceVendorIds.some(
+        (serviceVendorId) =>
+          String(serviceVendorId) === String(resolvedVendorId),
+      );
+    });
+  }, [profileServices, services, resolvedVendorId]);
 
   const bookingTarget = useMemo(() => {
     const primaryService = vendorServices[0];
@@ -36,7 +51,7 @@ function VendorProfilePage() {
 
     if (!serviceId || !resolvedVendorId) return "";
 
-    return `/checkout/${serviceId}/vendor/${resolvedVendorId}`;
+    return `/booking/${serviceId}/vendor/${resolvedVendorId}`;
   }, [vendorServices, resolvedVendorId]);
 
   if (loading || servicesLoading) {

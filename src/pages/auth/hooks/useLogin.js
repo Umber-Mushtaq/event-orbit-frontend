@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import axios from "axios";
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,6 +45,8 @@ export const useLogin = () => {
           navigate("/admin/dashboard");
         } else if (user.role === "vendor") {
           navigate("/vendor/dashboard");
+        } else if (location.state?.from) {
+          navigate(location.state.from);
         } else {
           navigate("/customer/dashboard");
         }

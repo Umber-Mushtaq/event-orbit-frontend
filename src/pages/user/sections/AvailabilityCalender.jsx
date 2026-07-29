@@ -80,6 +80,11 @@ export default function AvailabilityCalendar({
 
         .react-calendar__tile:hover {
           background: rgba(245,158,11,.15);
+          color: #fbbf24;
+        }
+
+        .react-calendar__tile:hover abbr {
+          color: #fbbf24;
         }
 
         .react-calendar__tile abbr {
@@ -106,6 +111,13 @@ export default function AvailabilityCalendar({
 
         .rc-selected abbr,
         .react-calendar__tile--active abbr {
+          color: black !important;
+        }
+
+        .rc-selected:hover,
+        .react-calendar__tile--active:hover,
+        .rc-selected:hover abbr,
+        .react-calendar__tile--active:hover abbr {
           color: black !important;
         }
 
@@ -142,6 +154,11 @@ export default function AvailabilityCalendar({
           background: rgba(255,255,255,.03);
           color: #777;
           cursor: not-allowed;
+        }
+
+        .react-calendar__tile:disabled:hover,
+        .react-calendar__tile:disabled:hover abbr {
+          color: #777;
         }
       `}</style>
 

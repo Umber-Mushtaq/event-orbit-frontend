@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { adminSectionCopy } from "../../data/admin-data/adminNavigationData";
 import EventCategoriesPage from "./EventCategoriesPage";
 import EventsManagementPage from "./EventsManagementPage";
-import CalendarManagementPage from "./CalendarManagementPage";
 import VendorManagementPage from "./VendorManagementPage";
 import RevenueAnalyticsChart from "../../components/adminComponent/RevenueAnalyticsChart";
 import EventStatusChart from "../../components/adminComponent/EventStatusChart";
@@ -117,7 +116,7 @@ function AdminSectionPage({ sectionKey }) {
     return () => {
       active = false;
     };
-  }, [analytics, sectionKey]);
+  }, [sectionKey]);
 
   const content = useMemo(() => {
     switch (sectionKey) {
@@ -137,8 +136,6 @@ function AdminSectionPage({ sectionKey }) {
             <VendorPerformanceChart data={analytics.vendorPerformance} />
           </section>
         );
-      case "calendar":
-        return <CalendarManagementPage />;
       case "notifications":
         return (
           <section className="grid gap-6">
@@ -191,7 +188,7 @@ function AdminSectionPage({ sectionKey }) {
           </section>
         );
     }
-  }, [sectionKey]);
+  }, [analytics, sectionKey]);
 
   return (
     <div className="space-y-6">

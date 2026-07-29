@@ -1,5 +1,12 @@
 import { Link, useParams } from "react-router";
-import { ArrowLeft, BadgeCheck, Layers3, Store, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  Award,
+  Layers3,
+  ShieldCheck,
+  Sparkles,
+  Store,
+} from "lucide-react";
 
 import { usePublicCategoryDetails } from "../../hooks/usePublicCategoryDetails";
 import CustomLoading from "../../shared_components/CustomLoading";
@@ -62,42 +69,33 @@ export default function PublicCategoryDetails() {
 
       <section className='max-w-7xl mx-auto px-3 mt-12'>
         <div className='space-y-10'>
-          <div className='bg-neutral-900/50 p-6 rounded-2xl'>
+          <div className='bg-neutral-900/50  p-6 rounded-2xl '>
             <div className='inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-md text-[10px] uppercase tracking-widest font-bold text-amber-400 mb-4 shadow-sm backdrop-blur-md'>
-              <BadgeCheck className='w-3.5 h-3.5 animate-pulse' />
-              Category Spotlight
+              <Award className='w-3.5 h-3.5 animate-pulse' /> Verified Premium
+              Platform Category
             </div>
             <h1 className='font-montserrat font-black text-3xl md:text-5xl tracking-wide uppercase leading-tight bg-gradient-to-r from-white via-white to-stone-400 bg-clip-text text-transparent'>
               {category.name}
             </h1>
 
-            <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-4 border-t border-white/10'>
-              <div className='rounded-2xl bg-neutral-950/60 border border-white/5 p-4'>
-                <div className='flex items-center gap-2 text-amber-400 text-xs uppercase tracking-widest font-bold'>
-                  <Store className='w-4 h-4' />
-                  Vendors
-                </div>
-                <div className='mt-2 text-2xl font-black text-white'>
-                  {vendors.length}
-                </div>
+            <div className='flex flex-wrap items-center gap-6 mt-6 pt-4 border-t border-white/30 text-xs text-stone-400'>
+              <div className='flex items-center gap-3 py-1.5 rounded-full '>
+                <Store className='w-4 h-4 text-amber-500' />
+                <span className='text-stone-200 font-medium'>
+                  {vendors.length} VERIFIED VENDORS
+                </span>
               </div>
-              <div className='rounded-2xl bg-neutral-950/60 border border-white/5 p-4'>
-                <div className='flex items-center gap-2 text-amber-400 text-xs uppercase tracking-widest font-bold'>
-                  <Layers3 className='w-4 h-4' />
-                  Listings
-                </div>
-                <div className='mt-2 text-2xl font-black text-white'>
-                  {category.listings ?? 0}
-                </div>
+              <div className='flex items-center gap-3 py-1.5 rounded-full '>
+                <Layers3 className='w-4 h-4 text-amber-500' />
+                <span className='text-stone-200 font-medium'>
+                  {category.listings ?? 0} LISTINGS
+                </span>
               </div>
-              <div className='rounded-2xl bg-neutral-950/60 border border-white/5 p-4'>
-                <div className='flex items-center gap-2 text-amber-400 text-xs uppercase tracking-widest font-bold'>
-                  <Sparkles className='w-4 h-4' />
-                  Status
-                </div>
-                <div className='mt-2 text-2xl font-black text-white'>
+              <div className='flex items-center gap-3 py-1.5 rounded-full '>
+                <Sparkles className='w-4 h-4 text-amber-500' />
+                <span className='text-stone-200 font-medium uppercase'>
                   {category.status || "Active"}
-                </div>
+                </span>
               </div>
             </div>
           </div>
@@ -120,13 +118,13 @@ export default function PublicCategoryDetails() {
             <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
             <div className='flex flex-col mb-6'>
               <div className='flex items-center gap-2'>
-                <Store className='w-4 h-4 text-amber-500/70' />
+                <ShieldCheck className='w-4 h-4 text-amber-500/70' />
                 <h3 className='font-montserrat font-extrabold text-sm uppercase tracking-widest text-stone-200'>
                   Related Vendors
                 </h3>
               </div>
               <p className='text-sm text-stone-400 font-normal mt-1 pl-6'>
-                Vendors listed below actively offer this category.
+                Verified vendors offering services in this category.
               </p>
             </div>
 

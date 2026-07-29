@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import { ImageGallery } from "../../services/ui/ImageGallery";
+import { MapLocation } from "../../services/ui/MapLocation";
 import Avatar from "../../../assets/fallback.png";
 import {
   FacebookSvg,
@@ -147,6 +148,10 @@ function VendorProfile({
     "Vendor";
   const ownerName = `${profile.firstName || ""} ${profile.lastName || ""}`.trim();
   const location = [profile.location, profile.city, profile.country].filter(Boolean).join(", ");
+  const mapLocation =
+    profile.address ||
+    [profile.location, profile.city, profile.country].filter(Boolean).join(", ") ||
+    "Lahore, Pakistan";
   const avgRating = reviews.length
     ? reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / reviews.length
     : Number(profile.vendorRating || 0);
@@ -161,6 +166,16 @@ function VendorProfile({
   const vendorIsWishlisted = primaryServiceId ? isWishlisted(primaryServiceId) : false;
   const wishlistUpdating =
     primaryServiceId && String(updatingServiceId) === String(primaryServiceId);
+  const token = localStorage.getItem("token");
+  const bookingFallbackTarget =
+    bookingTarget || `/booking/vendor/${profile._id || profile.id}`;
+  const bookingButtonTarget = token ? bookingFallbackTarget : "/auth/login";
+  const bookingButtonState = token
+    ? undefined
+    : {
+        from: bookingFallbackTarget,
+        message: "Please sign in to book this vendor.",
+      };
   const whatsappLink =
     profile.whatsappNumber || profile.phoneNumber
       ? `https://wa.me/${digitsOnly(profile.whatsappNumber || profile.phoneNumber)}`
@@ -267,15 +282,14 @@ function VendorProfile({
             </div>
 
             <div className='flex flex-wrap gap-3 lg:justify-end'>
-              {bookingTarget ? (
-                <Link
-                  to={bookingTarget}
-                  className='flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-neutral-950 font-black text-xs px-5 py-3 rounded-xl transition-all cursor-pointer shadow-lg tracking-wider uppercase'
-                >
-                  <CalendarDays className='w-3.5 h-3.5' />
-                  Book Now
-                </Link>
-              ) : null}
+              <Link
+                to={bookingButtonTarget}
+                state={bookingButtonState}
+                className='flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-neutral-950 hover:to-neutral-900 text-neutral-950 hover:text-border-gold-hover border border-transparent hover:border-border-gold font-black text-xs px-5 py-3 rounded-xl transition-all cursor-pointer shadow-lg tracking-wider uppercase'
+              >
+                <CalendarDays className='w-3.5 h-3.5' />
+                Book Now
+              </Link>
               {whatsappLink ? (
                 <a
                   href={whatsappLink}
@@ -398,6 +412,21 @@ function VendorProfile({
                 <FacebookSvg className='w-5 h-5 hover:text-amber-300' />
               </a>
             ) : null}
+          </div>
+        </div>
+
+        <div className='transition-all duration-300 rounded-2xl p-8 backdrop-blur-sm relative group'>
+          <div className='absolute top-0 left-6 w-12 h-[2px] bg-amber-500/50 group-hover:w-24 transition-all duration-500' />
+          <SectionHeading
+            icon={MapPin}
+            title='Service Location Map'
+            description='Exclusively showing localized coordinates inside operating sectors.'
+          />
+          <div className='rounded-xl overflow-hidden p-1'>
+            <MapLocation
+              locationName={mapLocation}
+              coordinates={profile.coordinates}
+            />
           </div>
         </div>
 

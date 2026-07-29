@@ -34,16 +34,16 @@ function BlogListingPageContent() {
     });
   }, [blogs, search, category]);
 
-  const remainingBlogs = filteredBlogs.slice(1);
-  const totalPages = Math.max(1, Math.ceil(remainingBlogs.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filteredBlogs.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
 
   const paginatedBlogs = useMemo(() => {
     const start = (safePage - 1) * PAGE_SIZE;
-    return remainingBlogs.slice(start, start + PAGE_SIZE);
-  }, [remainingBlogs, safePage]);
+    return filteredBlogs.slice(start, start + PAGE_SIZE);
+  }, [filteredBlogs, safePage]);
 
   const isEmpty = !isLoading && !error && filteredBlogs.length === 0;
+  const heroImage = filteredBlogs[0]?.featureImage || blogs[0]?.featureImage;
 
   const clearFilters = () => {
     setSearch("");
@@ -103,7 +103,7 @@ function BlogListingPageContent() {
           ]),
         ]}
       />
-      <BlogHeroSection />
+      <BlogHeroSection image={heroImage} />
 
       <section className='px-5 py-16'>
         <div className='mx-auto flex w-full max-w-7xl flex-col gap-10'>

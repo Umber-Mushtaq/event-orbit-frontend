@@ -11,9 +11,31 @@ export function slugifyBlogTitle(value) {
 }
 
 export function stripBlogHtml(html) {
-  return String(html || "")
+  let text = String(html || "")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<\s*(script|style|xml)[\s\S]*?>[\s\S]*?<\s*\/\s*\1\s*>/gi, " ")
+    .replace(/<\s*(br|\/p|\/div|\/li|\/h[1-6]|\/tr)\b[^>]*>/gi, "\n")
     .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+
+  const hadOfficeHeader = /MicrosoftInternetExplorer|DocumentNotSpecified/i.test(text);
+
+  text = text
+    .replace(/MicrosoftInternetExplorer\d*[\s\S]*?\bNormal\s+\d+\s*/gi, " ")
+    .replace(/DocumentNotSpecified[\s\S]*?\bNormal\s+\d+\s*/gi, " ");
+
+  if (hadOfficeHeader) {
+    text = text.replace(/^(\s*\d+\s*)+/, "");
+  }
+
+  return text
+    .replace(/[ \t\f\v]+/g, " ")
+    .replace(/\s*\n\s*/g, " ")
     .trim();
 }
 

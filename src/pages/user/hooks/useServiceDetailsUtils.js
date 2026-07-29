@@ -25,8 +25,8 @@ export function useServiceDetailsUtils() {
   const checkoutBookingPath = !token
     ? "/auth/register"
     : isDashboardView
-      ? `/customer/dashboard/checkout/${resolvedServiceId}/vendor/${vendorId}`
-      : `/checkout/${resolvedServiceId}/vendor/${vendorId}`;
+      ? `/customer/dashboard/booking/${resolvedServiceId}/vendor/${vendorId}`
+      : `/booking/${resolvedServiceId}/vendor/${vendorId}`;
 
   return {
     loading,

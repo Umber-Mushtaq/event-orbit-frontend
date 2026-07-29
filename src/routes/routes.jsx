@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router";
+import { createBrowserRouter, Navigate, useLocation, useParams } from "react-router";
 import PublicLayout from "../layouts/PublicLayout";
 import LandingPage from "../pages/landing/LandingPage";
 import PublicCategoryListings from "../pages/categories/PublicCategoryListings";
@@ -28,6 +28,7 @@ import Wishlist from "../pages/user/sections/Wishlist";
 import ContactPage from "../pages/landing/ContactPage";
 import AboutPage from "../pages/landing/AboutPage";
 import CheckoutPage from "../pages/user/sections/CheckoutPage";
+import VendorCheckoutRedirect from "../pages/user/sections/VendorCheckoutRedirect";
 import CustomerProfile from "../pages/user/sections/CustomerProfile";
 import BlogListingPage from "../pages/blog/BlogListingPage";
 import PublicBlogDetailPage from "../pages/blog/PublicBlogDetailPage";
@@ -43,7 +44,6 @@ import AdminDashboardOverview from "../pages/admin/sections/admin-section/AdminD
 import AdminSectionPage from "../pages/admin/sections/admin-section/AdminSectionPage";
 import EventCategoriesPage from "../pages/admin/sections/admin-section/EventCategoriesPage";
 import EventsManagementPage from "../pages/admin/sections/admin-section/EventsManagementPage";
-import CalendarManagementPage from "../pages/admin/sections/admin-section/CalendarManagementPage";
 import VendorManagementPage from "../pages/admin/sections/admin-section/VendorManagementPage";
 import UserManagementPage from "../pages/admin/sections/admin-section/UserManagementPage";
 import SettingsManagementPage from "../pages/admin/sections/admin-section/SettingsManagementPage";
@@ -52,6 +52,20 @@ import AdminChangePasswordPage from "../pages/admin/sections/admin-section/Admin
 import AdminBlogListingPage from "../pages/admin/sections/admin-section/blog/BlogListingPage";
 import BlogDetailsPage from "../pages/admin/sections/admin-section/blog/BlogDetailsPage";
 import BlogFormPage from "../pages/admin/sections/admin-section/blog/BlogFormPage";
+
+function LegacyCheckoutRedirect({ vendorOnly = false }) {
+  const { serviceId, vendorId } = useParams();
+  const location = useLocation();
+  const basePath = location.pathname.startsWith("/customer/dashboard")
+    ? "/customer/dashboard/booking"
+    : "/booking";
+
+  const targetPath = vendorOnly
+    ? `${basePath}/vendor/${vendorId}`
+    : `${basePath}/${serviceId}/vendor/${vendorId}`;
+
+  return <Navigate to={targetPath} replace />;
+}
 
 const router = createBrowserRouter([
   {
@@ -107,8 +121,20 @@ const router = createBrowserRouter([
         element: <ContactPage />,
       },
       {
-        path: "/checkout/:serviceId/vendor/:vendorId",
+        path: "/booking/:serviceId/vendor/:vendorId",
         element: <CheckoutPage />,
+      },
+      {
+        path: "/booking/vendor/:vendorId",
+        element: <VendorCheckoutRedirect />,
+      },
+      {
+        path: "/checkout/:serviceId/vendor/:vendorId",
+        element: <LegacyCheckoutRedirect />,
+      },
+      {
+        path: "/checkout/vendor/:vendorId",
+        element: <LegacyCheckoutRedirect vendorOnly />,
       },
       {
         path: "/blog",
@@ -191,7 +217,7 @@ const router = createBrowserRouter([
             path: "analytics",
             element: <AdminSectionPage sectionKey="analytics" />,
           },
-          { path: "calendar", element: <CalendarManagementPage /> },
+          { path: "calendar", element: <Navigate to="/admin/dashboard" replace /> },
           { path: "blog", element: <AdminBlogListingPage /> },
           { path: "blog/add", element: <BlogFormPage mode="create" /> },
           { path: "blog/:blogId", element: <BlogDetailsPage /> },
@@ -245,8 +271,20 @@ const router = createBrowserRouter([
             element: <PublicCategoryDetails />,
           },
           {
-            path: "checkout/:serviceId/vendor/:vendorId",
+            path: "booking/:serviceId/vendor/:vendorId",
             element: <CheckoutPage />,
+          },
+          {
+            path: "booking/vendor/:vendorId",
+            element: <VendorCheckoutRedirect />,
+          },
+          {
+            path: "checkout/:serviceId/vendor/:vendorId",
+            element: <LegacyCheckoutRedirect />,
+          },
+          {
+            path: "checkout/vendor/:vendorId",
+            element: <LegacyCheckoutRedirect vendorOnly />,
           },
           {
             path: "bookings",

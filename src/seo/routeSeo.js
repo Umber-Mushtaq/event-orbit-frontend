@@ -219,10 +219,10 @@ export const getRouteSeo = (pathname = "/") => {
     };
   }
 
-  if (/^\/checkout\//.test(pathname)) {
+  if (/^\/booking\//.test(pathname) || /^\/checkout\//.test(pathname)) {
     return {
-      title: "Checkout",
-      description: "Secure Event Orbit checkout.",
+      title: "Booking",
+      description: "Secure Event Orbit booking.",
       canonical: pathname,
       robots: "noindex,nofollow",
     };

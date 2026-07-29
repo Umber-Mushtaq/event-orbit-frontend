@@ -5,6 +5,7 @@ import { apiUrl } from "../config/api";
 export function usePublicVendorProfile(vendorId) {
   const [profile, setProfile] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -17,6 +18,7 @@ export function usePublicVendorProfile(vendorId) {
         setError(null);
         setProfile(null);
         setReviews([]);
+        setServices([]);
 
         const res = await axios.get(apiUrl(`/api/vendor/Profile/${vendorId}`), {
           signal: controller.signal,
@@ -24,6 +26,7 @@ export function usePublicVendorProfile(vendorId) {
         if (res.data?.success) {
           setProfile(res.data.profile);
           setReviews(res.data.reviews || []);
+          setServices(res.data.services || []);
         } else {
           setError("Failed to load vendor profile.");
         }
@@ -48,5 +51,5 @@ export function usePublicVendorProfile(vendorId) {
     };
   }, [vendorId]);
 
-  return { profile, reviews, loading, error };
+  return { profile, reviews, services, loading, error };
 }

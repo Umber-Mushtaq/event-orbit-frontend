@@ -9,7 +9,6 @@ const titleMap = {
   "/admin/vendors": "Vendors",
   "/admin/users": "Users",
   "/admin/analytics": "Analytics",
-  "/admin/calendar": "Calendar",
   "/admin/blog": "Blogs",
   "/admin/blog/add": "Add Blog",
   "/admin/notifications": "Notifications",
@@ -26,7 +25,6 @@ function AdminBreadcrumbs() {
     pathname === "/admin/categories" ||
     pathname === "/admin/vendors" ||
     pathname === "/admin/users" ||
-    pathname === "/admin/calendar" ||
     pathname === "/admin/profile" ||
     pathname === "/admin/change-password" ||
     pathname === "/admin/settings"

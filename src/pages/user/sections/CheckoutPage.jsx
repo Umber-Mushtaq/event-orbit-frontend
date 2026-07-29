@@ -39,6 +39,7 @@ export default function CheckoutPage() {
       // Pass the session error message silently down to the login page state context
       navigate("/auth/login", {
         state: {
+          from: `/booking/${serviceId}/vendor/${vendorId}`,
           message:
             "Session expired or unauthorized. Please sign in to book an event.",
         },
@@ -135,7 +136,7 @@ export default function CheckoutPage() {
   };
 
   if (isLoading || serviceLoading) {
-    return <CustomLoading msg='Loading checkout...' />;
+    return <CustomLoading msg='Loading booking...' />;
   }
 
   if (serviceError) {
@@ -148,7 +149,7 @@ export default function CheckoutPage() {
 
   return (
     <div className='flex flex-col mx-10 py-20 '>
-      <CustomHeader badge='Checkout' title='Book your event' />
+      <CustomHeader badge='Booking' title='Book your event' />
 
       <StatusIndicator
         error={statusError}
@@ -163,9 +164,9 @@ export default function CheckoutPage() {
           onDateSelect={setEventDate}
         />
 
-        {/* Right: Checkout Form */}
+        {/* Right: Booking Form */}
         <div>
-          <h2 className='text-3xl font-bold mb-6 text-amber-400'>Checkout</h2>
+          <h2 className='text-3xl font-bold mb-6 text-amber-400'>Booking</h2>
 
           <div className='mb-6 border border-neutral-800 rounded-md p-4 bg-neutral-900'>
             <h3 className='text-xl font-semibold'>{service?.title || "Service"}</h3>
@@ -224,7 +225,7 @@ export default function CheckoutPage() {
             <button
               type='submit'
               disabled={isSubmitting}
-              className='w-full bg-amber-400 text-neutral-900 font-semibold py-3 rounded-md hover:bg-amber-500 transition disabled:bg-neutral-700 disabled:text-neutral-400'
+              className='w-full rounded-md border border-transparent bg-amber-400 py-3 font-semibold text-neutral-900 transition hover:border-border-gold hover:bg-neutral-950 hover:text-border-gold-hover disabled:bg-neutral-700 disabled:text-neutral-400 disabled:hover:border-transparent'
             >
               {isSubmitting ? "Processing Request..." : "Confirm Booking"}
             </button>
