@@ -26,7 +26,7 @@ function LandingSteps() {
     },
   ];
   return (
-    <section className='py-20 px-5 w-full flex flex-col items-center relative overflow-hidden bg-neutral-950'>
+    <section className='relative flex w-full flex-col items-center overflow-hidden bg-white px-5 py-20 dark:bg-neutral-950'>
       <div className='w-full max-w-7xl mx-auto'>
         <CustomHeader
           badge='How It Works'
@@ -42,16 +42,16 @@ function LandingSteps() {
               key={step.id}
               className=' flex flex-col lg:flex-row mt-10 items-center w-full lg:w-auto flex-grow'
             >
-              <div className='bg-neutral-900/70 backdrop-blur-md rounded-2xl p-8 border  border-border-gold shadow-lg flex flex-col items-center text-center group w-full lg:max-w-xs xl:max-w-sm min-h-[320px] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-border-gold/50 hover:shadow-gold-glow-hover'>
+              <div className='group flex min-h-[320px] w-full flex-col items-center rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center shadow-[0_14px_35px_rgba(15,23,42,0.1)] backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-amber-300 hover:shadow-[0_20px_45px_rgba(15,23,42,0.16)] lg:max-w-xs xl:max-w-sm dark:border-border-gold dark:bg-neutral-900/70 dark:shadow-lg dark:hover:border-border-gold/50 dark:hover:shadow-gold-glow-hover'>
                 <div className='w-20 h-20 rounded-full bg-glass-gold text-border-gold flex items-center justify-center mb-6 border border-border-gold/30 shadow-gold-glow transition-all duration-300 group-hover:bg-amber-500/20 group-hover:border-border-gold-hover group-hover:scale-105'>
                   <IconComponent className='w-9 h-9 transition-transform duration-300 group-hover:rotate-6' />
                 </div>
 
-                <h3 className='font-montserrat font-bold text-xl text-white mb-3 group-hover:text-border-gold-hover transition-colors duration-200'>
+                <h3 className='font-montserrat mb-3 text-xl font-bold text-slate-950 transition-colors duration-200 group-hover:text-border-gold-hover dark:text-white'>
                   {step.stepNumber}. {step.title}
                 </h3>
 
-                <p className='font-poppins font-light text-sm text-light-text leading-relaxed max-w-xs'>
+                <p className='font-poppins max-w-xs text-sm font-light leading-relaxed text-slate-600 dark:text-light-text'>
                   {step.desc}
                 </p>
               </div>

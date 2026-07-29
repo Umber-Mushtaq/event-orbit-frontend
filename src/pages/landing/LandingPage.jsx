@@ -30,12 +30,13 @@ function LandingPage() {
         schema={[organizationSchema(), websiteSchema()]}
       />
       <section
-        className='relative flex flex-col items-center justify-center text-center py-32 px-6 bg-cover bg-no-repeat bg-center'
+        className='relative flex min-h-[540px] flex-col items-center justify-center overflow-hidden px-6 py-28 text-center md:py-36 bg-cover bg-no-repeat bg-center'
         style={{
           backgroundImage: `url(${HeroBg})`,
         }}
       >
-        <div className='absolute inset-0 bg-black/60'></div>
+        <div className='absolute inset-0 bg-[rgba(0,0,0,0.36)] dark:bg-[rgba(0,0,0,0.62)]'></div>
+        <div className='absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background to-transparent'></div>
         <div className='relative z-10 max-w-5xl'>
           <LandingPageTypography />
           <LandingPageSearchFilter />

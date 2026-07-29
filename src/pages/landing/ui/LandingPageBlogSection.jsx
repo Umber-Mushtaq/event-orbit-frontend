@@ -20,7 +20,7 @@ function BlogSectionCard({ blog }) {
   return (
     <Link
       to={`/blog/${blog.slug}`}
-      className='group flex h-full overflow-hidden rounded-[2rem] border border-border-gold/15 bg-[#141414]/90 shadow-[0_14px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-border-gold/30 hover:shadow-gold-glow-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950'
+      className='group flex h-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_35px_rgba(15,23,42,0.1)] transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-[0_20px_45px_rgba(15,23,42,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-border-gold/15 dark:bg-[#141414]/90 dark:shadow-[0_14px_40px_rgba(0,0,0,0.35)] dark:hover:border-border-gold/30 dark:hover:shadow-gold-glow-hover dark:focus-visible:ring-offset-neutral-950'
       aria-label={`Open blog post: ${blog.title}`}
     >
       <article className='flex h-full flex-col'>
@@ -32,14 +32,14 @@ function BlogSectionCard({ blog }) {
             decoding='async'
             className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
           />
-          <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent' />
+          <div className='absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/8 to-transparent dark:from-black/80 dark:via-black/15' />
           <div className='absolute left-4 top-4 rounded-full border border-border-gold/20 bg-glass-gold px-3 py-1 text-[11px] font-semibold text-border-gold-hover shadow-gold-glow'>
             {blog.category || "Blog"}
           </div>
         </div>
 
         <div className='flex flex-1 flex-col p-5'>
-          <div className='flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-stone-500'>
+          <div className='flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-stone-500'>
             <span className='inline-flex items-center gap-1.5'>
               <CalendarDays className='h-3.5 w-3.5' />
               Published {formatBlogDate(blog.publishedAt)}
@@ -58,11 +58,11 @@ function BlogSectionCard({ blog }) {
             ) : null}
           </div>
 
-          <h3 className='mt-3 line-clamp-2 text-xl font-black leading-snug text-white transition-colors duration-300 group-hover:text-border-gold-hover'>
+          <h3 className='mt-3 line-clamp-2 text-xl font-black leading-snug text-slate-950 transition-colors duration-300 group-hover:text-border-gold-hover dark:text-white'>
             {blog.title}
           </h3>
 
-          <p className='mt-3 line-clamp-3 text-sm leading-relaxed text-stone-400'>
+          <p className='mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600 dark:text-stone-400'>
             {summary}
           </p>
 
@@ -83,7 +83,7 @@ function BlogSectionSkeleton() {
       {Array.from({ length: 6 }).map((_, index) => (
         <div
           key={index}
-          className='overflow-hidden rounded-[2rem] border border-white/8 bg-[#141414]/90 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'
+          className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_35px_rgba(15,23,42,0.1)] dark:border-white/8 dark:bg-[#141414]/90 dark:shadow-[0_14px_40px_rgba(0,0,0,0.35)]'
         >
           <div className='aspect-[16/10] animate-pulse bg-neutral-800/80' />
           <div className='flex flex-col gap-4 p-5'>
@@ -105,7 +105,7 @@ function BlogSectionSkeleton() {
 
 function BlogSectionEmpty() {
   return (
-    <div className='rounded-[2rem] border border-white/8 bg-[#141414]/90 p-8 text-center text-stone-400 shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
+    <div className='rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-[0_14px_35px_rgba(15,23,42,0.1)] dark:border-white/8 dark:bg-[#141414]/90 dark:text-stone-400 dark:shadow-[0_14px_40px_rgba(0,0,0,0.35)]'>
       We're still curating fresh articles. Check back soon for the latest
       planning advice and event inspiration.
     </div>
@@ -135,7 +135,7 @@ function BlogSectionContent() {
   return (
     <section
       id='blog-section'
-      className='w-full overflow-hidden bg-neutral-950 px-5 py-20 text-white'
+      className='w-full overflow-hidden bg-slate-50 px-5 py-20 text-slate-950 dark:bg-neutral-950 dark:text-white'
     >
       <div className='mx-auto flex w-full max-w-7xl flex-col gap-10'>
         <div className='flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between'>
@@ -144,7 +144,7 @@ function BlogSectionContent() {
               badge='From the Blog'
               title='Fresh ideas for every celebration.'
             />
-            <p className='mt-5 max-w-2xl text-sm leading-relaxed text-stone-400 md:text-base'>
+            <p className='mt-5 max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base dark:text-stone-400'>
               Browse the latest planning advice, inspiration, and practical
               guidance from our editorial team.
             </p>

@@ -60,7 +60,7 @@ function RegisterForm({
             value={formData.firstName}
             onChange={onInputChange}
             disabled={loading}
-            className='w-full bg-neutral-900/50 border border-border-gold rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins'
+            className='w-full rounded-xl border border-border-gold bg-white py-3 pl-11 pr-4 font-poppins text-sm text-slate-950 placeholder-slate-400 transition-colors duration-200 focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
             required
           />
         </div>
@@ -73,7 +73,7 @@ function RegisterForm({
             value={formData.lastName}
             onChange={onInputChange}
             disabled={loading}
-            className='w-full bg-neutral-900/50 border border-border-gold rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins'
+            className='w-full rounded-xl border border-border-gold bg-white py-3 pl-11 pr-4 font-poppins text-sm text-slate-950 placeholder-slate-400 transition-colors duration-200 focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
             required
           />
         </div>
@@ -89,7 +89,7 @@ function RegisterForm({
           value={formData.email}
           onChange={onInputChange}
           disabled={loading}
-          className='w-full bg-neutral-900/50 border border-border-gold rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins'
+          className='w-full rounded-xl border border-border-gold bg-white py-3 pl-11 pr-4 font-poppins text-sm text-slate-950 placeholder-slate-400 transition-colors duration-200 focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
           required
         />
       </div>
@@ -104,7 +104,7 @@ function RegisterForm({
           value={formData.password}
           onChange={onInputChange}
           disabled={loading}
-          className='w-full bg-neutral-900/50 border border-border-gold rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins'
+          className='w-full rounded-xl border border-border-gold bg-white py-3 pl-11 pr-4 font-poppins text-sm text-slate-950 placeholder-slate-400 transition-colors duration-200 focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
           required
         />
       </div>
@@ -136,7 +136,7 @@ function RegisterForm({
               value={formData.businessName || ""}
               onChange={onInputChange}
               disabled={loading}
-              className='w-full bg-neutral-900/50 border border-border-gold rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins'
+              className='w-full rounded-xl border border-border-gold bg-white py-3 pl-11 pr-4 font-poppins text-sm text-slate-950 placeholder-slate-400 transition-colors duration-200 focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
               required={isVendor}
             />
           </div>
@@ -205,7 +205,7 @@ function RegisterForm({
               onChange={onInputChange}
               disabled={loading}
               rows={3}
-              className='w-full bg-neutral-900/50 border border-border-gold rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-border-gold transition-colors duration-200 font-poppins resize-none'
+              className='w-full resize-none rounded-xl border border-border-gold bg-white py-3 pl-11 pr-4 font-poppins text-sm text-slate-950 placeholder-slate-400 transition-colors duration-200 focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
               required={isVendor}
             />
           </div>

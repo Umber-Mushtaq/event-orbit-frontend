@@ -8,13 +8,11 @@ import { Link } from "react-router";
 function LandingPageVerifiedVendors() {
   const { vendors, loading, error } = useVerifiedVendors();
 
-  console.log("vendors-----", vendors);
-
   if (loading) return <CustomLoading msg='Loading vendors...' />;
   if (error) return <CustomError msg={error} />;
 
   return (
-    <div className='py-20 px-6 bg-neutral-950 flex flex-col items-center w-full'>
+    <div className='flex w-full flex-col items-center bg-slate-50 px-6 py-10 dark:bg-neutral-950'>
       <div className='w-full max-w-7xl mx-auto'>
         <CustomHeader badge='Verified Vendors' title='Our Featured Vendors' />
       </div>

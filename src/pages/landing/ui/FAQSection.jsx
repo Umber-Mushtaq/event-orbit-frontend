@@ -43,14 +43,14 @@ function FAQSection() {
   };
 
   return (
-    <section className='w-full bg-neutral-950 text-white py-20 px-5'>
+    <section className='w-full bg-white px-5 py-20 text-slate-950 dark:bg-neutral-950 dark:text-white'>
       <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start'>
         <div>
           <CustomHeader
             badge='Frequently Asked'
             title='Answers, before you ask.'
           />
-          <p className='text-stone-400 text-2xl mt-5 mb-8 max-w-md'>
+          <p className='mb-8 mt-5 max-w-md text-2xl text-slate-500 dark:text-stone-400'>
             Six things we hear most often.
           </p>
         </div>
@@ -58,11 +58,11 @@ function FAQSection() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className='rounded-lg bg-neutral-900/50 shadow-gold-glow'
+              className='rounded-lg border border-slate-200 bg-slate-50 shadow-[0_10px_28px_rgba(15,23,42,0.08)] dark:border-transparent dark:bg-neutral-900/50 dark:shadow-gold-glow'
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className='w-full flex justify-between items-center px-6 py-4 text-left text-white hover:text-amber-400 transition'
+                className='flex w-full items-center justify-between px-6 py-4 text-left text-slate-800 transition hover:text-amber-500 dark:text-white dark:hover:text-amber-400'
               >
                 {faq.question}
                 <ChevronDown
@@ -72,7 +72,7 @@ function FAQSection() {
                 />
               </button>
               {openIndex === index && (
-                <div className='px-6 pb-4 text-stone-300 text-sm leading-relaxed'>
+                <div className='px-6 pb-4 text-sm leading-relaxed text-slate-600 dark:text-stone-300'>
                   {faq.answer}
                 </div>
               )}

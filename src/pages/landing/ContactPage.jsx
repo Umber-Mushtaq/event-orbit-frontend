@@ -118,7 +118,7 @@ function ContactPage() {
               type='text'
               name='name'
               placeholder='Enter your full name'
-              className='w-full bg-neutral-900/50 border border-stone-400 rounded-lg py-3 px-4 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-border-gold transition'
+              className='w-full rounded-lg border border-stone-400 bg-white py-3 px-4 text-sm text-slate-950 placeholder-slate-400 transition focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
               required
             />
           </div>
@@ -131,7 +131,7 @@ function ContactPage() {
               type='email'
               name='email'
               placeholder='Enter your email'
-              className='w-full bg-neutral-900/50 border border-stone-400 rounded-lg py-3 px-4 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-border-gold transition'
+              className='w-full rounded-lg border border-stone-400 bg-white py-3 px-4 text-sm text-slate-950 placeholder-slate-400 transition focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
               required
             />
           </div>
@@ -144,7 +144,7 @@ function ContactPage() {
               rows={4}
               name='message'
               placeholder='Tell us about your inquiry...'
-              className='w-full bg-neutral-900/50 border border-stone-400 rounded-lg py-3 px-4 text-sm text-white placeholder-stone-400 focus:outline-none focus:border-border-gold transition resize-none'
+              className='w-full resize-none rounded-lg border border-stone-400 bg-white py-3 px-4 text-sm text-slate-950 placeholder-slate-400 transition focus:border-border-gold focus:outline-none dark:bg-neutral-950/80 dark:text-white dark:placeholder-stone-500'
               required
             />
           </div>

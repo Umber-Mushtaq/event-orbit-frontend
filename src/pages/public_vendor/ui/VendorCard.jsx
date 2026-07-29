@@ -20,10 +20,10 @@ function VendorCard({ vendor }) {
   return (
     <div
       onClick={handleClick}
-      className='cursor-pointer bg-neutral-900/70 border border-border-gold rounded-xl shadow-gold-glow hover:shadow-gold-glow-hover transition-all duration-300 overflow-hidden p-6 flex flex-col gap-4'
+      className='flex cursor-pointer flex-col gap-4 overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-[0_14px_35px_rgba(15,23,42,0.1)] transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-[0_20px_45px_rgba(15,23,42,0.16)] dark:border-border-gold dark:bg-neutral-900/70 dark:shadow-gold-glow dark:hover:shadow-gold-glow-hover'
     >
       <div className='flex items-center justify-between'>
-        <h3 className='text-lg font-bold text-white uppercase tracking-wide'>
+        <h3 className='text-lg font-bold uppercase tracking-wide text-slate-950 dark:text-white'>
           {vendor.businessName || `${vendor.firstName} ${vendor.lastName}`}
         </h3>
         {vendor.isApproved && (
@@ -46,14 +46,14 @@ function VendorCard({ vendor }) {
         />
       </div>
 
-      <p className='text-sm text-stone-300'>
+      <p className='text-sm text-slate-600 dark:text-stone-300'>
         {vendor.businessDescription || "No description provided."}
       </p>
       {vendor.vendorBio && (
-        <p className='text-xs text-stone-400 italic'>{vendor.vendorBio}</p>
+        <p className='text-xs italic text-slate-500 dark:text-stone-400'>{vendor.vendorBio}</p>
       )}
 
-      <div className='flex flex-col gap-2 text-xs text-stone-300'>
+      <div className='flex flex-col gap-2 text-xs text-slate-600 dark:text-stone-300'>
         {vendor.address && (
           <div className='flex items-center gap-2'>
             <MapPin className='w-4 h-4 text-amber-400' />

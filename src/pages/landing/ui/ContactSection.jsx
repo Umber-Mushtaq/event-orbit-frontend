@@ -1,19 +1,22 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+import HeroBg from "../../../assets/hero_bg2.jpg";
 function ContactSection() {
   return (
     <div className='flex items-center justify-center py-20'>
       <section
-        className='relative w-full md:w-7xl h-[70vh] md:rounded-2xl overflow-hidden flex items-center justify-center text-center   bg-cover bg-no-repeat bg-center border border-primary bg-neutral-700'
-        
+        className='relative flex h-[70vh] w-full items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat text-center md:w-7xl md:rounded-2xl border border-amber-200 shadow-[0_18px_50px_rgba(15,23,42,0.12)] dark:border-primary'
+        style={{
+          backgroundImage: `url(${HeroBg})`,
+        }}
       >
-        <div className='absolute inset-0 bg-black/60'></div>
+        <div className='absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.88),rgba(255,255,255,0.72)),linear-gradient(180deg,rgba(251,191,36,0.12),rgba(15,23,42,0.1))] dark:bg-black/60'></div>
 
         <div className='relative z-10 max-w-3xl px-6 flex flex-col items-center gap-6'>
-          <h1 className='text-3xl md:text-4xl font-bold text-white leading-snug'>
+          <h1 className='text-3xl md:text-4xl font-bold text-slate-950 dark:text-white leading-snug'>
             Where perfect events begin.
           </h1>
-          <p className='text-stone-300 text-sm md:text-base max-w-xl'>
+          <p className='text-slate-600 dark:text-stone-300 text-sm md:text-base max-w-xl'>
             Tell us about your event. Our concierge will assemble a shortlist of
             three vendors within 48 hours.
           </p>
