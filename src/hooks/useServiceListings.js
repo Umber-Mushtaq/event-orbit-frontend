@@ -38,7 +38,6 @@ export function useServiceListings(filters = {}) {
           apiUrl(`/api/services/getAllServices?${params.toString()}`),
           { signal: abortController.signal },
         );
-
         if (response.data?.success) {
           setServices(response.data.data);
         } else {
